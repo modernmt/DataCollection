@@ -1,13 +1,15 @@
 # gumbo-parser directory
 # https://github.com/google/gumbo-parser
 GUMBO = /home/buck/net/build/gumbo
-CXXFLAGS =	-O2 -g -Wall -fmessage-length=0 -std=c++11  -I$(GUMBO)/include/
-LIBS = -L$(GUMBO)/lib/
+
+CLD2 = /home/buck/net/build/cld2
+CXXFLAGS =	-O2 -g -Wall -fmessage-length=0 -std=c++11  -I$(GUMBO)/include/ -I$(CLD2)/public
+LIBS = -L$(GUMBO)/lib/ -L$(CLD2)/internal
 
 default: all
 
 html2text: html2text.o
-	$(CXX) -o $@ $^ -static $(LDFLAGS) -lgumbo $(LIBS)
+	$(CXX) -o $@ $^ -static $(LDFLAGS) -lgumbo -lidn $(LIBS)
 
 %.o : %.cpp *.h Makefile
 	@echo "***" $< "***"
