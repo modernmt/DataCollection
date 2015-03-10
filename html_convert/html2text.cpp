@@ -18,7 +18,6 @@
 #include "string_util.h"
 #include "header.h"
 
-using CLD2::int32;
 using std::string;
 using std::getline;
 using std::cin;
@@ -26,7 +25,7 @@ using std::vector;
 using std::cout;
 using std::ofstream;
 
-typedef int32 Encoding;
+typedef CLD2::int32 Encoding;
 static const Encoding UNKNOWN_ENCODING = 0;
 static const char* magic_number = "df6fa1abb58549287111ba8d776733e9";
 
@@ -38,7 +37,6 @@ static std::set<string> block_tags = {
     "h5",      "h6",      "header", "hgroup",   "hr",         "noscript",
     "ol",      "output",  "p",      "pre",      "section",    "table",
     "tfoot",   "ul",      "video"};
-
 
 // Using libidn to get tld
 string uri2tld(const string& uri) {
@@ -53,38 +51,105 @@ string uri2tld(const string& uri) {
   }
 }
 
-
-static void DumpText(GumboNode* node, ofstream* outfile) {
+static void DumpText(GumboNode* node, std::ostringstream* textbuffer) {
   if (node->type == GUMBO_NODE_TEXT) {
     string text(node->v.text.text);
     std::replace(text.begin(), text.end(), '\n', ' ');
-    *outfile << text;
+    *textbuffer << text;
   } else if (node->type == GUMBO_NODE_WHITESPACE) {
-    *outfile << " ";
+    *textbuffer << " ";
   } else if (node->type == GUMBO_NODE_ELEMENT &&
              node->v.element.tag != GUMBO_TAG_SCRIPT &&
              node->v.element.tag != GUMBO_TAG_STYLE) {
     // Insert line breaks for <br> and <li>
     if (node->v.element.tag == GUMBO_TAG_BR ||
         node->v.element.tag == GUMBO_TAG_LI) {
-      *outfile << std::endl;
+      *textbuffer << std::endl;
     }
     // Descend into subtree
     GumboVector* children = &node->v.element.children;
     for (unsigned int i = 0; i < children->length; ++i) {
-      DumpText(static_cast<GumboNode*>(children->data[i]), outfile);
+      DumpText(static_cast<GumboNode*>(children->data[i]), textbuffer);
     }
 
     const std::string tagname = gumbo_normalized_tagname(node->v.element.tag);
     // Insert line break if tag defines a block
     if (block_tags.find(tagname) != block_tags.end()) {
-      *outfile << std::endl;
+      *textbuffer << std::endl;
     }
   }
 }
 
+static string DumpText(GumboNode* node) {
+  std::ostringstream textbuffer;
+  DumpText(node, &textbuffer);
+  return textbuffer.str();
+}
 
-static void GetLinks(const string& suffix, GumboNode* node, vector<string>* links) {
+void SplitTextByLanguage(const int flags, const string& header,
+                         const string& buffer, ofstream* outfile,
+                         ofstream* statsfile) {
+  if (header.empty() || buffer.empty()) {
+    return;
+  }
+
+  const Header header_values(header);
+  const string uri = header_values.get_uri();
+  const string tld = uri2tld(uri);
+
+  bool is_plain_text = true;
+  CLD2::CLDHints cld_hints = {NULL, NULL, UNKNOWN_ENCODING,
+                              CLD2::UNKNOWN_LANGUAGE};
+  if (!tld.empty()) {
+    cld_hints.tld_hint = tld.c_str();
+  }
+  CLD2::Language language3[3];
+  int percent3[3];
+  double normalized_score3[3];
+  int valid_prefix_bytes;
+
+  CLD2::ResultChunkVector resultchunkvector;
+  int text_bytes;
+  bool is_reliable;
+
+  CLD2::ExtDetectLanguageSummaryCheckUTF8(
+      buffer.c_str(), buffer.size(), is_plain_text, &cld_hints, flags,
+      language3, percent3, normalized_score3, &resultchunkvector, &text_bytes,
+      &is_reliable, &valid_prefix_bytes);
+
+  if (is_reliable) {
+    if (outfile != nullptr && outfile->is_open()) {
+      for (int i = 0; i < static_cast<int>(resultchunkvector.size()); ++i) {
+        const CLD2::ResultChunk& rc = resultchunkvector[i];
+        CLD2::Language rc_lang = static_cast<CLD2::Language>(rc.lang1);
+        if (rc_lang == CLD2::UNKNOWN_LANGUAGE) {
+          continue;
+        }
+        const char* lang_code = LanguageCode(rc_lang);
+        const string chunk = string(buffer, rc.offset, rc.bytes);
+
+        *outfile << header << " language:" << lang_code
+                 << " offset:" << rc.offset << " bytes: " << rc.bytes
+                 << std::endl;
+        *outfile << chunk << std::endl;
+      }
+    }
+    if (statsfile != nullptr && statsfile->is_open()) {
+      // print some statistics
+      *statsfile << header << " bytes:" << buffer.size() << std::endl;
+      for (int i = 0; i < 3; i++) {
+        if (percent3[i] > 0) {
+          const char* lang_name = LanguageName(language3[i]);
+          *statsfile << lang_name << "\t" << percent3[i] << "\t"
+                     << normalized_score3[i] << std::endl;
+        }
+      }
+    }
+  }
+}
+
+static void GetLinks(const string& suffix, GumboNode* node,
+                     vector<string>* links) {
   if (node->type != GUMBO_NODE_ELEMENT) {
     return;
   }
@@ -101,7 +166,8 @@ static void GetLinks(const string& suffix, GumboNode* node, vector<string>* link
   }
 }
 
-static void DumpLinks(const string& header, GumboNode* node, ofstream* outfile) {
+static void DumpLinks(const string& header, GumboNode* node,
+                      ofstream* outfile) {
   static string suffix(".pdf");
   vector<string> links;
   GetLinks(suffix, node, &links);
@@ -114,17 +180,23 @@ static void DumpLinks(const string& header, GumboNode* node, ofstream* outfile) 
 }
 
 void ProcessBuffer(const string& header, const string& buffer,
-                   ofstream* text_file, ofstream* pdf_links_file,
-                   ofstream* language_stats_file) {
+                   const int split_by_language, ofstream* text_file,
+                   ofstream* pdf_links_file, ofstream* language_stats_file) {
   if (header.empty() || buffer.empty()) {
     return;
   }
   GumboOutput* output = gumbo_parse(buffer.c_str());
 
-  if (text_file->is_open()) {
-    *text_file << header << std::endl;
-    DumpText(output->root, text_file);
-    *text_file << std::endl;
+  if (text_file->is_open() || language_stats_file->is_open()) {
+    string text = DumpText(output->root);
+    std::cout << "Text: " << text << std::endl;
+    if (!split_by_language) {
+      *text_file << header << std::endl;
+      *text_file << text << std::endl;
+    } else {
+      int flags = 0;
+      SplitTextByLanguage(flags, header, text, text_file, language_stats_file);
+    }
   }
   if (pdf_links_file->is_open()) {
     DumpLinks(header, output->root, pdf_links_file);
@@ -134,11 +206,11 @@ void ProcessBuffer(const string& header, const string& buffer,
 }
 
 int main(int argc, char** argv) {
-
   ofstream text_file, pdf_links_file, lang_stats_file;
-
+  int split_by_language = 0;
   while (1) {
     static struct option long_options[] = {
+        {"splitlang", no_argument, &split_by_language, 1},
         {"textfile", required_argument, 0, 't'},
         {"pdflinks", required_argument, 0, 'p'},
         {"langstats", required_argument, 0, 'l'},
@@ -186,8 +258,8 @@ int main(int argc, char** argv) {
   string header;
   while (getline(cin, line)) {
     if (line.find(magic_number) == 0) {
-      ProcessBuffer(header, buffer.str(), &text_file, &pdf_links_file,
-                    &lang_stats_file);
+      ProcessBuffer(header, buffer.str(), split_by_language, &text_file,
+                    &pdf_links_file, &lang_stats_file);
       buffer.clear();
       buffer.str(string(""));
       header = line;
@@ -195,7 +267,7 @@ int main(int argc, char** argv) {
       buffer << line << std::endl;
     }
   }
-  ProcessBuffer(header, buffer.str(), &text_file, &pdf_links_file,
-                &lang_stats_file);
+  ProcessBuffer(header, buffer.str(), split_by_language, &text_file,
+                &pdf_links_file, &lang_stats_file);
   return 1;
 }

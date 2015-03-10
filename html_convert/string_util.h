@@ -10,20 +10,20 @@ namespace {
 using std::string;
 
 class StringUtil {
-public:
+ public:
   static bool EndsWith(string const& s, const string& end) {
     if (s.length() >= end.length() &&
         s.compare(s.length() - end.length(), end.length(), end) == 0) {
       return true;
     }
-    std::cout << s << " does not end with " << end << std::endl;
+//    std::cout << s << " does not end with " << end << std::endl;
     return false;
   }
 
   static string ToLower(const string& s) {
     string lower(s);
     std::transform(s.begin(), s.end(), lower.begin(), ::tolower);
-    std::cout << lower << std::endl;
+//    std::cout << lower << std::endl;
     return lower;
   }
 
@@ -46,6 +46,18 @@ public:
         std::find_if_not(s.rbegin(), s.rend(),
                          [](int c) { return std::isspace(c); }).base();
     return (wsback <= wsfront ? std::string() : std::string(wsfront, wsback));
+  }
+
+  static void TrimRepeatedleWhitespace(string* s) {
+    s->erase(std::unique(s->begin(), s->end(),
+                         [](char a, char b) { return a == ' ' && b == ' '; }),
+             s->end());
+  }
+
+  static string TrimRepeatedleWhitespace(const string& s) {
+    string tmp = s;
+    TrimRepeatedleWhitespace(&tmp);
+    return tmp;
   }
 };
 

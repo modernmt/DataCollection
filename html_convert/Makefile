@@ -9,7 +9,7 @@ LIBS = -L$(GUMBO)/lib/ -L$(CLD2)/internal
 default: all
 
 html2text: html2text.o
-	$(CXX) -o $@ $^ -static $(LDFLAGS) -lgumbo -lidn $(LIBS)
+	$(CXX) -o $@ $^  $(LDFLAGS) -lgumbo -lidn -lcld2_full $(LIBS) 
 
 %.o : %.cpp *.h Makefile
 	@echo "***" $< "***"
