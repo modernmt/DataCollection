@@ -131,7 +131,7 @@ void SplitTextByLanguage(const int flags, const string& header,
         *outfile << header << " language:" << lang_code
                  << " offset:" << rc.offset << " bytes: " << rc.bytes
                  << std::endl;
-        *outfile << chunk << std::endl;
+        *outfile << StringUtil::TrimRepeatedWhitespace(chunk) << std::endl;
       }
     }
     if (statsfile != nullptr && statsfile->is_open()) {
@@ -189,7 +189,6 @@ void ProcessBuffer(const string& header, const string& buffer,
 
   if (text_file->is_open() || language_stats_file->is_open()) {
     string text = DumpText(output->root);
-    std::cout << "Text: " << text << std::endl;
     if (!split_by_language) {
       *text_file << header << std::endl;
       *text_file << text << std::endl;
@@ -269,5 +268,5 @@ int main(int argc, char** argv) {
   }
   ProcessBuffer(header, buffer.str(), split_by_language, &text_file,
                 &pdf_links_file, &lang_stats_file);
-  return 1;
+  return 0;
 }

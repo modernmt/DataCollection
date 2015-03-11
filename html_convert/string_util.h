@@ -48,16 +48,24 @@ class StringUtil {
     return (wsback <= wsfront ? std::string() : std::string(wsfront, wsback));
   }
 
-  static void TrimRepeatedleWhitespace(string* s) {
+  static void TrimRepeatedSpace(string* s) {
     s->erase(std::unique(s->begin(), s->end(),
-                         [](char a, char b) { return a == ' ' && b == ' '; }),
+                         [](char a, char b) { return std::isspace(a) && std::isspace(b); }),
              s->end());
   }
 
-  static string TrimRepeatedleWhitespace(const string& s) {
-    string tmp = s;
-    TrimRepeatedleWhitespace(&tmp);
-    return tmp;
+  static string TrimRepeatedWhitespace(const string& s) {
+    std::stringstream ss(s);
+    std::ostringstream oss;
+    string line;
+    while (std::getline(ss, line)) {
+      line = Trim(line);
+      if (!line.empty()) {
+        TrimRepeatedSpace(&line);
+        oss << line << std::endl;
+      }
+    }
+    return oss.str();
   }
 };
 
