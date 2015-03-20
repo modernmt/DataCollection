@@ -19,7 +19,10 @@ if __name__ == "__main__":
     for line in sys.stdin:
         if not line.startswith("{"):
             continue
-        d = json.loads(line)
+        try:
+            d = json.loads(line)
+        except ValueError:
+            continue
 
         uri, links = None, None
         try:
@@ -37,5 +40,8 @@ if __name__ == "__main__":
             continue
 
         res = {"uri": uri, "links": links}
-        tld = tldextract.extract(urlparse(uri).netloc)
+        try:
+            tld = tldextract.extract(urlparse(uri).netloc)
+        except UnicodeError:
+            continue
         print tld.domain.encode("utf8", "ignore") , json.dumps(res)
