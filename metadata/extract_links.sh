@@ -3,7 +3,7 @@
 # Downloads $1 which should be a CommonCrawl wat file,
 # extracts links, sorts by domainname and xzips the result
 
-FILENAME=`echo $1 | awk  ' BEGIN { FS = "/" } { print $(NF) }'`
+FILENAME=`echo $1 | awk  ' BEGIN { FS = "/" } { print $(NF-2) "/" $(NF) }'`
 OUTFILE=${FILENAME/warc.wat.gz/links.xz}
 
 # Directory in which this script is stored
