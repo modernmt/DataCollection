@@ -42,30 +42,52 @@ def url_components(uri):
         components.remove('')
     return components
 
-def filter_components(components):
-    return [c for c in components if len(c) < 30]
+def filter_components(components, max_length):
+    return [c for c in components if len(c.split(':',1)[1]) < max_length]
 
-def process_buffer(buffer):
+def get_languages(buffer):
+    return [(lang, int(percentage), int(num_bytes)) \
+            for lang, percentage, num_bytes in \
+               [line.split() for line in buffer]]
+
+def process_buffer(buffer, max_length, max_english):
     if not buffer or len(buffer) < 2:
         return
+    assert buffer[0].startswith(magic_number)
 
-    main_lang = buffer[1].split()[0]
+    languages = get_languages(buffer[1:])
+    percent_english = 0
+    for lang, percent, num_bytes in languages:
+        if lang == "ENGLISH":
+            percent_english = percent
+            break
+    if percent_english > max_english:
+        return
 
     uri = buffer[0].split(' ', 2)[1].split(':', 1)[1]
     # print "uri:", uri
     components = url_components(uri)
-    components = filter_components(components)
+    components = filter_components(components, max_length)
     print u"\n".join(components).encode("utf-8")
 
 
+
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--max_english', default=100, type=int, 
+        help='ignore pages with higher percentage of ENLGISH text')
+    parser.add_argument('--max_length', default=20, type=int, 
+        help='ignore components longer than this')
+    args = parser.parse_args(sys.argv[1:])
+
     buffer = []
     for line in sys.stdin:
         line = line.decode("utf-8", "ignore")
         if line.startswith(magic_number):
-            process_buffer(buffer)
+            process_buffer(buffer, args.max_length, args.max_english)
             buffer = [line]
-        else:
+        elif buffer:
             buffer.append(line)
-    process_buffer(buffer)
+    process_buffer(buffer, args.max_length, args.max_english)
 
