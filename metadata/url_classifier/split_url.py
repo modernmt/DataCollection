@@ -55,12 +55,13 @@ def process_buffer(buffer):
     # print "uri:", uri
     components = url_components(uri)
     components = filter_components(components)
-    print "\n".join(components)
+    print u"\n".join(components).encode("utf-8")
 
 
 if __name__ == "__main__":
     buffer = []
     for line in sys.stdin:
+        line = line.decode("utf-8", "ignore")
         if line.startswith(magic_number):
             process_buffer(buffer)
             buffer = [line]
