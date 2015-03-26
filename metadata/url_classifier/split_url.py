@@ -12,7 +12,21 @@ import re
 magic_number = "df6fa1abb58549287111ba8d776733e9"
 
 
-def url_components(uri):
+def stoi(s):
+    """ works like int(s) but also accepts floats and scientific notation """
+    try:
+        return int(s)
+    except ValueError:
+        return int(float(s))
+
+
+def filter_components(components, max_length, valid_components):
+    return [c for c in components if
+            len(c.split(':', 1)[1]) < max_length
+            and (not valid_components or c in valid_components)]
+
+
+def url_components(uri, max_length, valid_components):
     components = set()
     parts = urlparse(uri)
 
@@ -43,21 +57,10 @@ def url_components(uri):
 
     if '' in components:
         components.remove('')
+
+    components = filter_components(components, max_length, valid_components)
+
     return components
-
-
-def filter_components(components, max_length, valid_components):
-    return [c for c in components if
-            len(c.split(':', 1)[1]) < max_length
-            and (not valid_components or c in valid_components)]
-
-
-def stoi(s):
-    """ works like int(s) but also accepts floats and scientific notation """
-    try:
-        return int(s)
-    except ValueError:
-        return int(float(s))
 
 
 def get_languages(buffer):
@@ -66,7 +69,8 @@ def get_languages(buffer):
             [line.split() for line in buffer]]
 
 
-def process_buffer(buffer, max_length, max_english, valid_components):
+def process_buffer(buffer, max_length, max_english, valid_components,
+                   output_format):
     if not buffer or len(buffer) < 2:
         return
     assert buffer[0].startswith(magic_number)
@@ -81,13 +85,22 @@ def process_buffer(buffer, max_length, max_english, valid_components):
         return
 
     uri = buffer[0].split(' ', 2)[1].split(':', 1)[1]
-    components = url_components(uri)
-    components = filter_components(components, max_length, valid_components)
-    print u"\n".join(components).encode("utf-8")
+    components = url_components(uri, max_length, valid_components)
+
+    if output_format == "components":
+        print u"\n".join(components).encode("utf-8")
+    else:
+        if not components:
+            return
+        assert output_format == "libsvm"
+        sys.stdout.write("%s" % (languages[0][0]))
+        for component in components:
+            sys.stdout.write(" %s:1" % (component))
+        sys.stdout.write("\n")
 
 
-def read_valid(filename):
-    return set(l.strip() for l in open(filename))
+def read_valid(file_handle):
+    return set(l.decode('utf-8').strip() for l in file_handle)
 
 if __name__ == "__main__":
     import argparse
@@ -97,11 +110,14 @@ if __name__ == "__main__":
                               of ENLGISH text')
     parser.add_argument('--max_length', default=20, type=int,
                         help='ignore components longer than this')
-    parser.add_argument('--valid_components',
+    parser.add_argument('--valid_components', type=argparse.FileType(),
+                        help='file containing valid components, one per line')
+    parser.add_argument('--format', default="components",
+                        choices=["components", "libsvm"],
                         help='file containing valid components, one per line')
     args = parser.parse_args(sys.argv[1:])
 
-    valid_components = set()
+    valid_components = None
     if args.valid_components:
         valid_components = read_valid(args.valid_components)
 
@@ -109,9 +125,14 @@ if __name__ == "__main__":
     for line in sys.stdin:
         line = line.decode("utf-8", "ignore")
         if line.startswith(magic_number):
-            process_buffer(
-                buffer, args.max_length, args.max_english, valid_components)
+            process_buffer(buffer, args.max_length, args.max_english,
+                           valid_components, args.format)
             buffer = [line]
         elif buffer:
             buffer.append(line)
-    process_buffer(buffer, args.max_length, args.max_english, valid_components)
+    process_buffer(
+        buffer,
+        args.max_length,
+        args.max_english,
+        valid_components,
+        args.format)
