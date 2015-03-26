@@ -4,6 +4,7 @@ import sys
 from urlparse import urlparse, parse_qsl
 import tldextract
 import re
+import random
 
 # example: df6fa1abb58549287111ba8d776733e9
 # uri:http://49ersnews.com/forum/index.php?showtopic=36414&st=15
@@ -69,20 +70,19 @@ def get_languages(buffer):
             [line.split() for line in buffer]]
 
 
-def process_buffer(buffer, max_length, max_english, valid_components,
-                   output_format):
+def process_buffer(buffer, max_length, max_english, sample_english,
+                   valid_components, output_format):
     if not buffer or len(buffer) < 2:
         return
     assert buffer[0].startswith(magic_number)
 
     languages = get_languages(buffer[1:])
-    percent_english = 0
     for lang, percent, num_bytes in languages:
         if lang == "ENGLISH":
-            percent_english = percent
-            break
-    if percent_english > max_english:
-        return
+            if percent > max_english:
+                return
+            if sample_english < 1.0 and random.random() > sample_english:
+                return
 
     uri = buffer[0].split(' ', 2)[1].split(':', 1)[1]
     components = url_components(uri, max_length, valid_components)
@@ -102,12 +102,22 @@ def process_buffer(buffer, max_length, max_english, valid_components,
 def read_valid(file_handle):
     return set(l.decode('utf-8').strip() for l in file_handle)
 
+
+def percentage(s):
+    p = float(s)
+    if p < 0.0 or p > 1.0:
+        raise ValueError("Value must be in [0, 1]")
+    return p
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--max_english', default=100, type=int,
                         help='ignore pages with higher percentage \
-                              of ENLGISH text')
+                              of English text')
+    parser.add_argument('--sample_english', default=1.0, type=percentage,
+                        help='relative amount of retained English entries.\
+                              value should be in  [0, 1]')
     parser.add_argument('--max_length', default=20, type=int,
                         help='ignore components longer than this')
     parser.add_argument('--valid_components', type=argparse.FileType(),
@@ -126,13 +136,9 @@ if __name__ == "__main__":
         line = line.decode("utf-8", "ignore")
         if line.startswith(magic_number):
             process_buffer(buffer, args.max_length, args.max_english,
-                           valid_components, args.format)
+                           args.sample_english, valid_components, args.format)
             buffer = [line]
         elif buffer:
             buffer.append(line)
-    process_buffer(
-        buffer,
-        args.max_length,
-        args.max_english,
-        valid_components,
-        args.format)
+    process_buffer(buffer, args.max_length, args.max_english,
+                   args.sample_english, valid_components, args.format)
