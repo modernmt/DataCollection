@@ -52,8 +52,16 @@ def filter_components(components, max_length, valid_components):
             and (not valid_components or c in valid_components)]
 
 
+def stoi(s):
+    """ works like int(s) but also accepts floats and scientific notation """
+    try:
+        return int(s)
+    except ValueError:
+        return int(float(s))
+
+
 def get_languages(buffer):
-    return [(lang, int(percentage), int(num_bytes))
+    return [(lang, int(percentage), stoi(num_bytes))
             for lang, percentage, num_bytes in
             [line.split() for line in buffer]]
 
