@@ -87,16 +87,19 @@ def process_buffer(buffer, max_length, max_english, sample_english,
     uri = buffer[0].split(' ', 2)[1].split(':', 1)[1]
     components = url_components(uri, max_length, valid_components)
 
+    if not components:
+        return
     if output_format == "components":
-        print u"\n".join(components).encode("utf-8")
-    else:
-        if not components:
-            return
-        assert output_format == "libsvm"
+        print "\n".join(components).encode("utf-8")
+    elif output_format == "libsvm":
         sys.stdout.write("%s" % (languages[0][0]))
         for component in components:
             sys.stdout.write(" %s:1" % (component))
         sys.stdout.write("\n")
+    elif output_format == "libshorttext":
+        # Format: <label><TAB><text>
+        sys.stdout.write("%s\t%s\n" % (languages[0][0],
+                                       " ".join(components).encode("utf-8")))
 
 
 def read_valid(file_handle):
@@ -123,7 +126,7 @@ if __name__ == "__main__":
     parser.add_argument('--valid_components', type=argparse.FileType(),
                         help='file containing valid components, one per line')
     parser.add_argument('--format', default="components",
-                        choices=["components", "libsvm"],
+                        choices=["components", "libsvm", "libshorttext"],
                         help='file containing valid components, one per line')
     args = parser.parse_args(sys.argv[1:])
 
