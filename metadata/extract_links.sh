@@ -14,4 +14,4 @@ mkdir -p ${TMPDIR}
 # Directory in which this script is stored
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-curl -s --retry 5 $1 | gzip -cd | ${DIR}/links_from_wat.py | sort -t" " -k1,1 --compress-program=pigz --temporary-directory=${TMPDIR} --parallel=4 | uniq | /home/buck/net/build/pxz/pxz -T 8 > ${OUTFILE} && touch ${OUTFILE/links.xz/done}
+curl -s --retry 5 $1 | gzip -cd | ${DIR}/links_from_wat.py | sort -t" " -S500M -k1,1 --compress-program=pigz --temporary-directory=${TMPDIR} --parallel=2 | uniq | /home/buck/net/build/pxz/pxz -T 2 -9 -e > ${OUTFILE} && touch ${OUTFILE/links.xz/done}
