@@ -6,15 +6,6 @@ import tldextract
 from urlparse import urlparse
 
 
-valid_paths = ["A", "IMG"]
-
-def valid_link(link):
-    if not "path" in link:
-        return False
-    if not link["path"].split("@",1)[0] in valid_paths:
-        return False
-    return True
-
 if __name__ == "__main__":
     for line in sys.stdin:
         if not line.startswith("{"):
@@ -26,22 +17,19 @@ if __name__ == "__main__":
 
         uri, links = None, None
         try:
+            container = d["Container"]
             uri = d["Envelope"]["WARC-Header-Metadata"]["WARC-Target-URI"]
-            links = d["Envelope"]\
-                     ["Payload-Metadata"]\
-                     ["HTTP-Response-Metadata"]\
-                     ["HTML-Metadata"]\
-                     ["Links"]
-            # links = [link for link in links if valid_link(link)]
+            links = d["Envelope"]["Payload-Metadata"][
+                "HTTP-Response-Metadata"]["HTML-Metadata"]["Links"]
         except KeyError:
             continue
 
         if not links:
             continue
 
-        res = {"uri": uri, "links": links}
+        res = {"uri": uri, "container": container, "links": links}
         try:
             tld = tldextract.extract(urlparse(uri).netloc)
         except UnicodeError:
             continue
-        print tld.domain.encode("utf8", "ignore") , json.dumps(res)
+        print tld.domain.encode("utf8", "ignore"), json.dumps(res)
