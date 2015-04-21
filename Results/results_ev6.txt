@@ -1,0 +1,11 @@
+Files Downloaded:
+-----------------------------------------------------
+1.xml	AB Coring	http://ab-carottage.fr/en/
+6.xml	Contact "AB Coring	http://ab-carottage.fr/en/contact/
+24.xml	Contact « AB Carottage	http://ab-carottage.fr/contact/
+2.xml	AB Carottage	http://ab-carottage.fr/
+
+Files Mapped:
+-----------------------------------------------------
+6.xml	24.xml
+2.xml	1.xml

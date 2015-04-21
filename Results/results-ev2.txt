@@ -1,0 +1,1184 @@
+Files Downloaded:
+-----------------------------------------------------
+1.xml	Strategy for sustainable development	http://europa.eu/legislation_summaries/agriculture/environment/l28117_en.htm
+10.xml	Agriculture	http://europa.eu/legislation_summaries/agriculture/index_en.htm
+1000.xml	EUROPA - Parlamento europeo	http://europa.eu/about-eu/institutions-bodies/european-parliament/index_it.htm
+1001.xml	Interinstitutional bodies	http://europa.eu/about-eu/institutions-bodies/interinstitutional-bodies/index_en.htm
+1002.xml	Organismi interistituzionali	http://europa.eu/about-eu/institutions-bodies/interinstitutional-bodies/index_it.htm
+1003.xml	EUROPA - European Ombudsman	http://europa.eu/about-eu/institutions-bodies/ombudsman/index_en.htm
+1004.xml	EUROPA - Mediatore europeo	http://europa.eu/about-eu/institutions-bodies/ombudsman/index_it.htm
+1009.xml	EUROPA - Traineeships for graduates, linguists and students	http://europa.eu/about-eu/working-eu-institutions/traineeships/index_en.htm
+1010.xml	EUROPA - Tirocini per laureati, linguisti e studenti	http://europa.eu/about-eu/working-eu-institutions/traineeships/index_it.htm
+1012.xml	EUROPA - About EUROPA	http://europa.eu/abouteuropa/faq/index_en.htm
+1013.xml	EUROPA – il sito EUROPA	http://europa.eu/abouteuropa/faq/index_it.htm
+1021.xml	EUROPA - Visit the EU institutions	http://europa.eu/contact/visit/index_en.htm
+1022.xml	EUROPA - Visitare le istituzioni dell'UE	http://europa.eu/contact/visit/index_it.htm
+1027.xml	About EPSO	http://europa.eu/epso/about/index_en.htm
+1028.xml	Presentazione dell'EPSO	http://europa.eu/epso/about/index_it.htm
+1029.xml		http://europa.eu/epso/apply/how_apply/index_en.htm
+103.xml	EUROPA - Come vengono prese le decisioni dell'UE	http://europa.eu/eu-law/decision-making/procedures/index_it.htm
+1030.xml		http://europa.eu/epso/apply/how_apply/index_it.htm
+1031.xml	Apply	http://europa.eu/epso/apply/index_en.htm
+1032.xml	Per candidarsi	http://europa.eu/epso/apply/index_it.htm
+1037.xml	Types of employment	http://europa.eu/epso/discover/types_employment/index_en.htm
+1038.xml	Tipi di impiego	http://europa.eu/epso/discover/types_employment/index_it.htm
+1039.xml	Why EU Careers?	http://europa.eu/epso/discover/why_eu_career/index_en.htm
+104.xml	EUROPA - EU treaties	http://europa.eu/eu-law/decision-making/treaties/index_en.htm
+1040.xml	Perché una carriera nell'UE?	http://europa.eu/epso/discover/why_eu_career/index_it.htm
+1042.xml	EU-Africa partnership	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12106_en.htm
+1043.xml	EU-Pacific strategy	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12556_en.htm
+1044.xml	European Development and External Assistance Policies: 2008 Report	http://europa.eu/legislation_summaries/development/general_development_framework/dv0008_en.htm
+1046.xml	Overseas countries and territories (OCTs): towards a new partnership	http://europa.eu/legislation_summaries/development/overseas_countries_territories/dv0010_en.htm
+1047.xml	European Institute of Innovation and Technology (EIT)	http://europa.eu/legislation_summaries/education_training_youth/general_framework/i23030_en.htm
+1048.xml	Istruzione e formazione degli adulti: non è mai troppo tardi per apprendere	http://europa.eu/legislation_summaries/education_training_youth/lifelong_learning/c11097_it.htm
+1049.xml	Equal treatment of temporary workers	http://europa.eu/legislation_summaries/employment_and_social_policy/employment_rights_and_work_organisation/c11329_en.htm
+105.xml	EUROPA - Trattati dell'UE	http://europa.eu/eu-law/decision-making/treaties/index_it.htm
+1052.xml	Money laundering: Preventing use of the financial system	http://europa.eu/legislation_summaries/other/l24016_en.htm
+1053.xml	Riciclaggio di capitali: prevenzione dell'uso del sistema finanziario	http://europa.eu/legislation_summaries/other/l24016_it.htm
+1054.xml	Development policy of the European Community	http://europa.eu/legislation_summaries/other/r12001_en.htm
+1055.xml	Politica di sviluppo della Comunità europea	http://europa.eu/legislation_summaries/other/r12001_it.htm
+1056.xml	Bodies and objectives	http://europa.eu/legislation_summaries/transport/bodies_objectives/index_en.htm
+106.xml	EUROPA - Diritto dell'UE	http://europa.eu/eu-law/index_it.htm
+1060.xml	Activities of the European Union – EU citizenship	http://europa.eu/pol/cit/index_en.htm
+1061.xml	EUROPA - Topics of the European Union - Climate action	http://europa.eu/pol/clim/index_en.htm
+1062.xml	EUROPA - Topics of the European Union - Trade	http://europa.eu/pol/comm/index_en.htm
+1063.xml	EUROPA - Topics of the European Union - Enlargement	http://europa.eu/pol/enlarg/index_en.htm
+1064.xml	EUROPA - Topics of the European Union - Enterprise	http://europa.eu/pol/enter/index_en.htm
+1065.xml	EUROPA - Topics of the European Union - Maritime affairs and fisheries	http://europa.eu/pol/fish/index_en.htm
+1066.xml	EUROPA - Topics of the European Union - Food safety in the EU	http://europa.eu/pol/food/index_en.htm
+1067.xml	EUROPA - Topics of the European Union - Institutional affairs	http://europa.eu/pol/inst/index_en.htm
+1068.xml	EUROPA - Topics of the European Union - Justice and home affairs	http://europa.eu/pol/justice/index_en.htm
+1069.xml	EUROPA - Topics of the European Union - Research & innovation	http://europa.eu/pol/rd/index_en.htm
+107.xml	EUROPA - Find legislation	http://europa.eu/eu-law/legislation/index_en.htm
+1070.xml	EUROPA - Topics of the European Union - One market without borders	http://europa.eu/pol/singl/index_en.htm
+1071.xml	EUROPA - Topics of the European Union - Space	http://europa.eu/pol/space/index_en.htm
+1072.xml	EUROPA - EUROPA - Topics of the European Union - Taxation	http://europa.eu/pol/tax/index_en.htm
+1073.xml	EUROPA - EU funding programmes for small businesses - Your Europe	http://europa.eu/youreurope/business/funding-grants/eu-programmes/index_en.htm
+1074.xml	EU – Buying prescription medicine abroad: expenses and reimbursement – Your Europe	http://europa.eu/youreurope/citizens/health/help-from-the-pharmacy/expenses-reimbursements/index_en.htm
+1075.xml	EU – Presenting a prescription at a chemist's abroad – Your Europe	http://europa.eu/youreurope/citizens/health/help-from-the-pharmacy/prescription/index_en.htm
+1076.xml	Expenses and reimbursements	http://europa.eu/youreurope/citizens/health/planned-healthcare/expenses-reimbursements/index_en.htm
+1077.xml	Planned healthcare contact points	http://europa.eu/youreurope/citizens/health/planned-healthcare/get-more-info/index_en.htm
+1078.xml	EU – Finding a hospital abroad – Your Europe	http://europa.eu/youreurope/citizens/health/planned-healthcare/hospitals/index_en.htm
+1079.xml	EU – Right to planned medical treatment abroad – Your Europe	http://europa.eu/youreurope/citizens/health/planned-healthcare/right-to-treatment/index_en.htm
+108.xml	EUROPA - Accesso alla legislazione	http://europa.eu/eu-law/legislation/index_it.htm
+1080.xml	EU – Payments and reimbursements for medical treatment abroad – Your Europe	http://europa.eu/youreurope/citizens/health/unplanned-healthcare/payments-reimbursements/index_en.htm
+1081.xml	EU - Health cover for temporary stays - Your Europe	http://europa.eu/youreurope/citizens/health/unplanned-healthcare/temporary-stays/index_en.htm
+1082.xml	EU – Health insurance when living, working abroad - Your Europe	http://europa.eu/youreurope/citizens/health/when-living-abroad/health-insurance-cover/index_en.htm
+1083.xml	EU – Using healthcare when living in another EU country – Your Europe	http://europa.eu/youreurope/citizens/health/when-living-abroad/healthcare/index_en.htm
+1092.xml	Italy	http://europa.eu/youreurope/citizens/residence/documents-formalities/reporting-presence/italy/index_en.htm
+1093.xml	Italia	http://europa.eu/youreurope/citizens/residence/documents-formalities/reporting-presence/italy/index_it.htm
+11.xml	Agricoltura	http://europa.eu/legislation_summaries/agriculture/index_it.htm
+111.xml	EUROPA - Telephone	http://europa.eu/europedirect/call_us/index_en.htm
+1110.xml	European Parliament elections	http://europa.eu/youreurope/citizens/residence/elections-abroad/ep-elections/index_en.htm
+112.xml	EUROPA - Telefono	http://europa.eu/europedirect/call_us/index_it.htm
+1129.xml	Municipal elections	http://europa.eu/youreurope/citizens/residence/elections-abroad/municipal-elections/index_en.htm
+113.xml	EUROPA - Il servizio d'informazione dell'UE (telefono, email, ecc.) – Europe Direct	http://europa.eu/europedirect/index_it.htm
+1138.xml	Your EU and non-EU family members	http://europa.eu/youreurope/citizens/residence/jobseekers/family-members/index_en.htm
+114.xml	EUROPA - EUROPA - Kids' Corner	http://europa.eu/kids-corner/index_en.htm
+1148.xml	EU – Allowed and banned luggage items: Alcohol, tobacco, cash - Your Europe	http://europa.eu/youreurope/citizens/travel/carry/alcohol-tobacco-cash/index_en.htm
+1149.xml	EU – Allowed and banned luggage items: animal or plants – Your Europe	http://europa.eu/youreurope/citizens/travel/carry/animal-plant/index_en.htm
+115.xml	EUROPA - EUROPA - Informazioni sull’Unione europea	http://europa.eu/kids-corner/index_it.htm
+1150.xml	EU – Mobile roaming costs in Europe - Your Europe	http://europa.eu/youreurope/citizens/travel/money-charges/mobile-roaming-costs/index_en.htm
+1151.xml	Travellers with reduced mobility	http://europa.eu/youreurope/citizens/travel/passenger-rights/reduced-mobility/index_en.htm
+116.xml	Markets for agricultural products	http://europa.eu/legislation_summaries/agriculture/agricultural_products_markets/index_en.htm
+1165.xml	EU - Income taxation when you live or work abroad in the EU - Your Europe	http://europa.eu/youreurope/citizens/work/taxes/income-taxes-abroad/index_en.htm
+117.xml	Mercati dei prodotti agricoli	http://europa.eu/legislation_summaries/agriculture/agricultural_products_markets/index_it.htm
+118.xml	Allargamento	http://europa.eu/legislation_summaries/agriculture/enlargement/index_it.htm
+1184.xml	EU - Unemployment &amp; benefits - Your Europe	http://europa.eu/youreurope/citizens/work/unemployment-and-benefits/index_en.htm
+119.xml	Single Farm Payment	http://europa.eu/legislation_summaries/agriculture/environment/ag0003_en.htm
+12.xml	Audiovisual and media	http://europa.eu/legislation_summaries/audiovisual_and_media/index_en.htm
+120.xml	Pagamento unico per azienda	http://europa.eu/legislation_summaries/agriculture/environment/ag0003_it.htm
+123.xml	Fight against illegal logging	http://europa.eu/legislation_summaries/agriculture/environment/ev0018_en.htm
+124.xml	Lotta contro lo sfruttamento illegale delle foreste	http://europa.eu/legislation_summaries/agriculture/environment/ev0018_it.htm
+125.xml	I concimi	http://europa.eu/legislation_summaries/agriculture/environment/l21278_it.htm
+126.xml	Piano d'azione dell'Unione europea a favore delle foreste	http://europa.eu/legislation_summaries/agriculture/environment/l24277_it.htm
+127.xml	Towards a competitive and sustainable forest-based industry	http://europa.eu/legislation_summaries/agriculture/environment/l24285_en.htm
+128.xml	Verso industrie forestali competitive e sostenibili	http://europa.eu/legislation_summaries/agriculture/environment/l24285_it.htm
+129.xml	Water protection and management (Water Framework Directive)	http://europa.eu/legislation_summaries/agriculture/environment/l28002b_en.htm
+13.xml	Audiovisivo e media	http://europa.eu/legislation_summaries/audiovisual_and_media/index_it.htm
+130.xml	Protezione e gestione delle acque (direttiva quadro sulle acque)	http://europa.eu/legislation_summaries/agriculture/environment/l28002b_it.htm
+131.xml	Nitrati agricoli	http://europa.eu/legislation_summaries/agriculture/environment/l28013_it.htm
+132.xml	Programma LIFE+	http://europa.eu/legislation_summaries/agriculture/environment/l28021_it.htm
+133.xml	Biodiversity Action Plan for Agriculture	http://europa.eu/legislation_summaries/agriculture/environment/l28024_en.htm
+134.xml	Attuazione della strategia: piani d'azione nel settore della conservazione delle risorse naturali dell'agricoltura	http://europa.eu/legislation_summaries/agriculture/environment/l28024_it.htm
+135.xml	Sesto programma di azione per l'ambiente	http://europa.eu/legislation_summaries/agriculture/environment/l28027_it.htm
+136.xml	Pollutant gases of wheeled agricultural or forestry tractors	http://europa.eu/legislation_summaries/agriculture/environment/l28070_en.htm
+137.xml	Inquinanti gassosi emessi dai trattori agricoli o forestali	http://europa.eu/legislation_summaries/agriculture/environment/l28070_it.htm
+138.xml	Use of sewage sludge in agriculture	http://europa.eu/legislation_summaries/agriculture/environment/l28088_en.htm
+139.xml	Utilizzazione dei fanghi di depurazione in agricoltura	http://europa.eu/legislation_summaries/agriculture/environment/l28088_it.htm
+141.xml	Thematic strategy for soil protection	http://europa.eu/legislation_summaries/agriculture/environment/l28181_en.htm
+142.xml	Strategia tematica per la protezione del suolo	http://europa.eu/legislation_summaries/agriculture/environment/l28181_it.htm
+145.xml	Food	http://europa.eu/legislation_summaries/agriculture/food/index_en.htm
+146.xml	Alimentazione	http://europa.eu/legislation_summaries/agriculture/food/index_it.htm
+147.xml	General framework	http://europa.eu/legislation_summaries/agriculture/general_framework/index_en.htm
+148.xml	Contesto generale	http://europa.eu/legislation_summaries/agriculture/general_framework/index_it.htm
+149.xml	Online access to Europe’s cultural heritage	http://europa.eu/legislation_summaries/audiovisual_and_media/am0001_en.htm
+150.xml	Il patrimonio culturale europeo accessibile on line	http://europa.eu/legislation_summaries/audiovisual_and_media/am0001_it.htm
+151.xml	Quadro normativo per la televisione mobile	http://europa.eu/legislation_summaries/audiovisual_and_media/am0002_it.htm
+152.xml	Media Mundus audiovisual cooperation programme with professionals from third countries 2011-2013	http://europa.eu/legislation_summaries/audiovisual_and_media/am0003_en.htm
+153.xml	Programma di cooperazione nel settore audiovisivo con i paesi terzi 2011-2013, denominato MEDIA Mundus	http://europa.eu/legislation_summaries/audiovisual_and_media/am0003_it.htm
+154.xml	Media literacy in the digital environment	http://europa.eu/legislation_summaries/audiovisual_and_media/am0004_en.htm
+155.xml	Alfabetizzazione mediatica nell'ambiente digitale	http://europa.eu/legislation_summaries/audiovisual_and_media/am0004_it.htm
+156.xml	Audiovisual Media Services (AMS) Directive	http://europa.eu/legislation_summaries/audiovisual_and_media/am0005_en.htm
+157.xml	Direttiva sui «Servizi di media audiovisivi»	http://europa.eu/legislation_summaries/audiovisual_and_media/am0005_it.htm
+158.xml	European cinema: opportunities and challenges in the digital era	http://europa.eu/legislation_summaries/audiovisual_and_media/am0006_en.htm
+159.xml	Cinema europeo: possibilità e sfide nell’era digitale	http://europa.eu/legislation_summaries/audiovisual_and_media/am0006_it.htm
+16.xml	Competition	http://europa.eu/legislation_summaries/competition/index_en.htm
+160.xml	State aid for public service broadcasting	http://europa.eu/legislation_summaries/audiovisual_and_media/cc0014_en.htm
+161.xml	Aiuti di Stato al servizio pubblico di emittenza radiotelevisiv	http://europa.eu/legislation_summaries/audiovisual_and_media/cc0014_it.htm
+165.xml	Ex Repubblica iugoslava di Macedonia – Società dell’informazione e media	http://europa.eu/legislation_summaries/audiovisual_and_media/cu0003_it.htm
+17.xml	Concorrenza	http://europa.eu/legislation_summaries/competition/index_it.htm
+170.xml	Estonia	http://europa.eu/legislation_summaries/audiovisual_and_media/e20102_en.htm
+171.xml	Estonia	http://europa.eu/legislation_summaries/audiovisual_and_media/e20102_it.htm
+173.xml	Ungheria	http://europa.eu/legislation_summaries/audiovisual_and_media/e20103_it.htm
+174.xml	Latvia	http://europa.eu/legislation_summaries/audiovisual_and_media/e20104_en.htm
+181.xml	Repubblica Ceca	http://europa.eu/legislation_summaries/audiovisual_and_media/e20107_it.htm
+185.xml	Cipro	http://europa.eu/legislation_summaries/audiovisual_and_media/e20111_it.htm
+189.xml	Turchia – Società dell’informazione e media	http://europa.eu/legislation_summaries/audiovisual_and_media/e20113_it.htm
+190.xml	Croatia – Information Society and Media	http://europa.eu/legislation_summaries/audiovisual_and_media/e20114_en.htm
+191.xml	Croazia – Società dell’informazione e media	http://europa.eu/legislation_summaries/audiovisual_and_media/e20114_it.htm
+195.xml	Protection of minors and human dignity in audiovisual and information services: Green Paper	http://europa.eu/legislation_summaries/audiovisual_and_media/l24030_en.htm
+196.xml	Protezione dei minori e della dignità umana nei servizi audiovisivi e d'informazione: Libro verde	http://europa.eu/legislation_summaries/audiovisual_and_media/l24030_it.htm
+20.xml	Contact	http://europa.eu/legislation_summaries/contact/index_en.htm
+201.xml	Television broadcasting activities: "Television without Frontiers" (TVWF) Directive	http://europa.eu/legislation_summaries/audiovisual_and_media/l24101_en.htm
+202.xml	Attività televisive: direttiva "Televisione senza frontiere" (TSF)	http://europa.eu/legislation_summaries/audiovisual_and_media/l24101_it.htm
+203.xml	"Audiovisual media services without frontiers" Directive	http://europa.eu/legislation_summaries/audiovisual_and_media/l24101a_en.htm
+204.xml	Direttiva "Servizi di media audiovisivi senza frontiere"	http://europa.eu/legislation_summaries/audiovisual_and_media/l24101a_it.htm
+21.xml	Per contattarci	http://europa.eu/legislation_summaries/contact/index_it.htm
+213.xml	Towards a single market in creative content online	http://europa.eu/legislation_summaries/audiovisual_and_media/l24104_en.htm
+214.xml	Verso un mercato unico dei contenuti creativi online	http://europa.eu/legislation_summaries/audiovisual_and_media/l24104_it.htm
+219.xml	The future of European regulatory audiovisual policy	http://europa.eu/legislation_summaries/audiovisual_and_media/l24107_en.htm
+22.xml	Culture	http://europa.eu/legislation_summaries/culture/index_en.htm
+220.xml	Il futuro della politica regolamentare europea nel settore dell'audiovisivo	http://europa.eu/legislation_summaries/audiovisual_and_media/l24107_it.htm
+221.xml	Media literacy in the digital age	http://europa.eu/legislation_summaries/audiovisual_and_media/l24112_en.htm
+222.xml	Educazione ai media nell'era digitale	http://europa.eu/legislation_summaries/audiovisual_and_media/l24112_it.htm
+223.xml	Strengthening the internal market for mobile TV	http://europa.eu/legislation_summaries/audiovisual_and_media/l24125_en.htm
+224.xml	Rafforzare il mercato interno della televisione mobile	http://europa.eu/legislation_summaries/audiovisual_and_media/l24125_it.htm
+23.xml	Cultura	http://europa.eu/legislation_summaries/culture/index_it.htm
+235.xml	MEDIA Plus (2001-2006): programme to encourage the development, distribution and promotion of European works	http://europa.eu/legislation_summaries/audiovisual_and_media/l24224_en.htm
+236.xml	MEDIA Plus (2001-2006): programma di sostegno allo sviluppo, alla distribuzione e alla promozione delle opere europee	http://europa.eu/legislation_summaries/audiovisual_and_media/l24224_it.htm
+237.xml	MEDIA 2007: programme of support for the European audiovisual sector	http://europa.eu/legislation_summaries/audiovisual_and_media/l24224a_en.htm
+238.xml	MEDIA 2007: programma di sostegno al settore audiovisivo europeo	http://europa.eu/legislation_summaries/audiovisual_and_media/l24224a_it.htm
+24.xml	Customs	http://europa.eu/legislation_summaries/customs/index_en.htm
+245.xml	Digital Agenda for Europe	http://europa.eu/legislation_summaries/audiovisual_and_media/si0016_en.htm
+246.xml	Agenda digitale europea	http://europa.eu/legislation_summaries/audiovisual_and_media/si0016_it.htm
+247.xml	Protecting children in the digital world	http://europa.eu/legislation_summaries/audiovisual_and_media/si0023_en.htm
+248.xml	Tutela dei minori nel mondo digitale	http://europa.eu/legislation_summaries/audiovisual_and_media/si0023_it.htm
+249.xml	Un bilancio per l'Europa (2014-2020)	http://europa.eu/legislation_summaries/budget/bu0001_it.htm
+25.xml	Dogane	http://europa.eu/legislation_summaries/customs/index_it.htm
+256.xml	Towards a new financial framework 2007-2013	http://europa.eu/legislation_summaries/budget/l34004_en.htm
+257.xml	Verso un nuovo quadro finanziario 2007 - 2013	http://europa.eu/legislation_summaries/budget/l34004_it.htm
+26.xml	Development	http://europa.eu/legislation_summaries/development/index_en.htm
+260.xml	Guarantee Fund for external actions	http://europa.eu/legislation_summaries/budget/l34006_en.htm
+261.xml	Fondi di garanzia relativi alle azioni esterne	http://europa.eu/legislation_summaries/budget/l34006_it.htm
+262.xml	Decision on the system of own resources	http://europa.eu/legislation_summaries/budget/l34007_en.htm
+263.xml	Decisione relativa al sistema delle risorse proprie	http://europa.eu/legislation_summaries/budget/l34007_it.htm
+266.xml	Own resources mechanism	http://europa.eu/legislation_summaries/budget/l34011_en.htm
+267.xml	Meccanismo delle risorse proprie	http://europa.eu/legislation_summaries/budget/l34011_it.htm
+268.xml	Financial perspectives system and the multiannual financial framework	http://europa.eu/legislation_summaries/budget/l34012_en.htm
+269.xml	Sistema delle prospettive finanziarie e del quadro finanziario pluriennale	http://europa.eu/legislation_summaries/budget/l34012_it.htm
+27.xml	Sviluppo	http://europa.eu/legislation_summaries/development/index_it.htm
+272.xml	Financial Regulation	http://europa.eu/legislation_summaries/budget/l34015_en.htm
+273.xml	Regolamento finanziario	http://europa.eu/legislation_summaries/budget/l34015_it.htm
+278.xml	Common rules for the provision of basic information on Purchasing Power Parities and for their calculation and dissemination	http://europa.eu/legislation_summaries/budget/l34019_en.htm
+279.xml	Regole comuni per la fornitura d'informazioni di base concernenti la parità del potere d'acquisto e il relativo calcolo e diffusione	http://europa.eu/legislation_summaries/budget/l34019_it.htm
+28.xml	Global partnership for sustainable development	http://europa.eu/legislation_summaries/development/sectoral_development_policies/l28015_en.htm
+280.xml	Interinstitutional Agreement on cooperation in budgetary matters	http://europa.eu/legislation_summaries/budget/l34020_en.htm
+281.xml	Accordo interistituzionale sulla cooperazione in materia di bilancio	http://europa.eu/legislation_summaries/budget/l34020_it.htm
+282.xml	Rules applicable to firms	http://europa.eu/legislation_summaries/competition/firms/index_en.htm
+283.xml	Disposizioni applicabili alle imprese	http://europa.eu/legislation_summaries/competition/firms/index_it.htm
+284.xml	Competition: international dimension and enlargement	http://europa.eu/legislation_summaries/competition/international_dimension_and_enlargement/index_en.htm
+285.xml	Concorrenza: dimensione internazionale e allargamento	http://europa.eu/legislation_summaries/competition/international_dimension_and_enlargement/index_it.htm
+287.xml	Rules applicable to state aid	http://europa.eu/legislation_summaries/competition/state_aid/index_en.htm
+288.xml	Disposizioni applicabili agli aiuti di stato	http://europa.eu/legislation_summaries/competition/state_aid/index_it.htm
+289.xml	Consumer information	http://europa.eu/legislation_summaries/consumers/consumer_information/index_en.htm
+29.xml	Partnership mondiale per lo sviluppo sostenibile	http://europa.eu/legislation_summaries/development/sectoral_development_policies/l28015_it.htm
+290.xml	Informazione dei consumatori	http://europa.eu/legislation_summaries/consumers/consumer_information/index_it.htm
+291.xml	Consumer safety	http://europa.eu/legislation_summaries/consumers/consumer_safety/index_en.htm
+292.xml	Sicurezza dei consumatori	http://europa.eu/legislation_summaries/consumers/consumer_safety/index_it.htm
+293.xml	Consumers: general framework and priorities	http://europa.eu/legislation_summaries/consumers/general_framework_and_priorities/index_en.htm
+294.xml	Consumatori: contesto generale e priorita'	http://europa.eu/legislation_summaries/consumers/general_framework_and_priorities/index_it.htm
+295.xml	Product labelling and packaging	http://europa.eu/legislation_summaries/consumers/product_labelling_and_packaging/index_en.htm
+296.xml	Etichettatura e imballaggio dei prodotti	http://europa.eu/legislation_summaries/consumers/product_labelling_and_packaging/index_it.htm
+297.xml	Protection of consumers' economic and legal interests	http://europa.eu/legislation_summaries/consumers/protection_of_consumers/index_en.htm
+298.xml	Tutela degli interessi economici e giuridici dei consumatori	http://europa.eu/legislation_summaries/consumers/protection_of_consumers/index_it.htm
+3.xml	Important legal notice	http://europa.eu/geninfo/legal_notices_en.htm
+30.xml	Economic and monetary affairs	http://europa.eu/legislation_summaries/economic_and_monetary_affairs/index_en.htm
+301.xml	Work Plan for Culture 2008-2010	http://europa.eu/legislation_summaries/culture/cu0001_en.htm
+302.xml	Piano di lavoro per la cultura 2008-2010	http://europa.eu/legislation_summaries/culture/cu0001_it.htm
+303.xml	La cultura nelle relazioni esterne dell'UE	http://europa.eu/legislation_summaries/culture/cu0002_it.htm
+304.xml	The former Yugoslav Republic of Macedonia – Information society and media	http://europa.eu/legislation_summaries/culture/cu0003_en.htm
+306.xml	Education, Audiovisual and Culture Executive Agency	http://europa.eu/legislation_summaries/culture/cu0004_en.htm
+307.xml	Agenzia esecutiva per l'istruzione, gli audiovisivi e la cultura	http://europa.eu/legislation_summaries/culture/cu0004_it.htm
+308.xml	Export of cultural goods	http://europa.eu/legislation_summaries/culture/cu0005_en.htm
+309.xml	Esportazione di beni culturali	http://europa.eu/legislation_summaries/culture/cu0005_it.htm
+31.xml	Affari economici e monetari	http://europa.eu/legislation_summaries/economic_and_monetary_affairs/index_it.htm
+310.xml	Green Paper on the potential of cultural and creative industries	http://europa.eu/legislation_summaries/culture/cu0006_en.htm
+311.xml	Libro verde sul potenziale delle industrie culturali e creative	http://europa.eu/legislation_summaries/culture/cu0006_it.htm
+312.xml	Work Plan for Culture 2011-14	http://europa.eu/legislation_summaries/culture/cu0007_en.htm
+313.xml	Piano di lavoro per la cultura 2011-2014	http://europa.eu/legislation_summaries/culture/cu0007_it.htm
+316.xml	Marchio del patrimonio europeo	http://europa.eu/legislation_summaries/culture/cu0009_it.htm
+32.xml	Education, training, youth, sport	http://europa.eu/legislation_summaries/education_training_youth/index_en.htm
+320.xml	Hungary	http://europa.eu/legislation_summaries/culture/e20103_en.htm
+323.xml	Lettonia	http://europa.eu/legislation_summaries/culture/e20104_it.htm
+324.xml	Lithuania	http://europa.eu/legislation_summaries/culture/e20105_en.htm
+325.xml	Lituania	http://europa.eu/legislation_summaries/culture/e20105_it.htm
+326.xml	Poland	http://europa.eu/legislation_summaries/culture/e20106_en.htm
+327.xml	Polonia	http://europa.eu/legislation_summaries/culture/e20106_it.htm
+328.xml	The Czech Republic	http://europa.eu/legislation_summaries/culture/e20107_en.htm
+33.xml	Istruzione, formazione, gioventù, sport	http://europa.eu/legislation_summaries/education_training_youth/index_it.htm
+332.xml	Cyprus	http://europa.eu/legislation_summaries/culture/e20111_en.htm
+334.xml	Malta	http://europa.eu/legislation_summaries/culture/e20112_en.htm
+335.xml	Malta	http://europa.eu/legislation_summaries/culture/e20112_it.htm
+336.xml	Turkey – Information society and media	http://europa.eu/legislation_summaries/culture/e20113_en.htm
+34.xml	Growth and jobs	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/index_en.htm
+342.xml	Return of cultural objects unlawfully removed from the territory of an EU country	http://europa.eu/legislation_summaries/culture/l11017b_en.htm
+343.xml	Restituzione di beni culturali usciti illegalmente dal territorio di un paese dell’UE	http://europa.eu/legislation_summaries/culture/l11017b_it.htm
+346.xml	Programma "Cultura 2000"	http://europa.eu/legislation_summaries/culture/l29006_it.htm
+347.xml	L’Europa per i cittadini (2007-2013)	http://europa.eu/legislation_summaries/culture/l29015_it.htm
+348.xml	European Year of Intercultural Dialogue (2008)	http://europa.eu/legislation_summaries/culture/l29017_en.htm
+349.xml	Anno europeo del dialogo interculturale (2008)	http://europa.eu/legislation_summaries/culture/l29017_it.htm
+35.xml	Crescita e occupazione	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/index_it.htm
+352.xml	European agenda for culture in a globalising world	http://europa.eu/legislation_summaries/culture/l29019_en.htm
+353.xml	Agenda europea per la cultura in un mondo in via di globalizzazione	http://europa.eu/legislation_summaries/culture/l29019_it.htm
+354.xml	European Year of Creativity and Innovation (2009)	http://europa.eu/legislation_summaries/culture/l29020_en.htm
+355.xml	Anno europeo della creatività e dell'innovazione (2009)	http://europa.eu/legislation_summaries/culture/l29020_it.htm
+356.xml	External trade: statistics relating to non-member countries	http://europa.eu/legislation_summaries/customs/cx0004_en.htm
+357.xml	Commercio estero: statistiche relative ai paesi terzi	http://europa.eu/legislation_summaries/customs/cx0004_it.htm
+358.xml	Modernised Community Customs Code	http://europa.eu/legislation_summaries/customs/do0001_en.htm
+359.xml	Codice doganale comunitario aggiornato	http://europa.eu/legislation_summaries/customs/do0001_it.htm
+36.xml	Employment and social policy	http://europa.eu/legislation_summaries/employment_and_social_policy/index_en.htm
+360.xml	Customs Agreement with Japan	http://europa.eu/legislation_summaries/customs/do0002_en.htm
+361.xml	Accordo doganale con il Giappone	http://europa.eu/legislation_summaries/customs/do0002_it.htm
+363.xml	Estonia	http://europa.eu/legislation_summaries/customs/e07102_en.htm
+364.xml	Estonia	http://europa.eu/legislation_summaries/customs/e07102_it.htm
+365.xml	Hungary	http://europa.eu/legislation_summaries/customs/e07103_en.htm
+366.xml	Ungheria	http://europa.eu/legislation_summaries/customs/e07103_it.htm
+367.xml	Latvia	http://europa.eu/legislation_summaries/customs/e07104_en.htm
+368.xml	Lettonia	http://europa.eu/legislation_summaries/customs/e07104_it.htm
+369.xml	Lithuania	http://europa.eu/legislation_summaries/customs/e07105_en.htm
+37.xml	Occupazione e politica sociale	http://europa.eu/legislation_summaries/employment_and_social_policy/index_it.htm
+370.xml	Lituania	http://europa.eu/legislation_summaries/customs/e07105_it.htm
+371.xml	Poland	http://europa.eu/legislation_summaries/customs/e07106_en.htm
+372.xml	Polonia	http://europa.eu/legislation_summaries/customs/e07106_it.htm
+373.xml	Czech Republic	http://europa.eu/legislation_summaries/customs/e07107_en.htm
+374.xml	Repubblica ceca	http://europa.eu/legislation_summaries/customs/e07107_it.htm
+377.xml	Cyprus	http://europa.eu/legislation_summaries/customs/e07111_en.htm
+378.xml	Cipro	http://europa.eu/legislation_summaries/customs/e07111_it.htm
+379.xml	Malta	http://europa.eu/legislation_summaries/customs/e07112_en.htm
+38.xml	Energy	http://europa.eu/legislation_summaries/energy/index_en.htm
+380.xml	Malta	http://europa.eu/legislation_summaries/customs/e07112_it.htm
+381.xml	Turchia – Mercato interno	http://europa.eu/legislation_summaries/customs/e07113_it.htm
+382.xml	Croatia - Internal market	http://europa.eu/legislation_summaries/customs/e07114_en.htm
+383.xml	Croazia - Mercato interno	http://europa.eu/legislation_summaries/customs/e07114_it.htm
+39.xml	Energia	http://europa.eu/legislation_summaries/energy/index_it.htm
+392.xml	Regime comunitario delle franchigie doganali	http://europa.eu/legislation_summaries/customs/l11002_it.htm
+393.xml	Combined Nomenclature, Common Customs Tariff and Integrated Tariff of the European Communities (Taric)	http://europa.eu/legislation_summaries/customs/l11003_en.htm
+394.xml	Nomenclatura combinata, tariffa doganale comune e tariffa integrata delle Comunità europee (Taric)	http://europa.eu/legislation_summaries/customs/l11003_it.htm
+395.xml	Transport under the TIR or ATA procedure	http://europa.eu/legislation_summaries/customs/l11004b_en.htm
+396.xml	Trasporti effettuati in regime TIR o ATA	http://europa.eu/legislation_summaries/customs/l11004b_it.htm
+397.xml	Abolition of customs formalities at internal frontier crossings for NATO military equipment	http://europa.eu/legislation_summaries/customs/l11005_en.htm
+398.xml	Soppressione delle formalità doganali per le attrezzature militari della NATO all'attraversamento delle frontiere interne	http://europa.eu/legislation_summaries/customs/l11005_it.htm
+399.xml	Abolition of internal frontier controls for means of transport registered in a non-Community country	http://europa.eu/legislation_summaries/customs/l11007b_en.htm
+4.xml	EUROPA - Avviso legale importante	http://europa.eu/geninfo/legal_notices_it.htm
+40.xml	Enlargement	http://europa.eu/legislation_summaries/enlargement/index_en.htm
+400.xml	Abolizione di taluni controlli alle frontiere interne per i mezzi di trasporto immatricolati al di fuori dell’UE	http://europa.eu/legislation_summaries/customs/l11007b_it.htm
+403.xml	Provisions implementing the Community Customs Code	http://europa.eu/legislation_summaries/customs/l11010b_en.htm
+404.xml	Disposizioni d’applicazione del codice doganale comunitario	http://europa.eu/legislation_summaries/customs/l11010b_it.htm
+405.xml	Strategy for the Customs Union	http://europa.eu/legislation_summaries/customs/l11014_en.htm
+406.xml	Strategia per l'unione doganale	http://europa.eu/legislation_summaries/customs/l11014_it.htm
+41.xml	Allargamento	http://europa.eu/legislation_summaries/enlargement/index_it.htm
+411.xml	Goods infringing intellectual property rights	http://europa.eu/legislation_summaries/customs/l11018c_en.htm
+412.xml	Merci che violano i diritti di proprietà intellettuale	http://europa.eu/legislation_summaries/customs/l11018c_it.htm
+417.xml	A paperless environment for Customs and Trade	http://europa.eu/legislation_summaries/customs/l11019b_en.htm
+418.xml	Un ambiente semplice e senza supporto cartaceo per la dogana e il commercio	http://europa.eu/legislation_summaries/customs/l11019b_it.htm
+419.xml	Endangered species of wild fauna and flora (CITES)	http://europa.eu/legislation_summaries/customs/l11023_en.htm
+42.xml	Enterprise	http://europa.eu/legislation_summaries/enterprise/index_en.htm
+420.xml	Specie della flora e della fauna selvatiche minacciate (CITES)	http://europa.eu/legislation_summaries/customs/l11023_it.htm
+426.xml	Action programme: Customs 2007 (2003-2007)	http://europa.eu/legislation_summaries/customs/l11039_en.htm
+427.xml	Programma d’azione: Dogana 2007 (2003-2007)	http://europa.eu/legislation_summaries/customs/l11039_it.htm
+43.xml	Imprese	http://europa.eu/legislation_summaries/enterprise/index_it.htm
+430.xml	Customs 2013 (2008-2013)	http://europa.eu/legislation_summaries/customs/l11050_en.htm
+435.xml	Drug precursors: external aspects	http://europa.eu/legislation_summaries/customs/l14003a_en.htm
+436.xml	Precursori di droghe: capitolo esterno	http://europa.eu/legislation_summaries/customs/l14003a_it.htm
+439.xml	Money laundering: prevention through customs cooperation	http://europa.eu/legislation_summaries/customs/l25069_en.htm
+44.xml	Kyoto Protocol on climate change	http://europa.eu/legislation_summaries/environment/cooperation_with_third_countries/l28060_en.htm
+440.xml	Riciclaggio dei capitali: prevenzione mediante la cooperazione doganale	http://europa.eu/legislation_summaries/customs/l25069_it.htm
+441.xml	Esenzioni applicabili ai viaggiatori	http://europa.eu/legislation_summaries/customs/l31045_it.htm
+446.xml	Convention on mutual assistance and cooperation between customs administrations (Naples II)	http://europa.eu/legislation_summaries/customs/l33051_en.htm
+447.xml	Convenzione relativa alla mutua assistenza ed alla cooperazione tra amministrazioni doganali: convenzione di Napoli II	http://europa.eu/legislation_summaries/customs/l33051_it.htm
+448.xml	Drug precursors: internal aspects	http://europa.eu/legislation_summaries/customs/l33215_en.htm
+449.xml	Precursori di droghe: aspetti interni	http://europa.eu/legislation_summaries/customs/l33215_it.htm
+45.xml	Protocollo di Kyoto sui cambiamenti climatici	http://europa.eu/legislation_summaries/environment/cooperation_with_third_countries/l28060_it.htm
+46.xml	Environment	http://europa.eu/legislation_summaries/environment/index_en.htm
+461.xml	The former Yugoslav Republic of Macedonia – Internal market	http://europa.eu/legislation_summaries/customs/mi0015_en.htm
+462.xml	Ex Repubblica iugoslava di Macedonia - Mercato interno	http://europa.eu/legislation_summaries/customs/mi0015_it.htm
+463.xml	Pan-Euro-Mediterranean system of cumulation of origin	http://europa.eu/legislation_summaries/customs/rx0014_en.htm
+464.xml	Sistema di cumulo paneuromediterraneo dell'origine	http://europa.eu/legislation_summaries/customs/rx0014_it.htm
+465.xml	African, Caribbean and Pacific states (ACP)	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/index_en.htm
+466.xml	Paesi dell'africa, dei caraibi e del pacifico (ACP)	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/index_it.htm
+467.xml	General development framework	http://europa.eu/legislation_summaries/development/general_development_framework/index_en.htm
+468.xml	Quadro generale di sviluppo	http://europa.eu/legislation_summaries/development/general_development_framework/index_it.htm
+469.xml	The EU contribution towards the Millennium Development Goals (MDGs)	http://europa.eu/legislation_summaries/development/general_development_framework/r12533_en.htm
+47.xml	Ambiente	http://europa.eu/legislation_summaries/environment/index_it.htm
+470.xml	Il contributo dell'UE agli obiettivi di sviluppo del millennio (OSM)	http://europa.eu/legislation_summaries/development/general_development_framework/r12533_it.htm
+471.xml	The European Consensus on Development	http://europa.eu/legislation_summaries/development/general_development_framework/r12544_en.htm
+472.xml	Il consenso europeo per lo sviluppo	http://europa.eu/legislation_summaries/development/general_development_framework/r12544_it.htm
+473.xml	Least developed countries (LDC)	http://europa.eu/legislation_summaries/development/least_developed_countries/index_en.htm
+474.xml	Paesi meno avanzati (PMA)	http://europa.eu/legislation_summaries/development/least_developed_countries/index_it.htm
+475.xml	Heavily indebted poor countries (HIPC) initiative	http://europa.eu/legislation_summaries/development/least_developed_countries/r12402_en.htm
+476.xml	Iniziativa a favore dei paesi poveri fortemente indebitati (HIPC)	http://europa.eu/legislation_summaries/development/least_developed_countries/r12402_it.htm
+477.xml	Paesi e territori d'oltremare (PTOM)	http://europa.eu/legislation_summaries/development/overseas_countries_territories/index_it.htm
+48.xml	Strategy on climate change: foundations of the strategy	http://europa.eu/legislation_summaries/environment/tackling_climate_change/l28157_en.htm
+481.xml	Strategia a favore dello sviluppo sostenibile	http://europa.eu/legislation_summaries/development/sectoral_development_policies/l28117_it.htm
+484.xml	Strategy for gender equality in development policy	http://europa.eu/legislation_summaries/development/sectoral_development_policies/r13005_en.htm
+485.xml	Una strategia per la parità di genere nella politica di sviluppo	http://europa.eu/legislation_summaries/development/sectoral_development_policies/r13005_it.htm
+486.xml	South Africa	http://europa.eu/legislation_summaries/development/south_africa/index_en.htm
+487.xml	Sudafrica	http://europa.eu/legislation_summaries/development/south_africa/index_it.htm
+488.xml	Economic and monetary affairs: enlargement	http://europa.eu/legislation_summaries/economic_and_monetary_affairs/enlargement/index_en.htm
+489.xml	Affari economici e monetari: allargamento	http://europa.eu/legislation_summaries/economic_and_monetary_affairs/enlargement/index_it.htm
+49.xml	Strategia sul cambiamento climatico: basi della strategia	http://europa.eu/legislation_summaries/environment/tackling_climate_change/l28157_it.htm
+490.xml	Institutional and economic framework of the euro	http://europa.eu/legislation_summaries/economic_and_monetary_affairs/institutional_and_economic_framework/index_en.htm
+491.xml	Contesto istituzionale ed economico dell'euro	http://europa.eu/legislation_summaries/economic_and_monetary_affairs/institutional_and_economic_framework/index_it.htm
+492.xml	Practical aspects of introducing the euro	http://europa.eu/legislation_summaries/economic_and_monetary_affairs/introducing_euro_practical_aspects/index_en.htm
+493.xml	Aspetti pratici dell'introduzione dell'euro	http://europa.eu/legislation_summaries/economic_and_monetary_affairs/introducing_euro_practical_aspects/index_it.htm
+494.xml	Stability and growth pact and economic policy coordination	http://europa.eu/legislation_summaries/economic_and_monetary_affairs/stability_and_growth_pact/index_en.htm
+495.xml	Patto di stabilita' e coordinamento delle politiche economiche	http://europa.eu/legislation_summaries/economic_and_monetary_affairs/stability_and_growth_pact/index_it.htm
+496.xml	Education, training, youth: cooperation with non-EU countries	http://europa.eu/legislation_summaries/education_training_youth/cooperation_with_third_countries/index_en.htm
+497.xml	Istruzione, formazione, giovent: cooperazione con i paesi terzi	http://europa.eu/legislation_summaries/education_training_youth/cooperation_with_third_countries/index_it.htm
+498.xml	The Lisbon Special European Council (March 2000): Towards a Europe of Innovation and Knowledge	http://europa.eu/legislation_summaries/education_training_youth/general_framework/c10241_en.htm
+499.xml	Il Consiglio europeo straordinario di Lisbona (marzo 2000): verso un'Europa dell'innovazione e della conoscenza	http://europa.eu/legislation_summaries/education_training_youth/general_framework/c10241_it.htm
+502.xml	Lifelong learning	http://europa.eu/legislation_summaries/education_training_youth/lifelong_learning/index_en.htm
+503.xml	Istruzione e formazione lungo tutto l'arco della vita	http://europa.eu/legislation_summaries/education_training_youth/lifelong_learning/index_it.htm
+504.xml	Sport	http://europa.eu/legislation_summaries/education_training_youth/sport/index_en.htm
+505.xml	Sport	http://europa.eu/legislation_summaries/education_training_youth/sport/index_it.htm
+506.xml	Formazione professionale	http://europa.eu/legislation_summaries/education_training_youth/vocational_training/index_it.htm
+507.xml	Youth	http://europa.eu/legislation_summaries/education_training_youth/youth/index_en.htm
+508.xml	Gioventù	http://europa.eu/legislation_summaries/education_training_youth/youth/index_it.htm
+509.xml	Anti-discrimination and relations with civil society	http://europa.eu/legislation_summaries/employment_and_social_policy/antidiscrimination_relations_with_civil_society/index_en.htm
+510.xml	Antidiscriminazione e relazioni con la società civile	http://europa.eu/legislation_summaries/employment_and_social_policy/antidiscrimination_relations_with_civil_society/index_it.htm
+511.xml	Promoting corporate social responsibility	http://europa.eu/legislation_summaries/employment_and_social_policy/community_employment_policies/c00019_en.htm
+512.xml	Promuovere la responsabilità sociale delle imprese	http://europa.eu/legislation_summaries/employment_and_social_policy/community_employment_policies/c00019_it.htm
+513.xml	Community employment policies	http://europa.eu/legislation_summaries/employment_and_social_policy/community_employment_policies/index_en.htm
+514.xml	Politiche comunitarie dell'occupazione	http://europa.eu/legislation_summaries/employment_and_social_policy/community_employment_policies/index_it.htm
+515.xml	Social measures for target groups: disability and old age	http://europa.eu/legislation_summaries/employment_and_social_policy/disability_and_old_age/index_en.htm
+516.xml	Azioni sociali per gruppi destinatari: disabilità e invecchiamento	http://europa.eu/legislation_summaries/employment_and_social_policy/disability_and_old_age/index_it.htm
+517.xml	Employment rights and work organisation	http://europa.eu/legislation_summaries/employment_and_social_policy/employment_rights_and_work_organisation/index_en.htm
+518.xml	Diritti e organizzazione del lavoro	http://europa.eu/legislation_summaries/employment_and_social_policy/employment_rights_and_work_organisation/index_it.htm
+519.xml	Equality between men and women	http://europa.eu/legislation_summaries/employment_and_social_policy/equality_between_men_and_women/index_en.htm
+52.xml	External trade	http://europa.eu/legislation_summaries/external_trade/index_en.htm
+520.xml	Parità di opportunità tra le donne e gli uomini	http://europa.eu/legislation_summaries/employment_and_social_policy/equality_between_men_and_women/index_it.htm
+523.xml	Workers' mobility: facilitating the acquisition and preservation of supplementary pension rights	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c10139_en.htm
+524.xml	Mobilità dei lavoratori: facilitare l'acquisizione e la tutela dei diritti alla pensione complementare	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c10139_it.htm
+527.xml	The demographic future of Europe – from challenge to opportunity	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c10160_en.htm
+528.xml	Il futuro demografico dell'Europa: trasformare una sfida in un'opportunità	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c10160_it.htm
+529.xml	Green Paper on Modernising Labour Law	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c10312_en.htm
+53.xml	Commercio estero	http://europa.eu/legislation_summaries/external_trade/index_it.htm
+530.xml	Libro verde sulla modernizzazione del diritto del lavoro	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c10312_it.htm
+531.xml	The Community Lisbon Programme	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c10528_en.htm
+532.xml	Programma comunitario di Lisbona	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c10528_it.htm
+533.xml	Promoting young people's full participation in education, employment and society	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c11103_en.htm
+534.xml	Favorire il pieno coinvolgimento dei giovani nell'istruzione, nell'occupazione e nella società	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c11103_it.htm
+535.xml	A new start for the Lisbon Strategy (2005)	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c11325_en.htm
+536.xml	Un nuovo slancio per la strategia di Lisbona (2005)	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c11325_it.htm
+539.xml	The Community Lisbon Programme: proposal for 2008–2010	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c11804_en.htm
+54.xml	Fight against fraud	http://europa.eu/legislation_summaries/fight_against_fraud/index_en.htm
+540.xml	Il programma comunitario di Lisbona: proposta per il periodo 2008–2010	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c11804_it.htm
+541.xml	European Job Mobility Action Plan (2007-2010)	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c11805_en.htm
+542.xml	Piano d’azione europeo per la mobilità del lavoro (2007-2010)	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c11805_it.htm
+543.xml	Strategic report on the renewed Lisbon strategy for growth and jobs: new cycle 2008-2010	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c11806_en.htm
+544.xml	Relazione strategica riguardante la strategia rinnovata di Lisbona per la crescita e l'occupazione: ciclo 2008-2010	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/c11806_it.htm
+547.xml	Life sciences and biotechnology	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/i23011_en.htm
+548.xml	Scienze della vita e biotecnologia	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/i23011_it.htm
+55.xml	Lotta contro la frode	http://europa.eu/legislation_summaries/fight_against_fraud/index_it.htm
+551.xml	A broad-based innovation strategy for the EU	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/i23035_en.htm
+552.xml	Un'ampia strategia dell'innovazione per l'UE	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/i23035_it.htm
+553.xml	The European Research Area (ERA): new perspectives	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/i23037_en.htm
+563.xml	EUROPA - EU symbols	http://europa.eu/about-eu/basic-information/symbols/index_en.htm
+564.xml	EUROPA - Il motto dell'UE	http://europa.eu/about-eu/basic-information/symbols/motto/index_it.htm
+565.xml	EUROPA - Paesi	http://europa.eu/about-eu/countries/index_it.htm
+566.xml	EUROPA - Adesione all'UE	http://europa.eu/about-eu/countries/joining-eu/index_it.htm
+567.xml	EUROPA - Austria in the EU	http://europa.eu/about-eu/countries/member-countries/austria/index_en.htm
+568.xml	EUROPA - Belgium in the EU	http://europa.eu/about-eu/countries/member-countries/belgium/index_en.htm
+569.xml	EUROPA - Bulgaria in the EU	http://europa.eu/about-eu/countries/member-countries/bulgaria/index_en.htm
+570.xml	EUROPA - Croatia in the EU	http://europa.eu/about-eu/countries/member-countries/croatia/index_en.htm
+571.xml	EUROPA - Cyprus in the EU	http://europa.eu/about-eu/countries/member-countries/cyprus/index_en.htm
+572.xml	EUROPA - Czech Republic in the EU	http://europa.eu/about-eu/countries/member-countries/czechrepublic/index_en.htm
+573.xml	EUROPA - Denmark in the EU	http://europa.eu/about-eu/countries/member-countries/denmark/index_en.htm
+574.xml	EUROPA - Estonia in the EU	http://europa.eu/about-eu/countries/member-countries/estonia/index_en.htm
+575.xml	EUROPA - Finland in the EU	http://europa.eu/about-eu/countries/member-countries/finland/index_en.htm
+576.xml	EUROPA - France in the EU	http://europa.eu/about-eu/countries/member-countries/france/index_en.htm
+577.xml	EUROPA - Germany in the EU	http://europa.eu/about-eu/countries/member-countries/germany/index_en.htm
+578.xml	EUROPA - Greece in the EU	http://europa.eu/about-eu/countries/member-countries/greece/index_en.htm
+579.xml	EUROPA - Hungary in the EU	http://europa.eu/about-eu/countries/member-countries/hungary/index_en.htm
+580.xml	EU member countries	http://europa.eu/about-eu/countries/member-countries/index_en.htm
+581.xml	EUROPA - Ireland in the EU	http://europa.eu/about-eu/countries/member-countries/ireland/index_en.htm
+582.xml	EUROPA - Italy in the EU	http://europa.eu/about-eu/countries/member-countries/italy/index_en.htm
+583.xml	EUROPA - Latvia in the EU	http://europa.eu/about-eu/countries/member-countries/latvia/index_en.htm
+584.xml	EUROPA - Lithuania in the EU	http://europa.eu/about-eu/countries/member-countries/lithuania/index_en.htm
+585.xml	EUROPA - Luxembourg in the EU	http://europa.eu/about-eu/countries/member-countries/luxembourg/index_en.htm
+586.xml	EUROPA - Malta in the EU	http://europa.eu/about-eu/countries/member-countries/malta/index_en.htm
+587.xml	EUROPA - The Netherlands in the EU	http://europa.eu/about-eu/countries/member-countries/netherlands/index_en.htm
+588.xml	EUROPA - Poland in the EU	http://europa.eu/about-eu/countries/member-countries/poland/index_en.htm
+589.xml	EUROPA - Portugal in the EU	http://europa.eu/about-eu/countries/member-countries/portugal/index_en.htm
+590.xml	EUROPA - Romania in the EU	http://europa.eu/about-eu/countries/member-countries/romania/index_en.htm
+591.xml	EUROPA - Slovakia in the EU	http://europa.eu/about-eu/countries/member-countries/slovakia/index_en.htm
+592.xml	EUROPA - Slovenia in the EU	http://europa.eu/about-eu/countries/member-countries/slovenia/index_en.htm
+593.xml	EUROPA - Spain in the EU	http://europa.eu/about-eu/countries/member-countries/spain/index_en.htm
+594.xml	EUROPA - Sweden in the EU	http://europa.eu/about-eu/countries/member-countries/sweden/index_en.htm
+595.xml	EUROPA - United Kingdom in the EU	http://europa.eu/about-eu/countries/member-countries/unitedkingdom/index_en.htm
+6.xml	About this site	http://europa.eu/legislation_summaries/about/index_en.htm
+60.xml	Human rights	http://europa.eu/legislation_summaries/human_rights/index_en.htm
+602.xml	EUROPA - The EU at a glance - The History of the European Union	http://europa.eu/about-eu/eu-history/1970-1979/index_en.htm
+603.xml	EUROPA - L'UE in sintesi - La Storia dell'Unione europea -	http://europa.eu/about-eu/eu-history/1970-1979/index_it.htm
+604.xml	EUROPA - The History of the European Union	http://europa.eu/about-eu/eu-history/1980-1989/index_en.htm
+605.xml	EUROPA - La Storia dell'Unione europea -	http://europa.eu/about-eu/eu-history/1980-1989/index_it.htm
+606.xml	EUROPA - The History of the European Union	http://europa.eu/about-eu/eu-history/1990-1999/index_en.htm
+607.xml	EUROPA - La Storia dell'Unione europea -	http://europa.eu/about-eu/eu-history/1990-1999/index_it.htm
+608.xml	EUROPA - The History of the European Union	http://europa.eu/about-eu/eu-history/2000-2009/index_en.htm
+609.xml	EUROPA - La Storia dell'Unione europea - giorni nostri	http://europa.eu/about-eu/eu-history/2000-2009/index_it.htm
+61.xml	Diritti umani	http://europa.eu/legislation_summaries/human_rights/index_it.htm
+611.xml	EUROPA - The Founding Fathers of the EU	http://europa.eu/about-eu/eu-history/founding-fathers/index_en.htm
+612.xml	EUROPA - I padri fondatori dell'UE	http://europa.eu/about-eu/eu-history/founding-fathers/index_it.htm
+613.xml	EUROPA - The economy	http://europa.eu/about-eu/facts-figures/economy/index_en.htm
+614.xml	EUROPA - L'economia	http://europa.eu/about-eu/facts-figures/economy/index_it.htm
+615.xml	EUROPA - L'Europa in cifre	http://europa.eu/about-eu/facts-figures/index_it.htm
+616.xml	EUROPA - Living in the EU	http://europa.eu/about-eu/facts-figures/living/index_en.htm
+617.xml	EUROPA - Vivere nell'UE	http://europa.eu/about-eu/facts-figures/living/index_it.htm
+618.xml	EUROPA - Finanziamenti dell'UE	http://europa.eu/about-eu/funding-grants/index_it.htm
+619.xml	EUROPA - Committee of the Regions	http://europa.eu/about-eu/institutions-bodies/cor/index_en.htm
+62.xml	Humanitarian aid	http://europa.eu/legislation_summaries/humanitarian_aid/index_en.htm
+620.xml	EUROPA - Comitato delle regioni	http://europa.eu/about-eu/institutions-bodies/cor/index_it.htm
+621.xml	EUROPA - Council of the European Union	http://europa.eu/about-eu/institutions-bodies/council-eu/index_en.htm
+622.xml	EUROPA - Consiglio dell'Unione europea	http://europa.eu/about-eu/institutions-bodies/council-eu/index_it.htm
+623.xml	EUROPA - European Court of Auditors	http://europa.eu/about-eu/institutions-bodies/court-auditors/index_en.htm
+624.xml	EUROPA - Corte dei conti europea	http://europa.eu/about-eu/institutions-bodies/court-auditors/index_it.htm
+625.xml	EUROPA - Court of Justice of the European Union	http://europa.eu/about-eu/institutions-bodies/court-justice/index_en.htm
+626.xml	EUROPA - Corte di giustizia dell'Unione europea	http://europa.eu/about-eu/institutions-bodies/court-justice/index_it.htm
+627.xml	EUROPA - European Central Bank	http://europa.eu/about-eu/institutions-bodies/ecb/index_en.htm
+628.xml	EUROPA - Banca centrale europea	http://europa.eu/about-eu/institutions-bodies/ecb/index_it.htm
+629.xml	EUROPA - European Economic and Social Committee	http://europa.eu/about-eu/institutions-bodies/ecosoc/index_en.htm
+63.xml	Aiuti umanitari	http://europa.eu/legislation_summaries/humanitarian_aid/index_it.htm
+630.xml	EUROPA - Comitato economico e sociale europeo	http://europa.eu/about-eu/institutions-bodies/ecosoc/index_it.htm
+631.xml	EUROPA - European Data Protection Supervisor	http://europa.eu/about-eu/institutions-bodies/edps/index_en.htm
+632.xml	EUROPA - Il Garante europeo della protezione dei dati	http://europa.eu/about-eu/institutions-bodies/edps/index_it.htm
+633.xml	EUROPA - European External Action Service	http://europa.eu/about-eu/institutions-bodies/eeas/index_en.htm
+634.xml	EUROPA - Servizio europeo per l'azione esterna	http://europa.eu/about-eu/institutions-bodies/eeas/index_it.htm
+635.xml	EUROPA - European Investment Bank	http://europa.eu/about-eu/institutions-bodies/eib/index_en.htm
+636.xml	EUROPA - Banca europea per gli investimenti	http://europa.eu/about-eu/institutions-bodies/eib/index_it.htm
+637.xml	EUROPA - European Investment Fund	http://europa.eu/about-eu/institutions-bodies/eif/index_en.htm
+638.xml	EUROPA - Fondo europeo per gli investimenti	http://europa.eu/about-eu/institutions-bodies/eif/index_it.htm
+639.xml	EUROPA - European Commission	http://europa.eu/about-eu/institutions-bodies/european-commission/index_en.htm
+64.xml	Summaries of EU legislation	http://europa.eu/legislation_summaries/index_en.htm
+640.xml	EUROPA - Commissione europea	http://europa.eu/about-eu/institutions-bodies/european-commission/index_it.htm
+641.xml	EUROPA - European Council	http://europa.eu/about-eu/institutions-bodies/european-council/index_en.htm
+642.xml	EUROPA - How EU decisions are made	http://europa.eu/eu-law/decision-making/procedures/index_en.htm
+643.xml	EUROPA - EU law	http://europa.eu/eu-law/index_en.htm
+644.xml	EUROPA - EU information service (telephone, email, etc.) – Europe Direct	http://europa.eu/europedirect/index_en.htm
+645.xml	Agriculture: enlargement	http://europa.eu/legislation_summaries/agriculture/enlargement/index_en.htm
+646.xml	Fertilisers	http://europa.eu/legislation_summaries/agriculture/environment/l21278_en.htm
+647.xml	European Union forest action plan	http://europa.eu/legislation_summaries/agriculture/environment/l24277_en.htm
+648.xml	Agricultural nitrates	http://europa.eu/legislation_summaries/agriculture/environment/l28013_en.htm
+649.xml	Programme LIFE+	http://europa.eu/legislation_summaries/agriculture/environment/l28021_en.htm
+65.xml	Sintesi della legislazione dell'UE	http://europa.eu/legislation_summaries/index_it.htm
+650.xml	Sixth Environment Action Programme	http://europa.eu/legislation_summaries/agriculture/environment/l28027_en.htm
+652.xml	Legal framework for mobile TV	http://europa.eu/legislation_summaries/audiovisual_and_media/am0002_en.htm
+653.xml	A budget for Europe (2014-2020)	http://europa.eu/legislation_summaries/budget/bu0001_en.htm
+654.xml	Culture in EU external relations	http://europa.eu/legislation_summaries/culture/cu0002_en.htm
+655.xml	European Heritage Label	http://europa.eu/legislation_summaries/culture/cu0009_en.htm
+656.xml	"Culture 2000" Programme	http://europa.eu/legislation_summaries/culture/l29006_en.htm
+657.xml	Europe for Citizens (2007-13)	http://europa.eu/legislation_summaries/culture/l29015_en.htm
+658.xml	Turkey - Internal market	http://europa.eu/legislation_summaries/customs/e07113_en.htm
+659.xml	EU customs relief system	http://europa.eu/legislation_summaries/customs/l11002_en.htm
+660.xml	Dogana 2013 (2008-2013)	http://europa.eu/legislation_summaries/customs/l11050_it.htm
+661.xml	Exemptions for travellers	http://europa.eu/legislation_summaries/customs/l31045_en.htm
+664.xml	Towards a renewed Africa-EU partnership	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/dv0017_en.htm
+665.xml	Verso un partenariato Africa-UE rinnovato	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/dv0017_it.htm
+666.xml	Cooperation with Non-EU Member Countries on nuclear safety	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/l27073_en.htm
+667.xml	Cooperazione con i paesi terzi in materia di sicurezza nucleare	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/l27073_it.htm
+668.xml	Cooperation with the African Centre for Study and Research on Terrorism	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/l33284_en.htm
+669.xml	Cooperazione con il Centro africano di studi e ricerche sul terrorismo	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/l33284_it.htm
+672.xml	Cotonou Agreement	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12101_en.htm
+673.xml	Accordo di Cotonou	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12101_it.htm
+674.xml	European Development Fund (EDF)	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12102_en.htm
+675.xml	Fondo europeo di sviluppo (FES)	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12102_it.htm
+680.xml	Assistance for traditional ACP suppliers of bananas	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12105_en.htm
+681.xml	Assistenza a favore dei fornitori ACP tradizionali di banane	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12105_it.htm
+682.xml	Partenariato UE-Africa	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12106_it.htm
+685.xml	Budgetisation of the European Development Fund	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12110_en.htm
+686.xml	Iscrizione in bilancio del Fondo europeo di sviluppo	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12110_it.htm
+687.xml	Creation of a Peace Facility for Africa	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12529_en.htm
+688.xml	Fondo per la pace in Africa	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12529_it.htm
+689.xml	European Water Facility for the ACP countries	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12531_en.htm
+690.xml	Fondo europeo per l'acqua destinato ai paesi ACP	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12531_it.htm
+693.xml	EU Strategy for Africa	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12540_en.htm
+694.xml	Strategia dell'UE per l'Africa	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12540_it.htm
+695.xml	An EU-Caribbean partnership for growth, stability and development	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12548_en.htm
+696.xml	Il partenariato UE - Caraibi a favore della crescita, la stabilità e lo sviluppo	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12548_it.htm
+697.xml	Strategia UE-Pacifico	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r12556_it.htm
+7.xml	A proposito di  questo sito	http://europa.eu/legislation_summaries/about/index_it.htm
+70.xml	Internal market	http://europa.eu/legislation_summaries/internal_market/index_en.htm
+700.xml	From a strategy for Africa to an EU-Africa strategic partnership	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r13009_en.htm
+701.xml	Da una strategia per l'Africa a un partenariato strategico UE - Africa	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r13009_it.htm
+704.xml	Special partnership with Cape Verde	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r13018_en.htm
+705.xml	Partenariato speciale con il Capo Verde	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/r13018_it.htm
+706.xml	Cooperation and dialogue between the EU, Africa and China	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/rx0002_en.htm
+707.xml	Cooperazione e dialogo tra l'UE, l'Africa e la Cina	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/rx0002_it.htm
+71.xml	Mercato interno	http://europa.eu/legislation_summaries/internal_market/index_it.htm
+710.xml	Economic partnership between Eastern and Southern Africa States	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/rx0007_en.htm
+711.xml	Partenariato economico tra gli Stati dell'Africa orientale e australe	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/rx0007_it.htm
+712.xml	Africa and Europe: strengthening transport cooperation	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/tr0029_en.htm
+713.xml	Africa ed Europa: rafforzamento della cooperazione in materia di trasporti	http://europa.eu/legislation_summaries/development/african_caribbean_pacific_states/tr0029_it.htm
+716.xml	Politiche comunitarie in materia di sviluppo e di assistenza esterna: relazione 2008	http://europa.eu/legislation_summaries/development/general_development_framework/dv0008_it.htm
+717.xml	Facility for rapid response to soaring food prices	http://europa.eu/legislation_summaries/development/general_development_framework/dv0009_en.htm
+718.xml	Strumento di risposta rapida all’impennata dei prezzi alimentari	http://europa.eu/legislation_summaries/development/general_development_framework/dv0009_it.htm
+719.xml	Millennium Development Goals (MDGs): twelve-point action plan	http://europa.eu/legislation_summaries/development/general_development_framework/dv0014_en.htm
+72.xml	Justice, freedom and security	http://europa.eu/legislation_summaries/justice_freedom_security/index_en.htm
+720.xml	Obiettivi di sviluppo del millennio (OSM): piano d'azione in dodici punti	http://europa.eu/legislation_summaries/development/general_development_framework/dv0014_it.htm
+721.xml	European development and external assistance policy: 2009 Report	http://europa.eu/legislation_summaries/development/general_development_framework/dv0015_en.htm
+722.xml	Politica europea in materia di sviluppo e assistenza esterna: relazione 2009	http://europa.eu/legislation_summaries/development/general_development_framework/dv0015_it.htm
+723.xml	Instrument for Stability (2007 – 2013)	http://europa.eu/legislation_summaries/development/general_development_framework/l14171_en.htm
+724.xml	Strumento per la stabilità (2007-2013)	http://europa.eu/legislation_summaries/development/general_development_framework/l14171_it.htm
+725.xml	A financing instrument for the promotion of democracy and human rights in the world (2007 – 2013)	http://europa.eu/legislation_summaries/development/general_development_framework/l14172_en.htm
+726.xml	Strumento finanziario per la promozione della democrazia e dei diritti umani nel mondo (2007-2013)	http://europa.eu/legislation_summaries/development/general_development_framework/l14172_it.htm
+727.xml	Financing instrument for development cooperation - DCI (2007-2013)	http://europa.eu/legislation_summaries/development/general_development_framework/l14173_en.htm
+728.xml	Strumento per il finanziamento della cooperazione allo sviluppo– DCI (2007-2013)	http://europa.eu/legislation_summaries/development/general_development_framework/l14173_it.htm
+729.xml	Cooperation with Non-EU Member Countries in the areas of migration and asylum	http://europa.eu/legislation_summaries/development/general_development_framework/l14510_en.htm
+73.xml	Giustizia, libertà e sicurezza	http://europa.eu/legislation_summaries/justice_freedom_security/index_it.htm
+730.xml	Programma tematico di cooperazione con i paesi terzi nei settori dell’emigrazione e dell’asilo	http://europa.eu/legislation_summaries/development/general_development_framework/l14510_it.htm
+731.xml	Environment and sustainable management of natural resources, including energy	http://europa.eu/legislation_summaries/development/general_development_framework/l28173_en.htm
+732.xml	Programma tematico per l'ambiente e la gestione sostenibile delle risorse, tra cui l'energia	http://europa.eu/legislation_summaries/development/general_development_framework/l28173_it.htm
+733.xml	The European Union and the United Nations: The choice of multilateralism	http://europa.eu/legislation_summaries/development/general_development_framework/r00009_en.htm
+734.xml	Unione europea e Nazioni Unite: la scelta del multilateralismo	http://europa.eu/legislation_summaries/development/general_development_framework/r00009_it.htm
+736.xml	Untying aid to developing countries	http://europa.eu/legislation_summaries/development/general_development_framework/r12108_en.htm
+737.xml	Svincolo degli aiuti ai paesi in via di sviluppo	http://europa.eu/legislation_summaries/development/general_development_framework/r12108_it.htm
+738.xml	Translating the Monterrey Consensus into practice	http://europa.eu/legislation_summaries/development/general_development_framework/r12527_en.htm
+739.xml	Messa in pratica del consenso di Monterrey	http://europa.eu/legislation_summaries/development/general_development_framework/r12527_it.htm
+74.xml	Maritime Affairs And Fisheries	http://europa.eu/legislation_summaries/maritime_affairs_and_fisheries/index_en.htm
+748.xml	Action Plan for more, better and faster aid	http://europa.eu/legislation_summaries/development/general_development_framework/r12553_en.htm
+749.xml	Piano d'azione per un aiuto più importante, più efficace e più tempestivo	http://europa.eu/legislation_summaries/development/general_development_framework/r12553_it.htm
+75.xml	Affari marittimi e pesca	http://europa.eu/legislation_summaries/maritime_affairs_and_fisheries/index_it.htm
+750.xml	Non-state Actors and Local Authorities	http://europa.eu/legislation_summaries/development/general_development_framework/r12554_en.htm
+751.xml	Gli attori non statali e le autorità locali	http://europa.eu/legislation_summaries/development/general_development_framework/r12554_it.htm
+752.xml	Partnership with the United Nations: development assistance and humanitarian aid	http://europa.eu/legislation_summaries/development/general_development_framework/r12600_en.htm
+753.xml	Partenariato con le Nazioni Unite: aiuto allo sviluppo e aiuto umanitario	http://europa.eu/legislation_summaries/development/general_development_framework/r12600_it.htm
+756.xml	Code of Conduct on Complementarity and the Division of Labour in Development Policy	http://europa.eu/legislation_summaries/development/general_development_framework/r13003_en.htm
+757.xml	Codice di condotta in materia di divisione dei compiti nell'ambito della politica di sviluppo	http://europa.eu/legislation_summaries/development/general_development_framework/r13003_it.htm
+758.xml	Common framework for joint multiannual programming	http://europa.eu/legislation_summaries/development/general_development_framework/r13007_en.htm
+759.xml	Quadro comune per la programmazione pluriennale comune	http://europa.eu/legislation_summaries/development/general_development_framework/r13007_it.htm
+76.xml	Public health	http://europa.eu/legislation_summaries/public_health/index_en.htm
+760.xml	Mid-term report on policy coherence for development	http://europa.eu/legislation_summaries/development/general_development_framework/r13015_en.htm
+761.xml	Relazione intermedia sulla coerenza delle politiche per lo sviluppo	http://europa.eu/legislation_summaries/development/general_development_framework/r13015_it.htm
+762.xml	Role of the European Union in the multilateral system of the UN	http://europa.eu/legislation_summaries/development/general_development_framework/rx0034_en.htm
+763.xml	Ruolo dell'Unione europea nel sistema multilaterale delle Nazioni Unite	http://europa.eu/legislation_summaries/development/general_development_framework/rx0034_it.htm
+764.xml	A scheme of generalised tariff preferences 2009-2011	http://europa.eu/legislation_summaries/development/least_developed_countries/cx0003_en.htm
+765.xml	Sistema di preferenze tariffarie generalizzate 2009-2011	http://europa.eu/legislation_summaries/development/least_developed_countries/cx0003_it.htm
+768.xml	Generalised System of Preferences 2006 - 2008	http://europa.eu/legislation_summaries/development/least_developed_countries/r11020_en.htm
+769.xml	Sistema di preferenze generalizzate 2006 - 2008	http://europa.eu/legislation_summaries/development/least_developed_countries/r11020_it.htm
+77.xml	Sanità pubblica	http://europa.eu/legislation_summaries/public_health/index_it.htm
+772.xml	Community participation in the initiative to ease the debt burden of highly-indebted poor countries (HIPC)	http://europa.eu/legislation_summaries/development/least_developed_countries/r12401_en.htm
+773.xml	Partecipazione comunitaria all'iniziativa di sgravio del debito dei paesi poveri fortemente indebitati (HIPC)	http://europa.eu/legislation_summaries/development/least_developed_countries/r12401_it.htm
+774.xml	Paesi e territori d'oltremare (PTOM): verso un nuovo partenariato	http://europa.eu/legislation_summaries/development/overseas_countries_territories/dv0010_it.htm
+775.xml	Overseas countries and territories (OCT)	http://europa.eu/legislation_summaries/development/overseas_countries_territories/index_en.htm
+776.xml	Istituto europeo di innovazione e tecnologia (EIT)	http://europa.eu/legislation_summaries/education_training_youth/general_framework/i23030_it.htm
+777.xml	Adult learning: It is never too late to learn	http://europa.eu/legislation_summaries/education_training_youth/lifelong_learning/c11097_en.htm
+778.xml	Vocational training	http://europa.eu/legislation_summaries/education_training_youth/vocational_training/index_en.htm
+78.xml	Regional policy	http://europa.eu/legislation_summaries/regional_policy/index_en.htm
+782.xml	Parità di trattamento dei lavoratori tramite agenzia interinale	http://europa.eu/legislation_summaries/employment_and_social_policy/employment_rights_and_work_organisation/c11329_it.htm
+783.xml	Spazio europeo della ricerca (SER): nuove prospettive	http://europa.eu/legislation_summaries/employment_and_social_policy/eu2020/growth_and_jobs/i23037_it.htm
+79.xml	Politica regionale	http://europa.eu/legislation_summaries/regional_policy/index_it.htm
+792.xml	Obiettivi e organismi	http://europa.eu/legislation_summaries/transport/bodies_objectives/index_it.htm
+793.xml	Intelligent transport and navigation by satellite	http://europa.eu/legislation_summaries/transport/intelligent_transport_navigation_by_satellite/index_en.htm
+794.xml	Trasporti intelligenti e navigazione via satellite	http://europa.eu/legislation_summaries/transport/intelligent_transport_navigation_by_satellite/index_it.htm
+795.xml	Deployment of Intelligent Transport Systems in Europe	http://europa.eu/legislation_summaries/transport/intelligent_transport_navigation_by_satellite/tr0040_en.htm
+796.xml	Diffusione di sistemi di trasporto intelligenti in Europa	http://europa.eu/legislation_summaries/transport/intelligent_transport_navigation_by_satellite/tr0040_it.htm
+797.xml	Intermodality and trans-european networks	http://europa.eu/legislation_summaries/transport/intermodality_transeuropean_networks/index_en.htm
+798.xml	Trasporto combinato e reti transeuropee	http://europa.eu/legislation_summaries/transport/intermodality_transeuropean_networks/index_it.htm
+799.xml	International dimension and enlargement	http://europa.eu/legislation_summaries/transport/international_dimension_enlargement/index_en.htm
+8.xml	Environment	http://europa.eu/legislation_summaries/agriculture/environment/index_en.htm
+80.xml	Research and innovation	http://europa.eu/legislation_summaries/research_innovation/index_en.htm
+800.xml	Dimensione internazionale e allargamento	http://europa.eu/legislation_summaries/transport/international_dimension_enlargement/index_it.htm
+801.xml	Mobility and passenger rights	http://europa.eu/legislation_summaries/transport/mobility_and_passenger_rights/index_en.htm
+802.xml	Mobilità e diritti dei passeggeri	http://europa.eu/legislation_summaries/transport/mobility_and_passenger_rights/index_it.htm
+803.xml	Rail transport	http://europa.eu/legislation_summaries/transport/rail_transport/index_en.htm
+804.xml	Trasporto ferroviario	http://europa.eu/legislation_summaries/transport/rail_transport/index_it.htm
+807.xml	Transport, energy and the environment	http://europa.eu/legislation_summaries/transport/transport_energy_environment/index_en.htm
+808.xml	Trasporti, energia e ambiente	http://europa.eu/legislation_summaries/transport/transport_energy_environment/index_it.htm
+81.xml	Ricerca e innovazione	http://europa.eu/legislation_summaries/research_innovation/index_it.htm
+812.xml	EUROPA - Topics of the European Union - Agriculture	http://europa.eu/pol/agr/index_en.htm
+813.xml	EUROPA - Politiche dell'Unione europea - Agricoltura	http://europa.eu/pol/agr/index_it.htm
+814.xml	EUROPA - Topics of the European Union - Audiovisual and media	http://europa.eu/pol/av/index_en.htm
+815.xml	EUROPA - Politiche dell'Unione europea - Audiovisivi e media	http://europa.eu/pol/av/index_it.htm
+816.xml	EUROPA - Topics of the European Union - Foreign & Security Policy	http://europa.eu/pol/cfsp/index_en.htm
+817.xml	EUROPA - Politiche dell’Unione europea - Politica estera e di sicurezza	http://europa.eu/pol/cfsp/index_it.htm
+818.xml	Attività dell’Unione europea - Cittadinanza dell'UE	http://europa.eu/pol/cit/index_it.htm
+819.xml	EUROPA - Attività dell'Unione europea - Azione per il clima	http://europa.eu/pol/clim/index_it.htm
+82.xml	Taxation	http://europa.eu/legislation_summaries/taxation/index_en.htm
+820.xml	EUROPA - Attività dell'Unione europea - Commercio	http://europa.eu/pol/comm/index_it.htm
+821.xml	EUROPA - Topics of the European Union - Competition	http://europa.eu/pol/comp/index_en.htm
+822.xml	EUROPA - Politiche dell'Unione europea - Concorrenza	http://europa.eu/pol/comp/index_it.htm
+823.xml	EUROPA - Topics of the European Union - Consumers	http://europa.eu/pol/cons/index_en.htm
+824.xml	EUROPA - Politiche dell'Unione europea - Consumatori	http://europa.eu/pol/cons/index_it.htm
+825.xml	EUROPA - Topics of the European Union - Culture in the European Union	http://europa.eu/pol/cult/index_en.htm
+826.xml	EUROPA - Politiche dell'Unione europea - Cultura nell'Unione europea	http://europa.eu/pol/cult/index_it.htm
+827.xml	EUROPA - Topics of the European Union - Development and cooperation	http://europa.eu/pol/dev/index_en.htm
+828.xml	EUROPA - Politiche dell’Unione europea - Cooperazione allo sviluppo	http://europa.eu/pol/dev/index_it.htm
+829.xml	EUROPA - Topics of the European Union - Education, training & youth	http://europa.eu/pol/educ/index_en.htm
+83.xml	Regime fiscale	http://europa.eu/legislation_summaries/taxation/index_it.htm
+830.xml	EUROPA - Politiche dell’Unione europea - Istruzione, formazione e gioventù	http://europa.eu/pol/educ/index_it.htm
+831.xml	EUROPA - Topics of the European Union - Economic and monetary affairs	http://europa.eu/pol/emu/index_en.htm
+832.xml	EUROPA - Politiche dell'Unione europea - Affari economici e monetari	http://europa.eu/pol/emu/index_it.htm
+833.xml	EUROPA - EUROPA - Topics of the European Union - Energy	http://europa.eu/pol/ener/index_en.htm
+834.xml	EUROPA - Politiche dell'Unione europea - Energia	http://europa.eu/pol/ener/index_it.htm
+835.xml	EUROPA - Politiche dell'Unione europea - Allargamento	http://europa.eu/pol/enlarg/index_it.htm
+836.xml	EUROPA - Politiche dell'Unione europea - Imprese	http://europa.eu/pol/enter/index_it.htm
+837.xml	EUROPA - Attività dell'Unione europea - Affari marittimi e pesca	http://europa.eu/pol/fish/index_it.htm
+838.xml	EUROPA - Politiche dell'Unione europea - Sicurezza alimentare nell'UE	http://europa.eu/pol/food/index_it.htm
+839.xml	EUROPA - Topics of the European Union - Fraud prevention	http://europa.eu/pol/fraud/index_en.htm
+840.xml	EUROPA - Politiche dell’Unione europea - Lotta alla frode	http://europa.eu/pol/fraud/index_it.htm
+841.xml	EUROPA - Topics of the European Union - Humanitarian aid & civil protection	http://europa.eu/pol/hum/index_en.htm
+842.xml	EUROPA - Politiche dell'Unione europea - Aiuti umanitari e protezione civile	http://europa.eu/pol/hum/index_it.htm
+843.xml	EUROPA - Topics of the European Union	http://europa.eu/pol/index_en.htm
+844.xml	EUROPA - Politiche dell'Unione europea	http://europa.eu/pol/index_it.htm
+845.xml	EUROPA - Topics of the European Union - Information technology	http://europa.eu/pol/infso/index_en.htm
+846.xml	EUROPA - Attività dell'Unione europea - Tecnologie dell’informazione	http://europa.eu/pol/infso/index_it.htm
+847.xml	EUROPA - Politiche dell’Unione europea - Affari istituzionali	http://europa.eu/pol/inst/index_it.htm
+848.xml	EUROPA - Politiche dell'Unione europea - Giustizia e affari interni	http://europa.eu/pol/justice/index_it.htm
+849.xml	EUROPA - Attività dell'Unione europea - Ricerca e innovazione	http://europa.eu/pol/rd/index_it.htm
+850.xml	EUROPA - Topics of the European Union - Regional policy	http://europa.eu/pol/reg/index_en.htm
+851.xml	EUROPA - Politiche dell'Unione europea - Politica regionale	http://europa.eu/pol/reg/index_it.htm
+852.xml	EUROPA - Topics of the European Union - Human rights	http://europa.eu/pol/rights/index_en.htm
+853.xml	EUROPA - Politiche dell'Unione europea - Diritti umani	http://europa.eu/pol/rights/index_it.htm
+854.xml	EUROPA - Politiche dell'Unione europea - Un unico mercato senza frontiere	http://europa.eu/pol/singl/index_it.htm
+855.xml	EUROPA - Topics of the European Union - Employment and social affairs	http://europa.eu/pol/socio/index_en.htm
+856.xml	EUROPA - Politiche dell'Unione europea - Occupazione e affari sociali	http://europa.eu/pol/socio/index_it.htm
+857.xml	EUROPA - Politiche dell'Unione europea - Spazio	http://europa.eu/pol/space/index_it.htm
+858.xml	EUROPA - Politiche dell'Unione europea - Fiscalità	http://europa.eu/pol/tax/index_it.htm
+86.xml	Summaries of EU legislation: web tutorial	http://europa.eu/legislation_summaries/tutorial/index_en.htm
+860.xml	EUROPA - Libraries and archives	http://europa.eu/publications/libraries-archives/index_en.htm
+861.xml	EUROPA - Biblioteche e archivi	http://europa.eu/publications/libraries-archives/index_it.htm
+866.xml	EUROPA - GLOSSARY	http://europa.eu/scadplus/aboutglossary_en.htm
+867.xml	EUROPA - GLOSSARIO	http://europa.eu/scadplus/aboutglossary_it.htm
+868.xml	EUROPA – Teachers’ Corner - Teaching resources about the EU	http://europa.eu/teachers-corner/index_en.htm
+869.xml	EUROPA - L’angolo degli insegnanti - Risorse didattiche sull’UE	http://europa.eu/teachers-corner/index_it.htm
+87.xml	Sintesi della legislazione dell’UE: web tutorial	http://europa.eu/legislation_summaries/tutorial/index_it.htm
+870.xml	EUROPA - EU entrepreneur exchanges - Your Europe	http://europa.eu/youreurope/business/funding-grants/erasmus/index_en.htm
+871.xml	EUROPA - Scambi per imprenditori dell'UE - La tua Europa	http://europa.eu/youreurope/business/funding-grants/erasmus/index_it.htm
+872.xml	EUROPA - Finanziamenti UE per le piccole imprese - La tua Europa	http://europa.eu/youreurope/business/funding-grants/eu-programmes/index_it.htm
+873.xml	EUROPA - Public contracts: EU rules & procedures - Your Europe	http://europa.eu/youreurope/business/public-tenders/rules-procedures/index_en.htm
+874.xml	EUROPA - Appalti pubblici: norme e procedure UE - La tua Europa	http://europa.eu/youreurope/business/public-tenders/rules-procedures/index_it.htm
+875.xml	EUROPA - Providing services in other EU countries: information & helpdesk - Your Europe	http://europa.eu/youreurope/business/sell-abroad/service-providers/index_en.htm
+876.xml	EUROPA - Prestare servizi all'estero: informazioni e helpdesk - La tua Europa	http://europa.eu/youreurope/business/sell-abroad/service-providers/index_it.htm
+88.xml	EUROPA - I simboli dell'UE	http://europa.eu/about-eu/basic-information/symbols/index_it.htm
+880.xml	Starting school in another EU country	http://europa.eu/youreurope/citizens/education/school/enrol/index_en.htm
+881.xml	Frequentare la scuola in un altro paese dell'UE	http://europa.eu/youreurope/citizens/education/school/enrol/index_it.htm
+882.xml	Financial support for traineeships	http://europa.eu/youreurope/citizens/education/traineeships/financial/index_en.htm
+883.xml	Sostegno finanziario per tirocinanti	http://europa.eu/youreurope/citizens/education/traineeships/financial/index_it.htm
+884.xml	University fees and financial help	http://europa.eu/youreurope/citizens/education/university/fees-and-financial-help/index_en.htm
+885.xml	Tasse universitarie e sostegno finanziario	http://europa.eu/youreurope/citizens/education/university/fees-and-financial-help/index_it.htm
+886.xml	EU - Recognition of academic qualifications in the EU – Your Europe	http://europa.eu/youreurope/citizens/education/university/recognition/index_en.htm
+887.xml	UE - Riconoscimento dei titoli accademici nell'UE - La tua Europa	http://europa.eu/youreurope/citizens/education/university/recognition/index_it.htm
+888.xml	Working while studying	http://europa.eu/youreurope/citizens/education/university/working-while-studying/index_en.htm
+889.xml	Lavorare studiando	http://europa.eu/youreurope/citizens/education/university/working-while-studying/index_it.htm
+89.xml	EUROPA - Countries	http://europa.eu/about-eu/countries/index_en.htm
+891.xml	EU – Preparing to volunteer abroad – Your Europe	http://europa.eu/youreurope/citizens/education/volunteering/prepare/index_en.htm
+892.xml	UE - Prepararsi a partire come volontario all'estero – La tua Europa	http://europa.eu/youreurope/citizens/education/volunteering/prepare/index_it.htm
+893.xml	UE – Acquistare farmaci con prescrizione medica all'estero: spese e rimborsi – La tua Europa	http://europa.eu/youreurope/citizens/health/help-from-the-pharmacy/expenses-reimbursements/index_it.htm
+894.xml	UE – Presentare una prescrizione medica in una farmacia all'estero – La tua Europa	http://europa.eu/youreurope/citizens/health/help-from-the-pharmacy/prescription/index_it.htm
+895.xml	Spese e rimborsi	http://europa.eu/youreurope/citizens/health/planned-healthcare/expenses-reimbursements/index_it.htm
+896.xml	Sportelli per cure programmate	http://europa.eu/youreurope/citizens/health/planned-healthcare/get-more-info/index_it.htm
+897.xml	UE – Trovare un ospedale all'estero – La tua Europa	http://europa.eu/youreurope/citizens/health/planned-healthcare/hospitals/index_it.htm
+898.xml	UE – Diritto alle cure mediche programmate all'estero – La tua Europa	http://europa.eu/youreurope/citizens/health/planned-healthcare/right-to-treatment/index_it.htm
+899.xml	UE - Pagamenti e rimborsi per cure mediche all'estero - La tua Europa	http://europa.eu/youreurope/citizens/health/unplanned-healthcare/payments-reimbursements/index_it.htm
+9.xml	Ambiente	http://europa.eu/legislation_summaries/agriculture/environment/index_it.htm
+90.xml	EUROPA - The history of the European Union	http://europa.eu/about-eu/eu-history/index_en.htm
+900.xml	UE - Copertura sanitaria per soggiorni di breve durata - La tua Europa	http://europa.eu/youreurope/citizens/health/unplanned-healthcare/temporary-stays/index_it.htm
+901.xml	UE - Assicurazione sanitaria per chi vive o lavora all'estero - La tua Europa	http://europa.eu/youreurope/citizens/health/when-living-abroad/health-insurance-cover/index_it.htm
+902.xml	UE - Assistenza sanitaria per chi vive in un altro paese dell'UE - La tua Europa	http://europa.eu/youreurope/citizens/health/when-living-abroad/healthcare/index_it.htm
+903.xml	Permanent residence (>5 years) for EU nationals	http://europa.eu/youreurope/citizens/residence/documents-formalities/eu-nationals-permanent-residence/index_en.htm
+904.xml	Soggiorno permanente (>5 anni) per cittadini UE	http://europa.eu/youreurope/citizens/residence/documents-formalities/eu-nationals-permanent-residence/index_it.htm
+905.xml	Permanent residence (>5 years) for non-EU family members	http://europa.eu/youreurope/citizens/residence/documents-formalities/non-eu-family-members-permanent-residence/index_en.htm
+906.xml	Soggiorno permanente (>5 anni) per familiari cittadini di paesi extra-UE	http://europa.eu/youreurope/citizens/residence/documents-formalities/non-eu-family-members-permanent-residence/index_it.htm
+907.xml	Reporting presence for short stays (<3 months)	http://europa.eu/youreurope/citizens/residence/documents-formalities/reporting-presence/index_en.htm
+908.xml	Dichiarazione di presenza per soggiorni brevi (<3 mesi)	http://europa.eu/youreurope/citizens/residence/documents-formalities/reporting-presence/index_it.htm
+909.xml	Elezioni del Parlamento europeo	http://europa.eu/youreurope/citizens/residence/elections-abroad/ep-elections/index_it.htm
+91.xml	EUROPA - La storia dell'Unione europea	http://europa.eu/about-eu/eu-history/index_it.htm
+910.xml	Elezioni comunali	http://europa.eu/youreurope/citizens/residence/elections-abroad/municipal-elections/index_it.htm
+911.xml	I tuoi familiari cittadini UE ed extra-UE	http://europa.eu/youreurope/citizens/residence/jobseekers/family-members/index_it.htm
+912.xml	Residence rights for jobseekers abroad	http://europa.eu/youreurope/citizens/residence/jobseekers/residence-rights/index_en.htm
+913.xml	Diritti di soggiorno per chi cerca lavoro all'estero	http://europa.eu/youreurope/citizens/residence/jobseekers/residence-rights/index_it.htm
+914.xml	Rights, conditions and formalities	http://europa.eu/youreurope/citizens/residence/student/rights-conditions/index_en.htm
+915.xml	Diritti, condizioni e formalità	http://europa.eu/youreurope/citizens/residence/student/rights-conditions/index_it.htm
+916.xml	Workers' and pensioners' EU family	http://europa.eu/youreurope/citizens/residence/worker-pensioner/eu-family-members/index_en.htm
+917.xml	Familiari UE di lavoratori e pensionati	http://europa.eu/youreurope/citizens/residence/worker-pensioner/eu-family-members/index_it.htm
+918.xml	Workers' and pensioners' residence rights	http://europa.eu/youreurope/citizens/residence/worker-pensioner/rights-conditions/index_en.htm
+919.xml	Diritti, condizioni e formalità	http://europa.eu/youreurope/citizens/residence/worker-pensioner/rights-conditions/index_it.htm
+92.xml	EUROPA - Facts and figures	http://europa.eu/about-eu/facts-figures/index_en.htm
+920.xml	UE - Articoli consentiti e vietati nel bagaglio: Alcool, tabacco, denaro contante - La tua Europa	http://europa.eu/youreurope/citizens/travel/carry/alcohol-tobacco-cash/index_it.htm
+921.xml	UE - Articoli consentiti e vietati nel bagaglio: animali o piante - La tua Europa	http://europa.eu/youreurope/citizens/travel/carry/animal-plant/index_it.htm
+923.xml	UE – Tariffe di roaming in Europa - La tua Europa	http://europa.eu/youreurope/citizens/travel/money-charges/mobile-roaming-costs/index_it.htm
+924.xml	Viaggiatori a mobilità ridotta	http://europa.eu/youreurope/citizens/travel/passenger-rights/reduced-mobility/index_it.htm
+925.xml	EU - driving licences – validity & renewal (loss, theft, expiry)	http://europa.eu/youreurope/citizens/vehicles/driving/loss/index_en.htm
+926.xml	UE – Validità e rinnovo della patente di guida (smarrimento, furto, scadenza)	http://europa.eu/youreurope/citizens/vehicles/driving/loss/index_it.htm
+927.xml	EU - Driving licence validity abroad (renewing, converting, etc.)	http://europa.eu/youreurope/citizens/vehicles/driving/validity/index_en.htm
+928.xml	UE – Validità della patente di guida all'estero (rinnovo, conversione, ecc.)	http://europa.eu/youreurope/citizens/vehicles/driving/validity/index_it.htm
+929.xml	Imposte sul reddito all’estero - La tua Europa	http://europa.eu/youreurope/citizens/work/taxes/income-taxes-abroad/index_it.htm
+93.xml	EUROPA - How the EU works	http://europa.eu/about-eu/index_en.htm
+930.xml	UE - Disoccupazione e indennità - La tua Europa	http://europa.eu/youreurope/citizens/work/unemployment-and-benefits/index_it.htm
+938.xml	EUROPA - European Institute for Innovation & Technology (EIT)	http://europa.eu/about-eu/agencies/eit/index_en.htm
+939.xml	EUROPA - Istituto europeo di innovazione e tecnologia - EIT	http://europa.eu/about-eu/agencies/eit/index_it.htm
+94.xml	EUROPA - Funzionamento dell'UE	http://europa.eu/about-eu/index_it.htm
+941.xml	EUROPA - Agencies and other EU bodies	http://europa.eu/about-eu/agencies/index_en.htm
+942.xml	EUROPA - Agenzie e altri organi dell'UE	http://europa.eu/about-eu/agencies/index_it.htm
+944.xml	EUROPA -  FRONTEX	http://europa.eu/about-eu/agencies/regulatory_agencies_bodies/policy_agencies/frontex/index_en.htm
+945.xml	EUROPA -  FRONTEX	http://europa.eu/about-eu/agencies/regulatory_agencies_bodies/policy_agencies/frontex/index_it.htm
+946.xml	EUROPA - EU Presidents – who does what?	http://europa.eu/about-eu/basic-information/eu-presidents/index_en.htm
+947.xml	EUROPA - I presidenti dell'UE - Chi fa cosa?	http://europa.eu/about-eu/basic-information/eu-presidents/index_it.htm
+948.xml	EUROPA - European years	http://europa.eu/about-eu/basic-information/european-years/index_en.htm
+949.xml	EUROPA - Anni europei	http://europa.eu/about-eu/basic-information/european-years/index_it.htm
+95.xml	EUROPA - EU institutions and other bodies	http://europa.eu/about-eu/institutions-bodies/index_en.htm
+950.xml	EUROPA - The euro	http://europa.eu/about-eu/basic-information/money/euro/index_en.htm
+951.xml	EUROPA - L'euro	http://europa.eu/about-eu/basic-information/money/euro/index_it.htm
+952.xml	EUROPA - How is the EU budget spent?	http://europa.eu/about-eu/basic-information/money/expenditure/index_en.htm
+953.xml	EUROPA - Come viene speso il bilancio dell'UE	http://europa.eu/about-eu/basic-information/money/expenditure/index_it.htm
+956.xml	EUROPA - How is the EU funded?	http://europa.eu/about-eu/basic-information/money/revenue-income/index_en.htm
+957.xml	EUROPA - Come viene finanziata l'UE	http://europa.eu/about-eu/basic-information/money/revenue-income/index_it.htm
+958.xml	EUROPA - The European anthem	http://europa.eu/about-eu/basic-information/symbols/anthem/index_en.htm
+959.xml	EUROPA - L'inno europeo	http://europa.eu/about-eu/basic-information/symbols/anthem/index_it.htm
+96.xml	EUROPA - Istituzioni e altri organi dell'UE	http://europa.eu/about-eu/institutions-bodies/index_it.htm
+960.xml	EUROPA - Europe Day – EU Open Doors	http://europa.eu/about-eu/basic-information/symbols/europe-day/index_en.htm
+961.xml	EUROPA - Festa dell'Europa - Giornata porte aperte dell'UE	http://europa.eu/about-eu/basic-information/symbols/europe-day/index_it.htm
+964.xml	EUROPA - The European flag	http://europa.eu/about-eu/basic-information/symbols/flag/index_en.htm
+965.xml	EUROPA - La bandiera europea	http://europa.eu/about-eu/basic-information/symbols/flag/index_it.htm
+966.xml	EUROPA - The EU motto	http://europa.eu/about-eu/basic-information/symbols/motto/index_en.htm
+967.xml	EUROPA - Joining the EU	http://europa.eu/about-eu/countries/joining-eu/index_en.htm
+968.xml	EUROPA - L'Austria nell'UE	http://europa.eu/about-eu/countries/member-countries/austria/index_it.htm
+969.xml	EUROPA - Il Belgio nell'UE	http://europa.eu/about-eu/countries/member-countries/belgium/index_it.htm
+97.xml	EUROPA - Work for the EU	http://europa.eu/about-eu/working-eu-institutions/index_en.htm
+970.xml	EUROPA - La Bulgaria nell'UE	http://europa.eu/about-eu/countries/member-countries/bulgaria/index_it.htm
+971.xml	EUROPA - La Croazia nell'UE	http://europa.eu/about-eu/countries/member-countries/croatia/index_it.htm
+972.xml	EUROPA - Cipro nell'UE	http://europa.eu/about-eu/countries/member-countries/cyprus/index_it.htm
+973.xml	EUROPA - La Repubblica ceca nell'UE	http://europa.eu/about-eu/countries/member-countries/czechrepublic/index_it.htm
+974.xml	EUROPA - La Danimarca nell'UE	http://europa.eu/about-eu/countries/member-countries/denmark/index_it.htm
+975.xml	EUROPA - L'Estonia nell'UE	http://europa.eu/about-eu/countries/member-countries/estonia/index_it.htm
+976.xml	EUROPA - La Finlandia nell'UE	http://europa.eu/about-eu/countries/member-countries/finland/index_it.htm
+977.xml	EUROPA - La Francia nell'UE	http://europa.eu/about-eu/countries/member-countries/france/index_it.htm
+978.xml	EUROPA - La Germania nell'UE	http://europa.eu/about-eu/countries/member-countries/germany/index_it.htm
+979.xml	EUROPA - La Grecia nell'UE	http://europa.eu/about-eu/countries/member-countries/greece/index_it.htm
+98.xml	EUROPA - Un impiego nell'UE - Lavorare per l'Unione europea	http://europa.eu/about-eu/working-eu-institutions/index_it.htm
+980.xml	EUROPA - l'Ungheria nell'UE	http://europa.eu/about-eu/countries/member-countries/hungary/index_it.htm
+981.xml	Stati membri dell'UE	http://europa.eu/about-eu/countries/member-countries/index_it.htm
+982.xml	EUROPA - L'Irlanda nell'UE	http://europa.eu/about-eu/countries/member-countries/ireland/index_it.htm
+983.xml	EUROPA - L'Italia nell'UE	http://europa.eu/about-eu/countries/member-countries/italy/index_it.htm
+984.xml	EUROPA - La Lettonia nell'UE	http://europa.eu/about-eu/countries/member-countries/latvia/index_it.htm
+985.xml	EUROPA - La Lituania nell'UE	http://europa.eu/about-eu/countries/member-countries/lithuania/index_it.htm
+986.xml	EUROPA - Il Lussemburgo nell'UE	http://europa.eu/about-eu/countries/member-countries/luxembourg/index_it.htm
+987.xml	EUROPA - Malta nell'UE	http://europa.eu/about-eu/countries/member-countries/malta/index_it.htm
+988.xml	EUROPA - I Paesi Bassi nell'UE	http://europa.eu/about-eu/countries/member-countries/netherlands/index_it.htm
+989.xml	EUROPA - La Polonia nell'UE	http://europa.eu/about-eu/countries/member-countries/poland/index_it.htm
+990.xml	EUROPA - Il Portogallo nell'UE	http://europa.eu/about-eu/countries/member-countries/portugal/index_it.htm
+991.xml	EUROPA - La Romania nell'UE	http://europa.eu/about-eu/countries/member-countries/romania/index_it.htm
+992.xml	EUROPA - La Slovacchia nell'UE	http://europa.eu/about-eu/countries/member-countries/slovakia/index_it.htm
+993.xml	EUROPA - La Slovenia nell'UE	http://europa.eu/about-eu/countries/member-countries/slovenia/index_it.htm
+994.xml	EUROPA - La Spagna nell'UE	http://europa.eu/about-eu/countries/member-countries/spain/index_it.htm
+995.xml	EUROPA - La Svezia nell'UE	http://europa.eu/about-eu/countries/member-countries/sweden/index_it.htm
+996.xml	EUROPA - Il Regno Unito nell'UE	http://europa.eu/about-eu/countries/member-countries/unitedkingdom/index_it.htm
+997.xml	EUROPA - EU funding	http://europa.eu/about-eu/funding-grants/index_en.htm
+998.xml	EUROPA - Consiglio europeo	http://europa.eu/about-eu/institutions-bodies/european-council/index_it.htm
+999.xml	EUROPA - European Parliament	http://europa.eu/about-eu/institutions-bodies/european-parliament/index_en.htm
+
+Files Mapped:
+-----------------------------------------------------
+1001.xml	1002.xml
+1003.xml	1004.xml
+1009.xml	1010.xml
+1013.xml	1012.xml
+1021.xml	1022.xml
+1028.xml	1027.xml
+1029.xml	1030.xml
+1032.xml	1031.xml
+1037.xml	1038.xml
+1039.xml	1040.xml
+1052.xml	1053.xml
+1054.xml	1055.xml
+105.xml	104.xml
+1081.xml	900.xml
+1082.xml	901.xml
+1083.xml	902.xml
+108.xml	107.xml
+1093.xml	1092.xml
+112.xml	111.xml
+113.xml	644.xml
+114.xml	115.xml
+116.xml	117.xml
+118.xml	645.xml
+119.xml	120.xml
+11.xml	10.xml
+123.xml	124.xml
+125.xml	646.xml
+126.xml	647.xml
+127.xml	128.xml
+129.xml	130.xml
+131.xml	648.xml
+132.xml	649.xml
+134.xml	133.xml
+135.xml	650.xml
+136.xml	137.xml
+138.xml	139.xml
+13.xml	12.xml
+142.xml	141.xml
+145.xml	146.xml
+147.xml	148.xml
+150.xml	149.xml
+151.xml	652.xml
+152.xml	153.xml
+155.xml	154.xml
+157.xml	156.xml
+159.xml	158.xml
+161.xml	160.xml
+170.xml	171.xml
+17.xml	16.xml
+191.xml	190.xml
+195.xml	196.xml
+1.xml	481.xml
+202.xml	201.xml
+203.xml	204.xml
+213.xml	214.xml
+219.xml	220.xml
+21.xml	20.xml
+221.xml	222.xml
+223.xml	224.xml
+22.xml	23.xml
+236.xml	235.xml
+238.xml	237.xml
+245.xml	246.xml
+248.xml	247.xml
+24.xml	25.xml
+257.xml	256.xml
+260.xml	261.xml
+262.xml	263.xml
+267.xml	266.xml
+269.xml	268.xml
+26.xml	27.xml
+272.xml	273.xml
+278.xml	279.xml
+281.xml	280.xml
+283.xml	282.xml
+285.xml	284.xml
+288.xml	287.xml
+289.xml	290.xml
+28.xml	29.xml
+292.xml	291.xml
+294.xml	293.xml
+296.xml	295.xml
+297.xml	298.xml
+302.xml	301.xml
+303.xml	654.xml
+304.xml	165.xml
+306.xml	307.xml
+308.xml	309.xml
+30.xml	31.xml
+310.xml	311.xml
+312.xml	313.xml
+316.xml	655.xml
+320.xml	173.xml
+323.xml	174.xml
+324.xml	325.xml
+327.xml	326.xml
+328.xml	181.xml
+332.xml	185.xml
+334.xml	335.xml
+336.xml	189.xml
+33.xml	32.xml
+342.xml	343.xml
+346.xml	656.xml
+347.xml	657.xml
+349.xml	348.xml
+353.xml	352.xml
+355.xml	354.xml
+357.xml	356.xml
+359.xml	358.xml
+35.xml	34.xml
+361.xml	360.xml
+364.xml	363.xml
+366.xml	365.xml
+368.xml	367.xml
+36.xml	37.xml
+370.xml	369.xml
+371.xml	372.xml
+373.xml	374.xml
+378.xml	377.xml
+380.xml	379.xml
+381.xml	658.xml
+383.xml	382.xml
+392.xml	659.xml
+393.xml	394.xml
+395.xml	396.xml
+397.xml	398.xml
+399.xml	400.xml
+39.xml	38.xml
+3.xml	4.xml
+404.xml	403.xml
+405.xml	406.xml
+412.xml	411.xml
+418.xml	417.xml
+419.xml	420.xml
+41.xml	40.xml
+427.xml	426.xml
+430.xml	660.xml
+435.xml	436.xml
+439.xml	440.xml
+43.xml	42.xml
+441.xml	661.xml
+446.xml	447.xml
+448.xml	449.xml
+45.xml	44.xml
+461.xml	462.xml
+463.xml	464.xml
+465.xml	466.xml
+467.xml	468.xml
+469.xml	470.xml
+471.xml	472.xml
+474.xml	473.xml
+476.xml	475.xml
+47.xml	46.xml
+485.xml	484.xml
+487.xml	486.xml
+489.xml	488.xml
+491.xml	490.xml
+492.xml	493.xml
+495.xml	494.xml
+496.xml	497.xml
+499.xml	498.xml
+49.xml	48.xml
+503.xml	502.xml
+505.xml	504.xml
+506.xml	778.xml
+507.xml	508.xml
+510.xml	509.xml
+512.xml	511.xml
+513.xml	514.xml
+516.xml	515.xml
+518.xml	517.xml
+519.xml	520.xml
+524.xml	523.xml
+528.xml	527.xml
+52.xml	53.xml
+530.xml	529.xml
+531.xml	532.xml
+534.xml	533.xml
+535.xml	536.xml
+539.xml	540.xml
+542.xml	541.xml
+544.xml	543.xml
+548.xml	547.xml
+552.xml	551.xml
+553.xml	783.xml
+55.xml	54.xml
+563.xml	88.xml
+565.xml	89.xml
+570.xml	971.xml
+571.xml	972.xml
+572.xml	973.xml
+573.xml	974.xml
+574.xml	975.xml
+575.xml	976.xml
+576.xml	977.xml
+577.xml	978.xml
+578.xml	979.xml
+589.xml	990.xml
+603.xml	602.xml
+605.xml	604.xml
+607.xml	606.xml
+609.xml	608.xml
+60.xml	61.xml
+612.xml	611.xml
+614.xml	613.xml
+615.xml	92.xml
+616.xml	617.xml
+620.xml	619.xml
+622.xml	621.xml
+623.xml	624.xml
+626.xml	625.xml
+627.xml	628.xml
+629.xml	630.xml
+62.xml	63.xml
+631.xml	632.xml
+633.xml	634.xml
+635.xml	636.xml
+637.xml	638.xml
+640.xml	639.xml
+642.xml	103.xml
+643.xml	106.xml
+64.xml	65.xml
+653.xml	249.xml
+664.xml	665.xml
+666.xml	667.xml
+668.xml	669.xml
+673.xml	672.xml
+675.xml	674.xml
+680.xml	681.xml
+682.xml	1042.xml
+686.xml	685.xml
+687.xml	688.xml
+689.xml	690.xml
+694.xml	693.xml
+696.xml	695.xml
+697.xml	1043.xml
+700.xml	701.xml
+704.xml	705.xml
+707.xml	706.xml
+70.xml	71.xml
+711.xml	710.xml
+713.xml	712.xml
+716.xml	1044.xml
+717.xml	718.xml
+720.xml	719.xml
+722.xml	721.xml
+724.xml	723.xml
+726.xml	725.xml
+728.xml	727.xml
+72.xml	73.xml
+730.xml	729.xml
+731.xml	732.xml
+734.xml	733.xml
+737.xml	736.xml
+739.xml	738.xml
+748.xml	749.xml
+74.xml	75.xml
+750.xml	751.xml
+752.xml	753.xml
+756.xml	757.xml
+758.xml	759.xml
+760.xml	761.xml
+763.xml	762.xml
+764.xml	765.xml
+768.xml	769.xml
+772.xml	773.xml
+774.xml	1046.xml
+775.xml	477.xml
+776.xml	1047.xml
+777.xml	1048.xml
+77.xml	76.xml
+782.xml	1049.xml
+792.xml	1056.xml
+794.xml	793.xml
+796.xml	795.xml
+798.xml	797.xml
+79.xml	78.xml
+7.xml	6.xml
+800.xml	799.xml
+802.xml	801.xml
+804.xml	803.xml
+808.xml	807.xml
+80.xml	81.xml
+812.xml	813.xml
+814.xml	815.xml
+816.xml	817.xml
+818.xml	1060.xml
+819.xml	1061.xml
+820.xml	1062.xml
+822.xml	821.xml
+824.xml	823.xml
+825.xml	826.xml
+828.xml	827.xml
+829.xml	830.xml
+82.xml	83.xml
+832.xml	831.xml
+834.xml	833.xml
+835.xml	1063.xml
+836.xml	1064.xml
+837.xml	1065.xml
+838.xml	1066.xml
+840.xml	839.xml
+842.xml	841.xml
+843.xml	844.xml
+846.xml	845.xml
+847.xml	1067.xml
+848.xml	1068.xml
+849.xml	1069.xml
+850.xml	851.xml
+852.xml	853.xml
+854.xml	1070.xml
+856.xml	855.xml
+857.xml	1071.xml
+858.xml	1072.xml
+861.xml	860.xml
+867.xml	866.xml
+869.xml	868.xml
+86.xml	87.xml
+871.xml	870.xml
+872.xml	1073.xml
+873.xml	874.xml
+875.xml	876.xml
+880.xml	881.xml
+882.xml	883.xml
+884.xml	885.xml
+886.xml	887.xml
+888.xml	889.xml
+891.xml	892.xml
+893.xml	1074.xml
+894.xml	1075.xml
+895.xml	1076.xml
+896.xml	1077.xml
+897.xml	1078.xml
+898.xml	1079.xml
+899.xml	1080.xml
+904.xml	903.xml
+906.xml	905.xml
+908.xml	907.xml
+909.xml	1110.xml
+910.xml	1129.xml
+911.xml	1138.xml
+912.xml	913.xml
+914.xml	915.xml
+916.xml	917.xml
+919.xml	918.xml
+91.xml	90.xml
+920.xml	1148.xml
+921.xml	1149.xml
+923.xml	1150.xml
+924.xml	1151.xml
+925.xml	926.xml
+927.xml	928.xml
+929.xml	1165.xml
+930.xml	1184.xml
+938.xml	939.xml
+941.xml	942.xml
+945.xml	944.xml
+946.xml	947.xml
+949.xml	948.xml
+94.xml	93.xml
+951.xml	950.xml
+953.xml	952.xml
+957.xml	956.xml
+959.xml	958.xml
+961.xml	960.xml
+965.xml	964.xml
+966.xml	564.xml
+967.xml	566.xml
+968.xml	567.xml
+969.xml	568.xml
+96.xml	95.xml
+970.xml	569.xml
+980.xml	579.xml
+981.xml	580.xml
+982.xml	581.xml
+983.xml	582.xml
+984.xml	583.xml
+985.xml	584.xml
+986.xml	585.xml
+987.xml	586.xml
+988.xml	587.xml
+989.xml	588.xml
+98.xml	97.xml
+991.xml	590.xml
+992.xml	591.xml
+993.xml	592.xml
+994.xml	593.xml
+995.xml	594.xml
+996.xml	595.xml
+997.xml	618.xml
+998.xml	641.xml
+999.xml	1000.xml
+9.xml	8.xml

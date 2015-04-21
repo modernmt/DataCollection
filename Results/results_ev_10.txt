@@ -1,0 +1,104 @@
+Files Downloaded:
+-----------------------------------------------------
+156.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/FarmVisitsGER/FVintroGER.php
+887.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/SummerOptionsGER/SOefGER.php
+747.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://hettahuskies.com/Translations/german/actGER/SummerOptionsGER/SOintroGER.php
+771.xml	Hetta Huskies | Location & Maps | Enontekio, Lapland, Finland	http://hettahuskies.com/Translations/german/locGER/Location&mapsGER/LocenontGER.php
+891.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/SummerOptionsGER/SOtrGER.php
+957.xml	Hetta Huskies |Sled Dog Farm Layout	http://hettahuskies.com/Translations/finnish/fdfi/Ethicsfi/pridefi.php
+431.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/MultiDayGER/MD2GER.php
+1461.xml	Hetta Huskies Summer Options - Life of a Husky Guide	http://www.hettahuskies.com/Translations/finnish/actfi/SummerOptionsfi/SOdagfi.php
+1023.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://hettahuskies.com/Translations/german/actGER/SummerOptionsGER/SOdagGER.php
+143.xml	Hetta Huskies | Enontekio, Lapland, Finland Attractions | Intro	http://www.hettahuskies.com/Translations/finnish/locfi/Areaattractionsfi/aaintrofi.php
+417.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/FarmVisitsGER/FVpaGER.php
+618.xml	Hetta Huskies Farm Visits & Walks - Frequently Asked Questions	http://hettahuskies.com/Translations/finnish/actfi/FarmVisitsfi/FVhhefi.php
+702.xml	Location & Maps	http://hettahuskies.com/Translations/french/locfr/Location&mapsfr/Locintrofr.php
+732.xml	Hetta Huskies Husky Safaris, Finland - 2-Day Dog Mushing Journey	http://hettahuskies.com/Translations/german/actGER/MultiDayGER/MD1andhalfGER.php
+1215.xml	Hetta Huskies - Multiday Safari Introduction	http://www.hettahuskies.com/Translations/french/actfr/SummerOptionsFR/SOtrFR.php
+155.xml	Activities in Hetta Huskies - Dog Sledding Finland | Mushing Finland | Husky Safari Lapland, Scandinavia	http://www.hettahuskies.com/Translations/german/actGER.php
+328.xml	Hetta Huskies Dog Sledding in Finland - Our Farm & Dogs	http://hettahuskies.com/media/videos/videos.php
+1323.xml	Hetta Huskies Dog Sledding in Finland - Contact	http://hettahuskies.com/Translations/finnish/actfi/AutumnTrainingfi/AT1dfi.php
+435.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/MultiDayGER/MD8GER.php
+172.xml	Hetta Huskies Dog Sledding in Finland - Contact	http://www.hettahuskies.com/Translations/russian/aboutRUS.php
+1258.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/AutumnTrainingGER/AT3dGER.php
+197.xml	Hetta Huskies | About Huskies and Sled Dogs	http://www.hettahuskies.com/farm&dogs/AboutHuskies/intro.php
+170.xml	Hetta Huskies | To and From Enontekio, Lapland, Finland	http://www.hettahuskies.com/Translations/german/locGER/Travel2&FGER/traveltofromGER.php
+483.xml	Hetta Huskies - Autumn Training	http://www.hettahuskies.com/Translations/russian/actRUS/AutumnTrainingRUS/ATintroRUS.php
+5.xml	Hetta Huskies Dog Sledding in Finland - Farm Visits	http://hettahuskies.com/activities/FarmVisits/FVintro.php
+497.xml	Hetta Huskies - Formation Automne	http://www.hettahuskies.com/Translations/russian/actRUS/MultiDayRUS/MD8RUS.php
+473.xml	Hetta Huskies | To and From Enontekio, Lapland, Finland | From Sweden	http://www.hettahuskies.com/Translations/german/locGER/Travel2&FGER/t2fswedenGER.php
+821.xml	Hetta Huskies | To and From Enontekio, Lapland, Finland | From Sweden	http://hettahuskies.com/Translations/russian/locRUS/Travel2&FRUS/t2fswedenRUS.php
+888.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/SummerOptionsGER/SOfvGER.php
+638.xml	Hetta Huskies Husky Safaris, Finland - 5-Day Dog Mushing Journey	http://hettahuskies.com/Translations/finnish/actfi/MultiDayfi/MDavailfi.php
+243.xml	Hetta Huskies Dog Mushing, Finland - 1-day Husky Safaris Overview	http://hettahuskies.com/Translations/finnish/actfi/SingleDayfi/SDintrofi.php
+720.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://hettahuskies.com/Translations/german/actGER/FarmVisitsGER/FVpeGER.php
+633.xml	Hetta Huskies Husky Safaris, Finland - 2-Day Dog Mushing Journey	http://hettahuskies.com/Translations/finnish/actfi/MultiDayfi/MD2fi.php
+1169.xml	Hetta Huskies | Summer Outdoor Activities	http://www.hettahuskies.com/Translations/finnish/locfi/Areaattractionsfi/aaoutdoorsumfi.php
+439.xml	Hetta Huskies Husky Safaris, Finland - Dog Mushing Frequently Asked Questions	http://www.hettahuskies.com/Translations/german/actGER/MultiDayGER/MDfdbkGER.php
+641.xml	Hetta Huskies Husky Safaris, Finland - Dog Mushing Frequently Asked Questions	http://hettahuskies.com/Translations/finnish/actfi/MultiDayfi/MDfdbkfi.php
+436.xml	Hetta Huskies Husky Safaris, Finland - 5-Day Dog Mushing Journey	http://www.hettahuskies.com/Translations/german/actGER/MultiDayGER/MDavailGER.php
+494.xml	Hetta Huskies - Formation Automne	http://www.hettahuskies.com/Translations/russian/actRUS/MultiDayRUS/MD3RUS.php
+165.xml	Hetta Huskies Dog Sledding in Finland - Contact	http://www.hettahuskies.com/Translations/german/kithireGER.php
+717.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://hettahuskies.com/Translations/german/actGER/FarmVisitsGER/FVhheGER.php
+472.xml	Hetta Huskies | To and From Enontekio, Lapland, Finland - From Norway	http://www.hettahuskies.com/Translations/german/locGER/Travel2&FGER/t2fnorwayGER.php
+159.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/SingleDayGER/SDintroGER.php
+414.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/FarmVisitsGER/FVfvGER.php
+742.xml	Hetta Huskies Husky Safaris, Finland - 5-Day Dog Mushing Journey	http://hettahuskies.com/Translations/german/actGER/MultiDayGER/MDhtbGER.php
+1194.xml	Hetta Huskies | Wilderness Areas and Huts	http://www.hettahuskies.com/Translations/finnish/mediafi/photosfi/huskiesfi.php
+620.xml	Hetta Huskies Farm Visits and Walks - Puppy Agility	http://hettahuskies.com/Translations/finnish/actfi/FarmVisitsfi/FVpafi.php
+722.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://hettahuskies.com/Translations/german/actGER/FarmVisitsGER/FVtrGER.php
+1338.xml	Hetta Huskies Summer Options - Husky Puppy Agility Trail	http://hettahuskies.com/Translations/finnish/actfi/SummerOptionsfi/SOpafi.php
+169.xml	Location & Maps	http://www.hettahuskies.com/Translations/german/locGER/Location&mapsGER/LocintroGER.php
+442.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/SingleDayGER/SDdrivGER.php
+471.xml	Hetta Huskies | To and From Enontekio, Lapland, Finland | From Finland	http://www.hettahuskies.com/Translations/german/locGER/Travel2&FGER/t2ffinlandGER.php
+1090.xml	Hetta Huskies, Lapland, Finland | Our Sled Dogs | Adopt a Husky	http://hettahuskies.com/Translations/russian/fdRUS/AdoptRUS/toadoptRUS.php
+495.xml	Hetta Huskies - Formation Automne	http://www.hettahuskies.com/Translations/russian/actRUS/MultiDayRUS/MD5ffRUS.php
+1305.xml	Hetta Huskies, Lapland, Finland | Our Sled Dogs | Adopt a Husky	http://www.hettahuskies.com/Translations/russian/fdRUS/AdoptRUS/gensponRUS.php
+153.xml	Hetta Huskies Dog Sledding in Finland - Contact	http://www.hettahuskies.com/Translations/german/aboutGER.php
+1141.xml	Hetta Huskies Husky Safaris, Finland - 5-Day Dog Mushing Journey	http://www.hettahuskies.com/Translations/finnish/actfi/MultiDayfi/MDhtbfi.php
+500.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/russian/actRUS/SingleDayRUS/SDdrivRUS.php
+166.xml	Hetta Huskies Dog Sledding in Finland - Contact	http://www.hettahuskies.com/Translations/german/locGER.php
+432.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/MultiDayGER/MD3GER.php
+265.xml	Hetta Huskies Dog Sledding in Finland - Our Farm & Dogs	http://hettahuskies.com/Translations/german/fdGER.php
+502.xml	Hetta Huskies Summer Options	http://www.hettahuskies.com/Translations/russian/actRUS/SummerOptionsRUS/SOintroRUS.php
+735.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://hettahuskies.com/Translations/german/actGER/MultiDayGER/MD5ffGER.php
+627.xml	Hetta Huskies Multi-Activity - Summer Adventures	http://hettahuskies.com/Translations/finnish/actfi/MultiActivityfi/MASAWfi.php
+419.xml	Hetta Huskies Dog Mushing, Finland - Core Husky Safaris	http://www.hettahuskies.com/Translations/german/actGER/FarmVisitsGER/FVsdGER.php
+278.xml	Hetta Huskies - Formation Automne	http://hettahuskies.com/Translations/russian/actRUS/MultiDayRUS/MDintroRUS.php
+1633.xml	Patricia McCormack's writings and musings	http://www.hettahuskies.com/pat/About/Nainen/earlyproposal.php
+
+Files Mapped:
+-----------------------------------------------------
+166.xml	197.xml
+1194.xml	473.xml
+888.xml	483.xml
+165.xml	172.xml
+432.xml	494.xml
+771.xml	1169.xml
+957.xml	471.xml
+156.xml	278.xml
+414.xml	1090.xml
+717.xml	618.xml
+742.xml	1141.xml
+722.xml	1258.xml
+153.xml	5.xml
+417.xml	620.xml
+170.xml	1305.xml
+328.xml	265.xml
+821.xml	472.xml
+627.xml	720.xml
+735.xml	495.xml
+439.xml	641.xml
+435.xml	497.xml
+159.xml	243.xml
+431.xml	633.xml
+747.xml	502.xml
+1461.xml	1023.xml
+732.xml	143.xml
+169.xml	702.xml
+155.xml	1633.xml
+891.xml	1215.xml
+442.xml	500.xml
+419.xml	1338.xml
+436.xml	638.xml
+1323.xml	887.xml

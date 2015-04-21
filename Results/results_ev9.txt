@@ -1,0 +1,65 @@
+Files Downloaded:
+-----------------------------------------------------
+65.xml	Pont Europe -	http://www.ponteurope.com/be-fr/news/view/21
+41.xml	Pont Europe -	http://www.ponteurope.com/us-en/innovation/view/2
+105.xml	Pont Europe -	http://www.ponteurope.com/fr-fr/innovation/view/3
+95.xml	Pont Europe -	http://www.ponteurope.com/gb-en/news/view/8
+89.xml	Pont Europe -	http://www.ponteurope.com/gb-en/news/view/21
+52.xml	Pont Europe -	http://www.ponteurope.com/us-en/news/view/4
+85.xml	Pont Europe -	http://www.ponteurope.com/gb-en/news/view/1
+63.xml	Pont Europe -	http://www.ponteurope.com/be-fr/innovation/view/2
+79.xml	Pont Europe -	http://www.ponteurope.com/fr-fr/news/view/17
+38.xml	Pont Europe -	http://www.ponteurope.com/gb-en/page/about
+102.xml	Pont Europe -	http://www.ponteurope.com/be-fr/innovation/view/7
+109.xml	Pont Europe -	http://www.ponteurope.com/gb-en/innovation/view/3
+47.xml	Pont Europe -	http://www.ponteurope.com/us-en/news/view/11
+10.xml	Pont Europe -	http://www.ponteurope.com/us-en/page/disclaimer
+33.xml	Pont Europe -	http://www.ponteurope.com/fr-fr/product/market/4
+16.xml	Pont Europe -	http://www.ponteurope.com/us-en/product/market/5
+4.xml	Pont Europe -	http://www.ponteurope.com/gb-en
+28.xml	Pont Europe -	http://www.ponteurope.com/fr-fr/page/disclaimer
+97.xml	Pont Europe -	http://www.ponteurope.com/gb-en/product/market/1
+77.xml	Pont Europe -	http://www.ponteurope.com/fr-fr/news/view/11
+49.xml	Pont Europe -	http://www.ponteurope.com/us-en/news/view/17
+7.xml	Pont Europe -	http://www.ponteurope.com/us-en/innovation
+32.xml	Pont Europe -	http://www.ponteurope.com/fr-fr/product/market/3
+21.xml	Pont Europe -	http://www.ponteurope.com/be-fr/page/about
+84.xml	Pont Europe -	http://www.ponteurope.com/fr-fr/news/view/9
+31.xml	Pont Europe -	http://www.ponteurope.com/fr-fr/product/market/2
+98.xml	Pont Europe -	http://www.ponteurope.com/gb-en/product/market/2
+66.xml	Pont Europe -	http://www.ponteurope.com/be-fr/news/view/4
+83.xml	Pont Europe -	http://www.ponteurope.com/fr-fr/news/view/8
+15.xml	Pont Europe -	http://www.ponteurope.com/us-en/product/market/4
+14.xml	Pont Europe -	http://www.ponteurope.com/us-en/product/market/3
+90.xml	Pont Europe -	http://www.ponteurope.com/gb-en/news/view/3
+100.xml	Pont Europe -	http://www.ponteurope.com/gb-en/product/market/6
+110.xml	Pont Europe -	http://www.ponteurope.com/gb-en/innovation/view/7
+82.xml	Pont Europe -	http://www.ponteurope.com/fr-fr/news/view/7
+69.xml	Pont Europe -	http://www.ponteurope.com/be-fr/product/market/1
+18.xml	Pont Europe -	http://www.ponteurope.com/be-fr/innovation
+35.xml	Pont Europe -	http://www.ponteurope.com/fr-fr/product/market/6
+2.xml	Pont Europe -	http://www.ponteurope.com/be-fr
+34.xml	Pont Europe -	http://www.ponteurope.com/fr-fr/product/market/5
+
+Files Mapped:
+-----------------------------------------------------
+85.xml	65.xml
+33.xml	15.xml
+66.xml	52.xml
+84.xml	89.xml
+77.xml	47.xml
+2.xml	4.xml
+35.xml	100.xml
+83.xml	90.xml
+32.xml	14.xml
+28.xml	10.xml
+69.xml	97.xml
+110.xml	102.xml
+82.xml	95.xml
+79.xml	49.xml
+31.xml	98.xml
+41.xml	63.xml
+7.xml	18.xml
+109.xml	105.xml
+38.xml	21.xml
+34.xml	16.xml
