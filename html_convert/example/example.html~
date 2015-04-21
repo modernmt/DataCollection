@@ -1,0 +1,15 @@
+df6fa1abb58549287111ba8d776733e9 http://example.com/site.html
+<html><body>
+This is some English text and it should hopefully be classified at such.
+<ul>
+  <li>Single.</li>
+  <li>Word.</li>
+  <li>Lines.</li>
+</ul>
+
+Have some links:
+<a href="http://google.com">Google</a>
+<a href="http://statmt.org/ngrams/BuckEtAl_LREC2014_CommonCrawlLM.pdf">LREC paper</a>.
+
+Am Ende finden wir dann noch etwas deutschen Text, wobei nicht klar ist ob die Menge ausreicht um ihn vom englishen zu unterscheiden.
+</body></html>
