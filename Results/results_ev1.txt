@@ -1,0 +1,47 @@
+Files Downloaded:
+-----------------------------------------------------
+86.xml	NKE: Tapered roller bearings	http://www.nke.at/en/bearings-applications/standard-bearings/tapered-roller-bearings/?key=2-2
+131.xml	NKE: Cuscinetti per veicoli su rotaia	http://www.nke.at/it/cuscinetti-applicazioni/applicazione/cuscinetti-per-veicoli-su-rotaia/
+41.xml	NKE: Railways	http://www.nke.at/en/bearings-applications/applications/railways/?key=3-3
+145.xml	NKE: Gestione della qualità, dell’ambiente e della salute: NKE ha ottenuto il rinnovo della certificazione ISO	http://www.nke.at/it/novita/novita-single/article/qualitaets-umwelt-und-gesundheitsmanagement-nke-austria-ist-nach-iso-rezertifiziert/
+62.xml	NKE: Cuscinetti a rulli conici	http://www.nke.at/it/cuscinetti-applicazioni/cuscinetti-standard/cuscinetti-a-rulli-conici/
+140.xml	NKE: Ingegneria d’applicazione	http://www.nke.at/it/ingegneria/ingegneria-dapplicazione/?amp%3bL=0&amp%3btype=98
+146.xml	NKE: Cuscinetti volventi di NKE per riduttori industriali	http://www.nke.at/it/novita/novita-single/article/waelzlager-von-nke-fuer-industriegetriebe/
+89.xml	NKE: Application engineering	http://www.nke.at/en/engineering/application-engineering/?amp%3bL=0&amp%3btype=98
+1.xml	NKE: Home	http://www.nke.at/en/
+87.xml	NKE: Engineering	http://www.nke.at/en/engineering/?amp%3bL=1
+19.xml	NKE: Self aligning ball bearings	http://www.nke.at/en/bearings-applications/standard-bearings/self-aligning-ball-bearings/
+94.xml	NKE: New special coating from NKE: Cost effective protection against corrosion for bearings and components	http://www.nke.at/en/news-events/news-single/article/neue-sonderbeschichtung-von-nke-kostenguenstiger-korrosionsschutz-fuer-lager-und-komponenten/
+16.xml	NKE: Cylindrical roller bearings	http://www.nke.at/en/bearings-applications/standard-bearings/cylindrical-roller-bearings/
+53.xml	NKE: Cuscinetti per impianti di produzione di energia eolica	http://www.nke.at/it/cuscinetti-applicazioni/applicazione/cuscinetti-per-impianti-di-produzione-di-energia-eolica/
+138.xml	NKE: Ingegneria	http://www.nke.at/it/ingegneria/?amp%3bL=1
+7.xml	NKE: Wind energy	http://www.nke.at/en/bearings-applications/applications/wind-energy/
+61.xml	NKE: Cuscinetti a rulli cilindrici	http://www.nke.at/it/cuscinetti-applicazioni/cuscinetti-standard/cuscinetti-a-rulli-cilindrici/
+25.xml	NKE: Bearing College	http://www.nke.at/en/engineering/bearing-college/
+152.xml	NKE: Sistema modulare per cuscinetti per riduttori epicicloidali impiegati negli impianti per la produzione di energia eolica	http://www.nke.at/it/novita/novita-single/article/modularsystem-von-nke-fuer-planetenlager-in-getrieben-fuer-windenergieanlagen/
+66.xml	NKE: Cuscinetti orientabili a sfere	http://www.nke.at/it/cuscinetti-applicazioni/cuscinetti-standard/cuscinetti-orientabili-a-sfere/
+15.xml	NKE: Bearing units	http://www.nke.at/en/bearings-applications/standard-bearings/bearing-units/
+122.xml	NKE: Home	http://www.nke.at/it/
+17.xml	NKE: Deep groove ball bearings	http://www.nke.at/en/bearings-applications/standard-bearings/deep-groove-ball-bearings/
+69.xml	NKE: Unità di supporto con cuscinetto	http://www.nke.at/it/cuscinetti-applicazioni/cuscinetti-standard/unita-di-supporto-con-cuscinetto/
+92.xml	NKE: Electrically insulated rolling bearings from NKE – Protection against bearing damage by current discharge	http://www.nke.at/en/news-events/news-single/article/elektrisch-isolierte-waelzlager-von-nke-schutz-gegen-lagerschaden-durch-stromdurchgang/
+50.xml	NKE: Cuscinetti / Applicazioni	http://www.nke.at/it/cuscinetti-applicazioni/
+67.xml	NKE: Cuscinetti radiali a sfere	http://www.nke.at/it/cuscinetti-applicazioni/cuscinetti-standard/cuscinetti-radiali-a-sfere/
+93.xml	NKE: Modular bearing system for planetary Wind turbine gearboxes	http://www.nke.at/en/news-events/news-single/article/modularsystem-von-nke-fuer-planetenlager-in-getrieben-fuer-windenergieanlagen/
+
+Files Mapped:
+-----------------------------------------------------
+146.xml	94.xml
+122.xml	1.xml
+66.xml	19.xml
+69.xml	15.xml
+25.xml	50.xml
+152.xml	93.xml
+140.xml	89.xml
+16.xml	61.xml
+67.xml	17.xml
+41.xml	131.xml
+87.xml	138.xml
+86.xml	62.xml
+7.xml	53.xml
+145.xml	92.xml

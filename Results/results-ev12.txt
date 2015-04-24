@@ -1,0 +1,17 @@
+Files Downloaded:
+-----------------------------------------------------
+65.xml	Philosophy: Simplicity pays off	http://tekstwerk.com/philosophy
+60.xml	Wir über uns: tekstwerk•com kennenlernen	http://tekstwerk.com/de/wir-ueber-uns
+52.xml	Nieuws	http://tekstwerk.com/de/news
+63.xml	Nieuws	http://tekstwerk.com/news
+19.xml	Introduction: Learn more about tekstwerk•com	http://tekstwerk.com/en/introduction
+10.xml	Portfolio	http://www.tekstwerk.com/en/portfolio
+33.xml	Philosophie: Einfachheit lohnt	http://www.tekstwerk.com/de/philosophie
+55.xml	Portfolio	http://tekstwerk.com/de/portfolio
+
+Files Mapped:
+-----------------------------------------------------
+10.xml	55.xml
+52.xml	63.xml
+65.xml	33.xml
+19.xml	60.xml

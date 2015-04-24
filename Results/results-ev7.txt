@@ -1,0 +1,41 @@
+Files Downloaded:
+-----------------------------------------------------
+135.xml	Adaptation et réduction des risques	http://www.iisd.org/adaptation/default_fr.aspx
+226.xml	Traitement équitable	http://www.iisd.org/gender/default_fr.aspx
+315.xml	Éducation, apprentissage et leadership	http://www.iisd.org/leaders/default_fr.aspx
+379.xml	Ressources naturelles	http://www.iisd.org/natres/default_fr.aspx
+336.xml	Mesure et évaluation	http://www.iisd.org/measure/default_fr.aspx
+148.xml	Changements climatiques et énergie	http://www.iisd.org/climate/default_fr.aspx
+391.xml	Réseaux et partenariats	http://www.iisd.org/networks/default_fr.aspx
+1.xml	What is Sustainable Development?	http://www.iisd.org/sd/
+19.xml	Gender Equity	http://www.iisd.org/gender/
+188.xml	Économie et DD	http://www.iisd.org/economics/default_fr.aspx
+204.xml	Environment, Conflict and Peacebuilding	http://www.iisd.org/ecp/default_fr.aspx
+10.xml	Climate Change and Energy	http://www.iisd.org/climate/
+42.xml	Qu’est-ce que le développement durable?	http://www.iisd.org/sd/default_fr.aspx
+6.xml	Adaptation and Risk Reduction	http://www.iisd.org/adaptation/
+25.xml	Sustainable Markets	http://www.iisd.org/markets/
+31.xml	Networks & Partnerships	http://www.iisd.org/networks/
+20.xml	Governance for Sustainable Development	http://www.iisd.org/governance/
+15.xml	Environment, Conflict and Peacebuilding	http://www.iisd.org/ecp/
+14.xml	Economics and SD	http://www.iisd.org/economics/
+27.xml	Measurement and Assessment	http://www.iisd.org/measure/
+231.xml	Gouvernance pour le développement durable	http://www.iisd.org/governance/default_fr.aspx
+24.xml	Education, Learning and Leadership	http://www.iisd.org/leaders/
+30.xml	Natural Resources	http://www.iisd.org/natres/
+321.xml	Marchés durables	http://www.iisd.org/markets/default_fr.aspx
+
+Files Mapped:
+-----------------------------------------------------
+14.xml	188.xml
+30.xml	379.xml
+24.xml	315.xml
+336.xml	27.xml
+19.xml	226.xml
+6.xml	135.xml
+25.xml	321.xml
+20.xml	231.xml
+31.xml	391.xml
+10.xml	148.xml
+42.xml	1.xml
+204.xml	15.xml
