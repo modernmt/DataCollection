@@ -25,7 +25,7 @@ class LanguageStripper(object):
             self.code_to_language[code] = "BULGARIAN"
         for code in ["czech", "cze", "cz", "cs"]:
             self.code_to_language[code] = "CZECH"
-        for code in ["deutch", "german", "ger", "deu", "de"]:
+        for code in ["deutsch", "german", "ger", "deu", "de"]:
             self.code_to_language[code] = "GERMAN"
         for code in ["english", "eng", "en"]:
             self.code_to_language[code] = "ENGLISH"
@@ -87,14 +87,6 @@ def process_buffer(buffer, language_stripper):
 
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--valid', type=argparse.FileType(),
-                        help='file containing valid features, one per line')
-    parser.add_argument('--prefix', nargs='+',
-                        help='list of valid prefixes')
-    args = parser.parse_args(sys.argv[1:])
-
     buffer = []
     language_stripper = LanguageStripper()
     for line in sys.stdin:
