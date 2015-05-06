@@ -32,15 +32,6 @@ def parse_line(line):
     return data
 
 
-def read_stats(filename, stats):
-    for line in gzip.open(filename):
-        line = line.split()[1:]
-        domain = line[0]
-
-        for i in range(len(line) / 2):
-            stats[domain][line[2 * i + 1]] = int(line[2 * i + 2])
-
-
 def entropy(lang_dist):
     total = float(sum(lang_dist.values()))
     h = 0
@@ -52,7 +43,6 @@ def entropy(lang_dist):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('-read', help="stats for non-english languages")
     parser.add_argument('-minpercent', type=int, default=10,
                         help="ignore percentage smaller than this.")
     parser.add_argument('-minbytes', type=int, default=100,
@@ -61,12 +51,12 @@ if __name__ == "__main__":
                         help="Ignore all other languages but these.")
     args = parser.parse_args(sys.argv[1:])
 
+
     stats = defaultdict(lambda: defaultdict(int))
-    if args.read:
-        read_stats(args.read, stats)
 
     header = None
     full_domain = None
+    valid_languages = [l.lower() for l in args.lang]
 
     for linenr, line in enumerate(sys.stdin):
         if line.startswith(magic_number):
@@ -76,21 +66,18 @@ if __name__ == "__main__":
 
         lang, percent, confidence = line.split()
 
-        if not args.read and lang == "ENGLISH":
-            continue
-        elif args.read:
-            if not lang == "ENGLISH":
-                continue
-            if full_domain not in stats:
-                continue
-
-        percent = int(percent)
+        percent = float(percent)
         if percent < args.minpercent:
+            continue
+        
+        #print lang, valid_languages
+        if valid_languages and lang.lower() not in valid_languages:
             continue
 
         bytes_in_lang = header["bytes"] * percent / 100
         if bytes_in_lang >= args.minbytes:
             stats[full_domain][lang] += bytes_in_lang
+            # print full_domain, lang, bytes_in_lang
 
 # del lang # fix pyflakes warning
 
