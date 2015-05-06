@@ -17,4 +17,4 @@ if __name__ == "__main__":
         k, v = line.rstrip().split("\t", 1)
         db.Put(k, v)
 
-    sys.stderr.write("%s" %db.GetStats())
+    sys.stderr.write("%s" % db.GetStats())
