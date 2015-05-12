@@ -57,6 +57,27 @@ def process_cdx(line, args):
                  "length": length, "mime": mime_type.encode('utf-8')}
     return key, valuedict
 
+
+def read_cdx(args):
+    for line in sys.stdin:
+        try:
+            for entry in re.findall(r"\S+ \S+ \{[^}]+\"\}", line):
+                yield process_cdx(entry, args)
+        except ValueError:
+            sys.stderr.write("Malformed line: %s\n" % line)
+            continue
+        except:
+            sys.stderr.write("Error processing: %s\n" % line)
+            continue
+
+
+def read_json(args):
+    for line in sys.stdin:
+        try:
+            yield process_json(line, args)
+        except KeyError:
+            pass
+
 if __name__ == "__main__":
     errors = 0
     import argparse
@@ -82,30 +103,12 @@ if __name__ == "__main__":
         batch = leveldb.WriteBatch()
 
     count = 0
+    kv_generator = read_cdx(args) if args.cdx else read_json(args)
 
-    for line in sys.stdin:
-        count += 1
-        key, valuedict = None, None
-        if args.cdx:
-            try:
-                for entry in re.findall(r"\S+ \S+ \{[^}]+}", line):
-                    key, valuedict = process_cdx(entry, args)
-            except ValueError:
-                sys.stderr.write("Malformed line: %s\n" % line)
-                continue
-            except:
-                sys.stderr.write("Error processing: %s\n" % line)
-                continue
-        else:
-            try:
-                key, valuedict = process_json(line, args)
-            except KeyError:
-                errors += 1
-                continue
-
+    for key, valuedict in kv_generator:
         if key is None or valuedict is None:
             continue
-
+        count += 1
         if db is not None:
             if args.batchsize > 1:
                 if batch_size >= args.batchsize:
@@ -121,8 +124,8 @@ if __name__ == "__main__":
                     sys.stderr.write('>')
                 db.Put("0 %s" % key, json.dumps(valuedict))
         else:
-            if count % 10000 == 0:
-                sys.stderr.write(':')
+            # if count % 10000 == 0:
+            #     sys.stderr.write(':')
             sys.stdout.write("0 %s\t%s\n" %
                              (key, json.dumps(valuedict)))
 

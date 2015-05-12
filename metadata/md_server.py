@@ -32,10 +32,11 @@ def json_error(status, message, traceback, version):
 class DBInterface(object):
 
     def __init__(self, db_directory, pretty=False, verbose=0,
-                 max_results=10000):
+                 max_results=10000, keyprefix=""):
         self.db = leveldb.LevelDB(db_directory)
         self.pretty = pretty
         self.verbose = verbose
+        self.keyprefix = keyprefix
         self.max_results = 10000
 
     def _dump_json(self, data, pretty=False):
@@ -67,8 +68,12 @@ class DBInterface(object):
         uri2crawl = defaultdict(list)
         n_results = 0
         n_skipped = 0
-        for key, value in self.db.RangeIter("%s " % query_domain):
+        print "query:", "%s%s " % (self.keyprefix, query_domain)
+        for key, value in self.db.RangeIter("%s%s " % (self.keyprefix, query_domain)):
             n_skipped += 1
+            if not key.startswith(self.keyprefix):
+                break
+            key = key[len(self.keyprefix):]
             tld, uri, crawl = key.split(" ", 2)
             if query_domain != tld:  # went too far
                 break
@@ -116,6 +121,7 @@ if __name__ == "__main__":
     parser.add_argument('-pretty',
                         action='store_true',
                         help='pretty print json')
+    parser.add_argument('-keyprefix', help='prefix to db keys', default='')
     parser.add_argument('-logprefix',
                         help='logfile prefix, default: write to stderr')
     parser.add_argument('-verbose',
@@ -141,4 +147,5 @@ if __name__ == "__main__":
     cherrypy.quickstart(DBInterface(args.db,
                                     pretty=args.pretty,
                                     verbose=args.verbose,
-                                    max_results=args.maxresults))
+                                    max_results=args.maxresults,
+                                    keyprefix=args.keyprefix))
