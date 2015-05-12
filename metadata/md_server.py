@@ -23,7 +23,7 @@ def split_uri(uri, encoding='idna'):
     path = "%s" % (parsed_uri.path)
     if parsed_uri.query:
         path = "%s?%s" % (path, parsed_uri.query)
-    return extracted.domain.encode(encoding), extracted.suffix, parsed_uri.path
+    return extracted.domain.encode(encoding), extracted.suffix, path
 
 
 def json_error(status, message, traceback, version):
