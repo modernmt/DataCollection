@@ -20,6 +20,9 @@ def split_uri(uri, encoding='idna'):
     extracted = tldextract.extract(netloc)
     # tld = .domain.encode(encoding)
     # suffix = tldextract.extract(netloc).suffix
+    path = "%s" % (parsed_uri.path)
+    if parsed_uri.query:
+        path = "%s?%s" % (path, parsed_uri.query)
     return extracted.domain.encode(encoding), extracted.suffix, parsed_uri.path
 
 
