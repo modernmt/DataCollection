@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 import sys
 import json
+import tldextract
+from urlparse import urlparse
+import re
 
 
 def make_full_path(crawl, folder, filename):
@@ -11,12 +14,59 @@ def make_full_path(crawl, folder, filename):
            "/segments/%d" % (int(folder)) +\
            "/warc/%s" % filename.replace("warc.wat.gz", "warc.gz")
 
+
+def get_tld(uri):
+    tld = tldextract.extract(urlparse(uri).netloc)
+    return tld
+
+
+def process_json(line, args):
+    tld, data = line.split(" ", 1)
+    data = json.loads(data)
+    tld = tld.decode("utf-8").encode("idna")
+
+    key, valuedict = None, None
+    container_data = data["container"]
+    offset = container_data["Offset"]
+    length = container_data["Gzip-Metadata"]["Deflate-Length"]
+    filename = args.prefix + container_data["Filename"]
+    filename = make_full_path(args.crawl, args.folder, filename)
+    uri = data["uri"]
+
+    key = " ".join((tld, uri, args.crawl))
+    valuedict = {"filename": filename, "offset:": offset,
+                 "length": length}
+    return key, valuedict
+
+
+def process_cdx(line, args):
+    if not line.strip():
+        return None, None
+    loc, timestamp, data = line.split(' ', 2)
+    data = json.loads(data)
+    uri = data["url"]
+    tld = get_tld(uri).domain
+    mime_type = data.get("mime", "UNKNOWN")
+    offset = data["offset"]
+    length = data["length"]
+    filename = "https://aws-publicdatasets.s3.amazonaws.com/%s" % data[
+        "filename"]
+
+    key = " ".join((tld.encode('idna'), uri.encode('utf-8'), args.crawl))
+    valuedict = {"filename": filename, "offset:": offset,
+                 "length": length, "mime": mime_type.encode('utf-8')}
+    return key, valuedict
+
 if __name__ == "__main__":
     errors = 0
     import argparse
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--db', help='leveldb root directory')
+    parser.add_argument('--cdx', action='store_true',
+                        help='input data is in CDX format')
+    parser.add_argument('--batchsize', help='size of levelDB write batches',
+                        default=100000, type=int)
     parser.add_argument('--prefix', help='prefix for filename',
                         default='')
     parser.add_argument('crawl', help='crawl id, e.g. 2013_11')
@@ -28,27 +78,53 @@ if __name__ == "__main__":
         import leveldb
         db = leveldb.LevelDB(args.db)
 
+        batch_size = 0
+        batch = leveldb.WriteBatch()
+
+    count = 0
+
     for line in sys.stdin:
-        tld, data = line.split(" ", 1)
-        data = json.loads(data)
-        tld = tld.decode("utf-8").encode("idna")
-
+        count += 1
         key, valuedict = None, None
-        try:
-            container_data = data["container"]
-            offset = container_data["Offset"]
-            length = container_data["Gzip-Metadata"]["Deflate-Length"]
-            filename = args.prefix + container_data["Filename"]
-            filename = make_full_path(args.crawl, args.folder, filename)
-            uri = data["uri"]
+        if args.cdx:
+            try:
+                for entry in re.findall(r"\S+ \S+ \{[^}]+}", line):
+                    key, valuedict = process_cdx(entry, args)
+            except ValueError:
+                sys.stderr.write("Malformed line: %s\n" % line)
+                continue
+            except:
+                sys.stderr.write("Error processing: %s\n" % line)
+                continue
+        else:
+            try:
+                key, valuedict = process_json(line, args)
+            except KeyError:
+                errors += 1
+                continue
 
-            key = " ".join((tld, uri, args.crawl))
-            valuedict = {"filename": filename, "offset:": offset,
-                         "length": length}
-        except KeyError:
-            errors += 1
+        if key is None or valuedict is None:
+            continue
 
         if db is not None:
-            db.Put("0 %s" % key, json.dumps(valuedict))
+            if args.batchsize > 1:
+                if batch_size >= args.batchsize:
+                    db.Write(batch)
+                    sys.stderr.write('.')
+                    batch = leveldb.WriteBatch()
+                    batch_size = 0
+                else:
+                    batch.Put("0 %s" % key, json.dumps(valuedict))
+                    batch_size += 1
+            else:  # no batch writes
+                if count % 10000 == 0:
+                    sys.stderr.write('>')
+                db.Put("0 %s" % key, json.dumps(valuedict))
         else:
-            sys.stdout.write("%s\t%s\n" % (key, json.dumps(valuedict)))
+            if count % 10000 == 0:
+                sys.stderr.write(':')
+            sys.stdout.write("0 %s\t%s\n" %
+                             (key, json.dumps(valuedict)))
+
+    if db is not None and batch_size > 0:
+        db.Write(batch, sync=True)
