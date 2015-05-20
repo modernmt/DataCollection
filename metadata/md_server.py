@@ -126,7 +126,6 @@ if __name__ == "__main__":
     # parser.add_argument('url', help='url to search for')
 
     args = parser.parse_args(sys.argv[1:])
-    args = parser.parse_args(sys.argv[1:])
 
     cherrypy.config.update({'server.request_queue_size': 1000,
                             'server.socket_port': args.port,
