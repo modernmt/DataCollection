@@ -66,10 +66,21 @@ static void DumpText(GumboNode* node, std::ostringstream* textbuffer) {
         node->v.element.tag == GUMBO_TAG_LI) {
       *textbuffer << std::endl;
     }
+    // Insert space before and after spans. This is in violation of the 
+    // HTML5 standard but spans are often fitted with margins to make the words
+    // look sperated when they are not. Adding spaces mimics this.
+    if (node->v.element.tag == GUMBO_TAG_SPAN) {
+      *textbuffer << " ";
+    }
     // Descend into subtree
     GumboVector* children = &node->v.element.children;
     for (unsigned int i = 0; i < children->length; ++i) {
       DumpText(static_cast<GumboNode*>(children->data[i]), textbuffer);
+    }
+
+    // Space after span, see above
+    if (node->v.element.tag == GUMBO_TAG_SPAN) {
+      *textbuffer << " ";
     }
 
     const std::string tagname = gumbo_normalized_tagname(node->v.element.tag);
