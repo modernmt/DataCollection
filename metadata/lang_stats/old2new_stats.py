@@ -9,7 +9,7 @@ from cld2helper import read_cld2_languages
 
 def get_domain(netloc):
     extract = tldextract.extract(netloc)
-    return ".".join((extract.domain.encode('idna'), extract.suffix))
+    return ".".join((extract.domain, extract.suffix)).encode('idna')
 
 
 if __name__ == "__main__":
@@ -25,7 +25,8 @@ if __name__ == "__main__":
         domain, language, num_bytes = line.split()
         assert language in code2name
         language = code2name[language]
-        domain = get_domain(domain)
+        # domain = get_domain(domain)
+
         sys.stdout.write("%s %s %d\n" % (domain, language, int(num_bytes)))
 
 
