@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     leveldb::DB* db;
     leveldb::Options options;
     options.block_cache = leveldb::NewLRUCache(1014 * 1024 * 1024);  // 1GB
-    options.write_buffer_size = 1014 * 1024 * 1024;
+    options.write_buffer_size = 1024 * 1024 * 1024; // 1 GB
     options.create_if_missing = true;
     leveldb::Status status = leveldb::DB::Open(options, argv[1], &db);
     if (!status.ok()) {
@@ -27,6 +27,7 @@ int main(int argc, char** argv) {
     } 
 
     leveldb::WriteOptions writeOptions;
+    // writeOptions.sync = true;
 
     string line;
     int nLines = 0;
