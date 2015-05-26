@@ -49,12 +49,14 @@ class DBInterface(object):
 
     @cherrypy.expose
     def crawls(self, **kwargs):
+        cherrypy.response.headers['Content-Type'] = 'application/json'
         pretty = kwargs.get("pretty", 0) > 0
         result = {"crawls": ["2013_20"]}
         return self._dump_json(result, pretty)
 
     @cherrypy.expose
     def query_domain(self, **kwargs):
+        cherrypy.response.headers['Content-Type'] = 'application/json'
         start_time = time.time()
         domain = kwargs["domain"]
         send_data = kwargs.get("full", 0) > 0
