@@ -9,9 +9,18 @@ from math import log
 def entropy(lang_dist):
     total = float(sum(lang_dist.values()))
     h = 0
+
+    if total == 0:
+        sys.stderr.write("weird values: total: %f\n" % total)
+        return h
+
     for lang, count in lang_dist.iteritems():
-        p = count / total
-        h += p * log(p)
+        p = float(count) / total
+        try:
+            h += p * log(p)
+        except ValueError:
+            sys.stderr.write("weird values: cnt: %d, total: %f\n"
+                             % (count, total))
     return h
 
 
