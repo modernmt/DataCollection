@@ -1,0 +1,59 @@
+Bitextor Fileformats
+
+
+== ett ==
+One document per line
+Values (tab-separated)
+    mime type given by 'file'
+    charset given by 'file' (is this ever used?)
+    filename relative to webdir 
+    base64 encoded HTML after running though tika and boilerpipe
+
+== lett ==
+One document per line
+Retain only source- or target- language files
+Values (tab-separated)
+    mime type given by 'file'
+    charset given by 'file' (is this ever used?)
+    filename relative to webdir 
+    base64 encoded HTML after running though tika and boilerpipe
+
+== lettr ==
+Same as lett but additional column containing serialized pages
+Serialization based on tika-cleaned, boilerpipe-cleaned page in 5th column
+Scripts ignored
+Tags wrapped in _, e.g. _body_
+Text replaced by series of '_' times log_2(num_words)
+Example:
+_html__style______style__body_______a__a__body__html_
+
+== lettr2idx ==
+Builds a (language, word) to document index
+Format: 
+language lowercased_word docs[:off1[:off2[:..]]]
+
+Example:
+de      abenteuer       684:14:3:31:2
+
+Means word 'abenteuer' from a German text appears in documents (i.e. lines in the lettr file) 684, 684+14, 684+14+3, ...
+
+== idx2ridx ==
+Generates candidate pairs
+Reads the word-to-document index and a bilingual dictionary.
+Documents represented by bag of words.
+Augments dictionary with words apprearing on both sides.
+Generates document-words index, generates list of possible traget words
+by generating all translations for all words
+
+Formula for similarity:
+
+size_of_bigger_document / size_of_smaller_document * number_of_common_words_after_translating_source / number_of_translated
+
+
+
+Example www.hettahuskies.com
+
+Webdocuments from crawl: 1048
+After language-id: 908
+     49 de
+    859 en
