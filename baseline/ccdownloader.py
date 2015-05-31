@@ -52,7 +52,8 @@ class CCDownloader(object):
         raw_page = self.download(full_filename, offset, length)
         sys.stderr.write("%s : %d bytes\n" % (line[1], len(raw_page)))
         if raw_page:
-            outfile.write("%s\t%s\n" % (CCDownloader.magic_number, "\t".join(line)))
+            outfile.write("%s\t%s\n" %
+                          (CCDownloader.magic_number, "\t".join(line)))
             if html_only:
                 outfile.write(self.extract_html(raw_page))
             else:
