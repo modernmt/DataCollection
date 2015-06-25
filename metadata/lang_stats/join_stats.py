@@ -9,9 +9,19 @@ from math import log
 def entropy(lang_dist):
     total = float(sum(lang_dist.values()))
     h = 0
+
+    if total <= 0:
+        sys.stderr.write("weird values: total: %f\n" % total)
+        return h
+
     for lang, count in lang_dist.iteritems():
-        p = count / total
-        h += p * log(p)
+        p = float(count) / total
+        try:
+            h += p * log(p)
+        except ValueError:
+            sys.stderr.write("weird values: cnt: %d, total: %f\n"
+                             % (count, total))
+            return 0
     return h
 
 
@@ -38,7 +48,7 @@ if __name__ == "__main__":
                 continue
 
             num_bytes = int(num_bytes)
-            stats[domain][language] += num_bytes
+            stats[domain][language.upper()] += num_bytes
 
     for domain in stats:
         e = entropy(stats[domain])
