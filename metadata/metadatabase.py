@@ -49,10 +49,12 @@ def process_cdx(line, args):
     mime_type = data.get("mime", "UNKNOWN")
     offset = data["offset"]
     length = data["length"]
+    # crawl from path, e.g. common-crawl/crawl-data/CC-MAIN-2015-14/
+    crawl = data["filename"].split("/")("/")[2][-7:].replace("-", "_")
     filename = "https://aws-publicdatasets.s3.amazonaws.com/%s" % data[
         "filename"]
 
-    key = " ".join((tld.encode('idna'), uri.encode('utf-8'), args.crawl))
+    key = " ".join((tld.encode('idna'), uri.encode('utf-8'), crawl))
     valuedict = {"filename": filename, "offset:": offset,
                  "length": length, "mime": mime_type.encode('utf-8')}
     return key, valuedict
