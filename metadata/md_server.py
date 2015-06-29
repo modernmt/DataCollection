@@ -49,17 +49,20 @@ class DBInterface(object):
 
     @cherrypy.expose
     def crawls(self, **kwargs):
+        cherrypy.response.headers['Content-Type'] = 'application/json'
         pretty = kwargs.get("pretty", 0) > 0
         result = {"crawls": ["2013_20"]}
         return self._dump_json(result, pretty)
 
     @cherrypy.expose
     def query_domain(self, **kwargs):
+        cherrypy.response.headers['Content-Type'] = 'application/json'
         start_time = time.time()
         domain = kwargs["domain"]
         send_data = kwargs.get("full", 0) > 0
         query_crawl = kwargs.get("crawl", "")
         pretty = kwargs.get("pretty", 0) > 0
+        max_results = int(kwargs.get("max_results", self.max_results))
         if not domain.startswith("http://") or domain.startswith("https://"):
             domain = "http://%s" % domain
         query_domain, query_suffix, query_path = split_uri(domain)
@@ -72,7 +75,8 @@ class DBInterface(object):
         n_results = 0
         n_skipped = 0
         print "query:", "%s%s " % (self.keyprefix, query_domain)
-        for key, value in self.db.RangeIter("%s%s " % (self.keyprefix, query_domain)):
+        for key, value in self.db.RangeIter("%s%s "
+                                            % (self.keyprefix, query_domain)):
             n_skipped += 1
             if not key.startswith(self.keyprefix):
                 break
@@ -88,7 +92,7 @@ class DBInterface(object):
             if query_path and not path.startswith(query_path):
                 continue
             n_results += 1
-            if n_results > self.max_results:
+            if n_results > max_results:
                 break
             data = json.loads(value)
             uri2crawl[uri].append((crawl, data))
