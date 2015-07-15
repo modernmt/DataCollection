@@ -16,7 +16,9 @@ def make_full_path(crawl, folder, filename):
 
 
 def get_tld(uri):
-    tld = tldextract.extract(urlparse(uri).netloc)
+    netloc = uri.split('//',1)[1].split('/',1)[0].split(':',1)[0].split('@')[-1]
+    # netloc = urlparse(uri)
+    tld = tldextract.extract(netloc)
     return tld
 
 
@@ -46,13 +48,19 @@ def process_cdx(line, args):
     data = json.loads(data)
     uri = data["url"]
     tld = get_tld(uri).domain
+
+    tld = tld.encode('idna')
+    # uri = uri.encode('utf-8')
+
+    # crawl from path, e.g. common-crawl/crawl-data/CC-MAIN-2015-14/
+    crawl = data["filename"].split("/")[2][-7:].replace("-", "_")
+    key = u" ".join((tld, uri, crawl)).encode("utf-8")
+
+    filename = "https://aws-publicdatasets.s3.amazonaws.com/%s" % data[
+        "filename"]
     mime_type = data.get("mime", "UNKNOWN")
     offset = data["offset"]
     length = data["length"]
-    filename = "https://aws-publicdatasets.s3.amazonaws.com/%s" % data[
-        "filename"]
-
-    key = " ".join((tld.encode('idna'), uri.encode('utf-8'), args.crawl))
     valuedict = {"filename": filename, "offset:": offset,
                  "length": length, "mime": mime_type.encode('utf-8')}
     return key, valuedict
@@ -61,14 +69,14 @@ def process_cdx(line, args):
 def read_cdx(args):
     for line in sys.stdin:
         try:
-            for entry in re.findall(r"\S+ \S+ \{[^}]+\"\}", line):
-                yield process_cdx(entry, args)
+            if line.count('}') == 1:
+                yield process_cdx(line, args)
+            else:  # sometimes several entries are on a single line
+                for entry in re.findall(r"\S+\s\S+\s\{[^}]+\"\}", line):
+                    yield process_cdx(entry, args)
         except ValueError:
             sys.stderr.write("Malformed line: %s\n" % line)
-            continue
-        except:
-            sys.stderr.write("Error processing: %s\n" % line)
-            continue
+            raise
 
 
 def read_json(args):
@@ -105,6 +113,7 @@ if __name__ == "__main__":
     count = 0
     kv_generator = read_cdx(args) if args.cdx else read_json(args)
 
+
     for key, valuedict in kv_generator:
         if key is None or valuedict is None:
             continue
@@ -117,16 +126,16 @@ if __name__ == "__main__":
                     batch = leveldb.WriteBatch()
                     batch_size = 0
                 else:
-                    batch.Put("0 %s" % key, json.dumps(valuedict))
+                    batch.Put("%s" % key, json.dumps(valuedict))
                     batch_size += 1
             else:  # no batch writes
                 if count % 10000 == 0:
                     sys.stderr.write('>')
-                db.Put("0 %s" % key, json.dumps(valuedict))
+                db.Put("%s" % key, json.dumps(valuedict))
         else:
             # if count % 10000 == 0:
             #     sys.stderr.write(':')
-            sys.stdout.write("0 %s\t%s\n" %
+            sys.stdout.write("%s\t%s\n" %
                              (key, json.dumps(valuedict)))
 
     if db is not None and batch_size > 0:
