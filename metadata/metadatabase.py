@@ -76,7 +76,10 @@ def read_cdx(args):
                     yield process_cdx(entry, args)
         except ValueError:
             sys.stderr.write("Malformed line: %s\n" % line)
-            raise
+            continue
+        except:
+            sys.stderr.write("Error processing: %s\n" % line)
+            continue
 
 
 def read_json(args):
@@ -112,7 +115,6 @@ if __name__ == "__main__":
 
     count = 0
     kv_generator = read_cdx(args) if args.cdx else read_json(args)
-
 
     for key, valuedict in kv_generator:
         if key is None or valuedict is None:

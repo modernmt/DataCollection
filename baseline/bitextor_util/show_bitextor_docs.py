@@ -3,6 +3,8 @@
 import sys
 import base64
 
+""" Makes bitextors .docs files humand readable """
+
 for line in sys.stdin:
     s_url, t_url, source, target = line.split("\t")
     source = base64.b64decode(source).decode("utf-8")
