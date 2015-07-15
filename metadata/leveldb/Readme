@@ -1,0 +1,12 @@
+Building instructions:
+
+1. Install libsnappy-dev and libgoogle-perftools-dev
+2. Get leveldb
+
+    cd build
+    git clone git@github.com:google/leveldb.git
+    cd leveldb
+    make
+
+3. Modify Makefile to point to leveldb includes
+
