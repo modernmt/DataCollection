@@ -16,7 +16,8 @@ def make_full_path(crawl, folder, filename):
 
 
 def get_tld(uri):
-    netloc = uri.split('//',1)[1].split('/',1)[0].split(':',1)[0].split('@')[-1]
+    netloc = uri.split(
+        '//', 1)[1].split('/', 1)[0].split(':', 1)[0].split('@')[-1]
     # netloc = urlparse(uri)
     tld = tldextract.extract(netloc)
     return tld
@@ -41,20 +42,23 @@ def process_json(line, args):
     return key, valuedict
 
 
+def make_key(url, crawl):
+    tld = get_tld(url).domain
+    tld = tld.encode('idna')
+    # uri = uri.encode('utf-8')
+    key = u" ".join((tld, url, crawl)).encode("utf-8")
+    return key
+
+
 def process_cdx(line, args):
     if not line.strip():
         return None, None
     loc, timestamp, data = line.split(' ', 2)
     data = json.loads(data)
     uri = data["url"]
-    tld = get_tld(uri).domain
-
-    tld = tld.encode('idna')
-    # uri = uri.encode('utf-8')
-
     # crawl from path, e.g. common-crawl/crawl-data/CC-MAIN-2015-14/
     crawl = data["filename"].split("/")[2][-7:].replace("-", "_")
-    key = u" ".join((tld, uri, crawl)).encode("utf-8")
+    key = make_key(uri, crawl)
 
     filename = "https://aws-publicdatasets.s3.amazonaws.com/%s" % data[
         "filename"]
