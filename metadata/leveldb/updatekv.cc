@@ -65,9 +65,10 @@ int main(int argc, char** argv) {
             const string newValue = JoinJSON(value, oldValue);
             batch.Put(key, newValue);
         } else {
-            std::cerr << "KEY_NOT_FOUND:\t" << line;
+            std::cerr << status.ToString() 
+                      << "\t" << line << std::endl;
         }
-        if (nLines % 10000 == 0) {
+        if (nLines % 1000 == 0) {
             status = db->Write(writeOptions, &batch);
             if (!status.ok()) {
                 std::cerr << "Write error: " << status.ToString() << std::endl;
