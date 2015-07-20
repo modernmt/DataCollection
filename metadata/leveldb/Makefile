@@ -1,4 +1,4 @@
-CXXFLAGS = -O3 -mtune=native -Wall -fmessage-length=0
+CXXFLAGS = -O2 -Wall -fmessage-length=0
 
 default: all
 
@@ -14,7 +14,7 @@ updatekv: updatekv.o
 	$(CXX) $(CXXFLAGS) -I/home/buck/net/build/leveldb/include -c $< -o $@  
 
 .PHONY : all clean
-all:    insertkv
+all:    insertkv updatekv
 
 clean:
 	rm -f insertkv updatekv
