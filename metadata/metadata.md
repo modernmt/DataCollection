@@ -14,8 +14,9 @@ for i in `seq -w 0 299`; do wget -c https://aws-publicdatasets.s3.amazonaws.com/
 
 ## Building data database from location data
 
+```
   for f in /fs/nas/eikthyrnir0/commoncrawl/cdx/2015_22/cdx-00???.gz; do echo `date` $f ; zcat $f | nice python ~/net/build/DataCollection/metadata/metadatabase.py --cdx 2015_22 cdx --db db_2015_22 --batchsize 100000; done
-
+```
 
 ## Getting the language distribution data
 
