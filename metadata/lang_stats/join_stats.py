@@ -5,6 +5,22 @@ import sys
 from collections import defaultdict
 from math import log
 
+""" join language stat files together, possibly
+    filering by langauge 
+
+    input data are several file of format
+
+    entropy domain l1 b1 [l2 b2 [l3 b3 [...]]]
+    where
+    * ln is a language identifier and
+    * bn is the number of byes in that language
+
+    Example:
+    -0.000089 www.hammockforums.net en 22430509 da 155
+
+    Output is in the same format
+"""
+
 
 def entropy(lang_dist):
     total = float(sum(lang_dist.values()))
@@ -29,7 +45,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('infile', nargs='?', type=argparse.FileType('r'))
+    parser.add_argument('infile', nargs='+', help="statistics files")
     parser.add_argument('-lang', nargs='*',
                         help="Ignore all other languages but these.")
     args = parser.parse_args()
@@ -40,15 +56,12 @@ if __name__ == "__main__":
 
     stats = defaultdict(lambda: defaultdict(int))
 
-    for line in sys.stdin:
-        domain, data = line.split(" ", 1)
-        data = data.split()
-        for language, num_bytes in zip(data[::2], data[1::2]):
-            if valid_languages and language.lower() not in valid_languages:
-                continue
-
-            num_bytes = int(num_bytes)
-            stats[domain][language.upper()] += num_bytes
+    for filename in args.infile:
+        for line in open(filename):
+            _entropy, domain, data = line.split(' ', 2)
+            data = data.split()
+            for l, b in zip(data[::2], data[1::2]):
+                stats[domain][l] += int(b)
 
     for domain in stats:
         e = entropy(stats[domain])
