@@ -1,4 +1,4 @@
-CXXFLAGS = -O2 -Wall -Wextra -Wsign-compare -Wshadow -Wno-unused-parameter -std=c++11 -fmessage-length=0 -Wfatal-errors -I/home/buck/net/build/rocksdb/include/
+CXXFLAGS = -O3 -Wall -Wextra -Wsign-compare -Wshadow -Wno-unused-parameter -std=c++11 -fmessage-length=0 -Wfatal-errors -I/home/buck/net/build/rocksdb/include/
 
 default: all
 

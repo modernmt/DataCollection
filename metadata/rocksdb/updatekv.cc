@@ -1,13 +1,12 @@
 // Write tab separated key-value pairs to a level-db
+#include "rdb_options.h"
 
 #include <iostream>
 #include <string>
 #include "jsoncpp/json/json.h"
 
 #include "rocksdb/db.h"
-#include "rocksdb/env.h"
-#include "rocksdb/slice.h"
-#include "rocksdb/options.h"
+
 
 using std::string;
 
@@ -36,17 +35,17 @@ int main(int argc, char** argv) {
     }
 
     rocksdb::DB* db;
-    rocksdb::Options options;
-    options.write_buffer_size = 256 * 1024 * 1024; // 256MB
-    options.max_write_buffer_number = 5; // Total of 1GB write cache
-    options.min_write_buffer_number_to_merge = 2;
+    rocksdb::Options options = GetOptions();
+    // options.write_buffer_size = 256 * 1024 * 1024; // 256MB
+    // options.max_write_buffer_number = 5; // Total of 1GB write cache
+    // options.min_write_buffer_number_to_merge = 2;
 
-    auto env = rocksdb::Env::Default();
-    env->SetBackgroundThreads(16, rocksdb::Env::LOW);
-    env->SetBackgroundThreads(4, rocksdb::Env::HIGH);
-    options.max_background_compactions = 16;
-    options.max_background_flushes = 1;
-    options.max_open_files = 1000;
+    // auto env = rocksdb::Env::Default();
+    // env->SetBackgroundThreads(16, rocksdb::Env::LOW);
+    // env->SetBackgroundThreads(4, rocksdb::Env::HIGH);
+    // options.max_background_compactions = 16;
+    // options.max_background_flushes = 1;
+    // options.max_open_files = 1000;
     
     rocksdb::Status status = rocksdb::DB::Open(options, argv[1], &db);
     if (!status.ok()) {
