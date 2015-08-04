@@ -34,14 +34,23 @@ if __name__ == "__main__":
             continue
         line = parse_line(line)
         if url is not None and line['uri'] != url:
+            key = None
+            try:
+                key = make_key(url, args.crawl)
+            except:
+                continue
             sys.stdout.write("%s\t%s\n" % (
-                make_key(url, args.crawl),
+                key,
                 json.dumps({"languages": stats.items()})))
             stats = defaultdict(int)
         url = line['uri']
         stats[line['language']] += int(line['bytes'])
 
     if url is not None:
-        sys.stdout.write("%s\t%s\n" % (
-            make_key(url, args.crawl),
-            json.dumps({"languages": stats.items()})))
+        try:
+           key = make_key(url, args.crawl)
+           sys.stdout.write("%s\t%s\n" % (
+               key,
+               json.dumps({"languages": stats.items()})))
+        except:
+           pass
