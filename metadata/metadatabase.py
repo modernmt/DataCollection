@@ -11,7 +11,7 @@ def make_full_path(crawl, folder, filename):
     return "https://aws-publicdatasets.s3.amazonaws.com/" +\
            "common-crawl/crawl-data/" + \
            "CC-MAIN-%s" % crawl.replace("_", "-") +\
-           "/segments/%d" % (int(folder)) +\
+           "/segments/%s" % folder +\
            "/warc/%s" % filename.replace("warc.wat.gz", "warc.gz")
 
 
@@ -26,19 +26,18 @@ def get_tld(uri):
 def process_json(line, args):
     tld, data = line.split(" ", 1)
     data = json.loads(data)
-    tld = tld.decode("utf-8").encode("idna")
 
-    key, valuedict = None, None
+    uri = data["uri"]
+    key = make_key(uri, args.crawl)
+
     container_data = data["container"]
     offset = container_data["Offset"]
     length = container_data["Gzip-Metadata"]["Deflate-Length"]
     filename = args.prefix + container_data["Filename"]
     filename = make_full_path(args.crawl, args.folder, filename)
-    uri = data["uri"]
-
-    key = " ".join((tld, uri, args.crawl))
+    mime_type = data.get("type", "UNKNOWN")
     valuedict = {"filename": filename, "offset:": offset,
-                 "length": length}
+                 "length": length, "mime": mime_type.encode('utf-8')}
     return key, valuedict
 
 
@@ -88,6 +87,7 @@ def read_cdx(args):
 
 def read_json(args):
     for line in sys.stdin:
+        # yield process_json(line, args)
         try:
             yield process_json(line, args)
         except KeyError:
