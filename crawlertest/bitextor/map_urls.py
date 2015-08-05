@@ -1,28 +1,28 @@
 #!/usr/bin/python
 
 import sys
-import glob
 
-if len(sys.argv) != 2:
-    print "Usage: python "+sys.argv[0]+" mapping_dir"
-    exit()
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('mapping', help='mapping from filename to url',
+                        type=argparse.FileType('r'))
+    args = parser.parse_args(sys.argv[1:])
 
-# Read mapping files into dictionary
-mappings = sys.argv[1]
-mapping = {}
-for mapfile in glob.iglob(mappings+"/*.mapping"):
-    f = open(mapfile)
-    for line in f:
-	(filename,url) = line.split()
-	mapping[filename] = url
+    mapping = {}
+    for line in args.mapping:
+        filename, url = line.strip().split()
+        assert filename not in mapping, "Repeated value: %s\n" % line
+        mapping[filename] = url
 
-for line in sys.stdin:
-    (filesource, filetarget) = line.split()
-    if filesource in mapping:
-	if filetarget in mapping:
-	    print mapping[filesource]+"\t"+mapping[filetarget]
-	else:
-	    sys.stderr.write("Target file mapping not found:"+filetarget+"\n")
-    else:
-	sys.stderr.write("Source file mapping not found:"+filesource+"\n")
-
+    for line in sys.stdin:
+        filesource, filetarget = line.strip().split()
+        if filesource in mapping:
+            if filetarget in mapping:
+                print mapping[filesource] + "\t" + mapping[filetarget]
+            else:
+                sys.stderr.write(
+                    "Target file mapping not found:" + filetarget + "\n")
+        else:
+            sys.stderr.write(
+                "Source file mapping not found:" + filesource + "\n")
