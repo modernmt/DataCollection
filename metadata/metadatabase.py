@@ -6,6 +6,8 @@ import tldextract
 from urlparse import urlparse
 import re
 
+magic_number = "df6fa1abb58549287111ba8d776733e9"
+
 
 def make_full_path(crawl, folder, filename):
     return "https://aws-publicdatasets.s3.amazonaws.com/" +\
@@ -16,10 +18,18 @@ def make_full_path(crawl, folder, filename):
 
 
 def get_tld(uri):
-    netloc = uri.split(
-        '//', 1)[1].split('/', 1)[0].split(':', 1)[0].split('@')[-1]
+    try:
+        netloc = uri.split(
+            '//', 1)[1].split('/', 1)[0].split(':', 1)[0].split('@')[-1]
+    except IndexError:
+        return ""
     # netloc = urlparse(uri)
-    tld = tldextract.extract(netloc)
+    try:
+        tld = tldextract.extract(netloc)
+    except UnicodeError:
+        return None
+    except IndexError:
+        return None
     return tld
 
 
@@ -41,9 +51,48 @@ def process_json(line, args):
     return key, valuedict
 
 
+def process_old_json(line, uri, args):
+    try:
+        data = json.loads(line)
+    except ValueError:
+        return None, None
+    key = make_key(uri, args.crawl)
+
+    if data.get("http_result", None) != 200:
+        return None, None
+    archive_info = data.get('archiveInfo', None)
+    if not archive_info:
+        return None, None
+    offset = archive_info['arcFileOffset']
+    length = archive_info['compressedSize']
+
+    filename = "https://" + \
+        "aws-publicdatasets.s3.amazonaws.com/" + \
+        "common-crawl/parse-output/segment/" + \
+        "%s" % archive_info['arcSourceSegmentId'] + \
+        "/%s_%s.arc.gz" % (archive_info['arcFileDate'],
+                           archive_info['arcFileParition'])
+
+    mime_type = data.get('mime_type', '')
+    if mime_type.split('/')[0] != 'text':
+        # sys.stderr.write("skipping: %s %s\n" % (uri.encode('utf-8'),
+        #                                         mime_type.encode('utf-8')))
+        return None, None
+
+    valuedict = {"filename": filename, "offset:": offset,
+                 "length": length, "mime": mime_type.encode('utf-8')}
+    return key, valuedict
+
+
 def make_key(url, crawl):
-    tld = get_tld(url).domain
-    tld = tld.encode('idna')
+    tld = get_tld(url)
+    if tld:
+        try:
+            tld = tld.domain.encode('idna')
+        except UnicodeError:
+            tld = '__UNKNOWN__'
+    else:
+        tld = '__UNKNOWN__'
     # uri = uri.encode('utf-8')
     key = u" ".join((tld, url, crawl)).encode("utf-8")
     return key
@@ -93,6 +142,18 @@ def read_json(args):
         except KeyError:
             pass
 
+
+def read_old_json(args):
+    url = None
+    for line in sys.stdin:
+        if line.startswith(magic_number):
+            url = line.decode("utf-8").split()[1].strip()
+        else:
+            k, v = process_old_json(line, url, args)
+            if k is not None:
+                yield k, v
+
+
 if __name__ == "__main__":
     errors = 0
     import argparse
@@ -101,6 +162,8 @@ if __name__ == "__main__":
     parser.add_argument('--db', help='leveldb root directory')
     parser.add_argument('--cdx', action='store_true',
                         help='input data is in CDX format')
+    parser.add_argument('--old', action='store_true',
+                        help='old json format of 2012 crawl')
     parser.add_argument('--batchsize', help='size of levelDB write batches',
                         default=100000, type=int)
     parser.add_argument('--prefix', help='prefix for filename',
@@ -119,6 +182,8 @@ if __name__ == "__main__":
 
     count = 0
     kv_generator = read_cdx(args) if args.cdx else read_json(args)
+    if args.old:
+        kv_generator = read_old_json(args)
 
     for key, valuedict in kv_generator:
         if key is None or valuedict is None:
