@@ -140,8 +140,13 @@ def read_candidates(infile, valid_hosts=None):
         if line.startswith('http://://'):
             line = line.replace('http://://', 'http://')
 
-        stripped, lang, tld_and_orig_crawl, langdist = line.split('\t', 3)
-        tld, candidate_orig, candidate_crawl = tld_and_orig_crawl.split(' ')
+        try:
+            stripped, lang, tld_and_orig_crawl, langdist = line.split('\t', 3)
+            tld, candidate_orig, candidate_crawl = tld_and_orig_crawl.split(
+                ' ')
+        except:
+            sys.stderr.write("Malformed input: '%s'" % line)
+            continue
 
         if valid_hosts and not netloc(candidate_orig) in valid_hosts:
             continue
@@ -181,7 +186,7 @@ if __name__ == "__main__":
         tld, uri, crawl = k.split(' ')
 
         if candidates and uri in candidates:
-            print_match(uri, uri, args.crawl, candidates)
+            print_match(uri, uri, crawl, candidates)
             continue
 
         parsed_uri = urlparse.urlparse(uri)
@@ -222,9 +227,10 @@ if __name__ == "__main__":
                 and parsed_uri.path and parsed_uri.path[-1] != '/':
             stripped_uri = stripped_uri[:-1]
 
-        if candidates and stripped_uri in candidates:
-            print_match(stripped_uri, uri, args.crawl, candidates)
-            continue
+        if candidates:
+            if stripped_uri in candidates:
+                print_match(stripped_uri, uri, crawl, candidates)
+                continue
         else:
             try:
                 sys.stdout.write("\t".join([stripped_uri, args.lang, line]))
