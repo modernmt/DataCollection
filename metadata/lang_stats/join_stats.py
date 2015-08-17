@@ -3,6 +3,7 @@
 
 import sys
 from collections import defaultdict
+from itertools import izip
 from math import log
 
 """ join language stat files together, possibly
@@ -48,9 +49,11 @@ if __name__ == "__main__":
     parser.add_argument('infile', nargs='+', help="statistics files")
     parser.add_argument('-lang', nargs='*',
                         help="Ignore all other languages but these.")
+    parser.add_argument('-nomono', action='store_true',
+                        help='filter monolingual entries')
     args = parser.parse_args()
 
-    valid_languages = []
+    valid_languages = None
     if args.lang:
         valid_languages = [l.lower() for l in args.lang]
 
@@ -60,10 +63,14 @@ if __name__ == "__main__":
         for line in open(filename):
             _entropy, domain, data = line.split(' ', 2)
             data = data.split()
-            for l, b in zip(data[::2], data[1::2]):
+            for l, b in izip(data[::2], data[1::2]):
+                if valid_languages and l not in valid_languages:
+                    continue
                 stats[domain][l] += int(b)
 
     for domain in stats:
+        if args.nomono and len(stats[domain]) == 1:
+            continue
         e = entropy(stats[domain])
         sys.stdout.write("%f %s" % (e, domain))
         for language in stats[domain]:
