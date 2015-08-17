@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-Reads downloaded website from tar file and writes lett format to be
-processed by bitextor pipeline
-"""
-
 import sys
 import chardet
 from chardet.universaldetector import UniversalDetector
