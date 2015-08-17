@@ -37,16 +37,22 @@ if __name__ == "__main__":
     args = parser.parse_args()
     stripper = LanguageStripper()
 
+    source_uris, target_uris = set(), set()
+
     for line in args.infile:
         source_uri, target_uri, source, target, score = line.split("\t")
         source_lang, stripped_source_uri = strip_uri(source_uri, stripper)
         target_lang, stripped_target_uri = strip_uri(target_uri, stripper)
+        source_uris.add(source_uri)
+        target_uris.add(target_uri)
         if stripped_source_uri != stripped_target_uri:
             wrong.append((stripped_source_uri, stripped_target_uri))
         else:
             if args.outfile:
                 args.outfile.write(line)
             correct.append((stripped_source_uri, stripped_target_uri))
+
+    print "found %s source and %s target uris" %(len(source_uris), len(target_uris))
 
     total = len(wrong) + len(correct)
     total_unique = len(set(wrong).union(set(correct)))
