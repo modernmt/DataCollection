@@ -83,7 +83,7 @@ def process_buffer(buffer, language_stripper):
 
     languages = [lang for lang, percent, num_bytes in
                  get_languages(buffer[1:])]
-    print "\t".join((stripped_uri, uri, matched_language, "/".join(languages)))
+    print "\t".join((stripped_uri, uri, matched_language, "/".join(languages))).encode('utf-8')
 
 
 if __name__ == "__main__":
