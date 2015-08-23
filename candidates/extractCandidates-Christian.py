@@ -19,9 +19,12 @@ def cleanOfSpaces(myString):
 
 def normalize(testURL):
     """Normalize the URL."""
+    testURL = testURL.split('//', 1)[1]
 
-    testURL = re.sub("^http(s)?://", "", testURL)
-    testURL = re.sub("/$", "", testURL)
+    # testURL = re.sub("^http(s)?://", "", testURL)
+    if testURL.endswith('/'):
+        testURL = testURL[:-1]
+    # testURL = re.sub("/$", "", testURL)
     components = testURL.split('/')
     return components
 
@@ -36,19 +39,19 @@ def isHTML(fileS):
 
 def hasLangParameter(lang, fileS):
     """It has the lang parameter in the form: lang=en etc.  """
-    if re.search("=" + lang, fileS):
+    re_lang = re.compile("=%s" % lang)
+    if re_lang.search(fileS):
         return 1
 
 
-def rule1(url, lang):
+def rule1(url, url_components, lang):
     """The rule says that the destination file should be same after replacing the language code: mi0064_en.htm====>mi0064_it.htm
     or it should have the structure of type =en"""
 
-    components = normalize(url)
-    fileS = components[-1]
+    fileS = url_components[-1]
     if isHTML(fileS):
-        regex = "([^A-Za-z])" + lang + "\\.htm(l?)$"
-        m = re.search(regex, fileS)
+        re_rule1 = re.compile("([^A-Za-z])" + lang + "\\.htm(l?)$")
+        m = re_rule1.search(fileS)
         if m:
             return 1
     elif hasLangParameter(lang, fileS):
@@ -56,26 +59,25 @@ def rule1(url, lang):
     return 0
 
 
-def rule2(url, lang):
+def rule2(url, url_components, lang):
     """The rule says that the path to the file should differ by a language code e.g www.cvc.com/en/ => www.cvc.com/it/  """
 
-    components = normalize(url)
-    components.pop()
-    urlPart = "/".join(components)
-    regex = "([^A-Za-z]){1}" + lang + "([^A-Za-z]){1}"
-    m = re.search(regex, urlPart)
+    urlPart = "/".join(url_components[:-1])
+    # regex = "([^A-Za-z]){1}" + lang + "([^A-Za-z]){1}"
+    re_rule2 = re.compile("([^A-Za-z])" + lang + "([^A-Za-z])")
+    m = re_rule2.search(urlPart)
     if m:
         return 1
     return 0
 
 
-def rulesOn(url, lang):
+def rulesOn(url, url_components, lang):
     """If the URL has a certain form I say I have a promising URL."""
 
     mapRes = {}
 
-    res1 = rule1(url, lang)
-    res2 = rule2(url, lang)
+    res1 = rule1(url, url_components, lang)
+    res2 = rule2(url, url_components, lang)
 
     mapRes["rule1"] = res1
     mapRes["rule2"] = res2
@@ -103,8 +105,9 @@ def getCandidates(fi, fo, sLang, dLang):
         # tld url crawl<TAB>json_data
         url = getURL(line)
 
-        mapS = rulesOn(url, sLang)
-        mapD = rulesOn(url, dLang)
+        url_components = normalize(url)
+        mapS = rulesOn(url, url_components, sLang)
+        mapD = rulesOn(url, url_components, dLang)
 
         #---------If-Elif to impede that the same link is put under both source
         if mapS["rule1"] or mapS["rule2"]:
