@@ -6,7 +6,7 @@ import urlparse
 import tldextract
 import time
 import cherrypy
-import leveldb
+import rocksdb
 from collections import defaultdict
 
 
@@ -34,13 +34,23 @@ def json_error(status, message, traceback, version):
 
 class DBInterface(object):
 
-    def __init__(self, db_directory, pretty=False, verbose=0,
+    def __init__(self, db_directories, pretty=False, verbose=0,
                  max_results=10000, keyprefix=""):
-        self.db = leveldb.LevelDB(db_directory)
+
+        self.dbs = []
+
+        for db_directory in db_directories:
+            opts = rocksdb.Options()
+            opts.create_if_missing = False
+            opts.max_open_files = 1000
+            opts.num_levels = 6
+
+            self.dbs.append(rocksdb.DB(db_directory, opts, read_only=True))
+
         self.pretty = pretty
         self.verbose = verbose
         self.keyprefix = keyprefix
-        self.max_results = 10000
+        self.max_results = max_results
 
     def _dump_json(self, data, pretty=False):
         if self.pretty or pretty:
@@ -63,8 +73,12 @@ class DBInterface(object):
         query_crawl = kwargs.get("crawl", "")
         pretty = kwargs.get("pretty", 0) > 0
         max_results = int(kwargs.get("max_results", self.max_results))
-        if not domain.startswith("http://") or domain.startswith("https://"):
+
+        if not domain.startswith("http://"):
             domain = "http://%s" % domain
+        if domain.startswith("https://"):
+            domain = "http://%s" % domain[8:]
+
         query_domain, query_suffix, query_path = split_uri(domain)
 
         result = {"query_domain": query_domain,
@@ -75,27 +89,31 @@ class DBInterface(object):
         n_results = 0
         n_skipped = 0
         print "query:", "%s%s " % (self.keyprefix, query_domain)
-        for key, value in self.db.RangeIter("%s%s "
-                                            % (self.keyprefix, query_domain)):
-            n_skipped += 1
-            if not key.startswith(self.keyprefix):
-                break
-            key = key[len(self.keyprefix):]
-            tld, uri, crawl = key.split(" ", 2)
-            if query_domain != tld:  # went too far
-                break
-            if query_crawl and query_crawl != crawl:
-                continue
-            suffix, path = split_uri(uri)[1:]
-            if query_suffix and query_suffix != suffix:
-                continue
-            if query_path and not path.startswith(query_path):
-                continue
-            n_results += 1
-            if n_results > max_results:
-                break
-            data = json.loads(value)
-            uri2crawl[uri].append((crawl, data))
+
+        for db in self.dbs:
+            it = db.iteritems()
+            it.seek("%s%s " % (self.keyprefix, query_domain))
+            for key, value in it:
+                n_skipped += 1
+                if not key.startswith(self.keyprefix):
+                    break
+                key = key[len(self.keyprefix):]
+                tld, uri, crawl = key.split(" ", 2)
+                if query_domain != tld:  # went too far
+                    break
+                if query_crawl and query_crawl != crawl:
+                    # this db has the wrong crawl
+                    break
+                suffix, path = split_uri(uri)[1:]
+                if query_suffix and query_suffix != suffix:
+                    continue
+                if query_path and not path.startswith(query_path):
+                    continue
+                n_results += 1
+                if n_results > max_results:
+                    break
+                data = json.loads(value)
+                uri2crawl[uri].append((crawl, data))
 
         result["unique_urls"] = uri2crawl.keys()
         if send_data:
@@ -135,7 +153,7 @@ if __name__ == "__main__":
                         help='verbosity level, default: 0',
                         type=int,
                         default=0)
-    parser.add_argument('db', help='leveldb root directory')
+    parser.add_argument('db', nargs='+', help='leveldb root directories')
     # parser.add_argument('url', help='url to search for')
 
     args = parser.parse_args(sys.argv[1:])
