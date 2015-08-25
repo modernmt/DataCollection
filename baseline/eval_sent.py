@@ -52,7 +52,7 @@ if __name__ == "__main__":
                 args.outfile.write(line)
             correct.append((stripped_source_uri, stripped_target_uri))
 
-    print "found %s source and %s target uris" %(len(source_uris), len(target_uris))
+    print "found %s source and %s target uris" % (len(source_uris), len(target_uris))
 
     total = len(wrong) + len(correct)
     total_unique = len(set(wrong).union(set(correct)))
