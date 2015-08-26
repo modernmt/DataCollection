@@ -49,15 +49,17 @@ if __name__ == "__main__":
                                  (tgt_url, tgt_crawl, args.tlang)):
 
             payload = {'domain': url, 'crawl': crawl, 'full': 1,
-                       'max_results': 1}
+                       'max_results': 1, 'verbose': 1, 'exact': 1}
             r = requests.get(args.server, params=payload)
             data = r.json()['data']
+            if r.json()['skipped'] > 1:
+                print r.json()['skipped']
             if url not in data:
                 payload['max_results'] = 1000
                 r = requests.get(args.server, params=payload)
                 data = r.json()['data']
                 if url not in data:
                     errors += 1
-                    print "Errors: %d/%d=%.2f\t%s %s" % (n, errors, 100. * n / errors, url, crawl)
+                    print "Errors: %d/%d=%.2f\t%s %s" % (errors, n, 100. * errors / n, url, crawl)
 
         # sys.exit()
