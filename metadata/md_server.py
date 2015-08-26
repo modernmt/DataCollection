@@ -82,8 +82,8 @@ class DBInterface(object):
 
         if not domain.startswith("http://"):
             domain = "http://%s" % domain
-        if domain.startswith("https://"):
-            domain = "http://%s" % domain[8:]
+        # if domain.startswith("https://"):
+        #     domain = "http://%s" % domain[8:]
 
         query_domain, query_suffix, query_path = split_uri(domain)
 
