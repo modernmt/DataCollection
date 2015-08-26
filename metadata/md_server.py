@@ -37,15 +37,22 @@ class DBInterface(object):
     def __init__(self, db_directories, pretty=False, verbose=0,
                  max_results=10000, keyprefix=""):
 
-        self.dbs = []
+        self.dbs = {}
 
         for db_directory in db_directories:
             opts = rocksdb.Options()
             opts.create_if_missing = False
             opts.max_open_files = 1000
             opts.num_levels = 6
-
-            self.dbs.append(rocksdb.DB(db_directory, opts, read_only=True))
+            db = rocksdb.DB(db_directory, opts, read_only=True)
+            it = db.iterkeys()
+            it.seek_to_first()
+            key = it.next()
+            tld, url, crawl = key.split(" ", 2)
+            assert crawl not in self.dbs, "Multiple dbs for %s\n" % crawl
+            sys.stderr.write("DB at %s holds crawl %s\n" %
+                             (db_directory, crawl))
+            self.dbs[crawl] = db
 
         self.pretty = pretty
         self.verbose = verbose
@@ -61,7 +68,7 @@ class DBInterface(object):
     def crawls(self, **kwargs):
         cherrypy.response.headers['Content-Type'] = 'application/json'
         pretty = kwargs.get("pretty", 0) > 0
-        result = {"crawls": ["2013_20"]}
+        result = {"crawls": self.dbs.keys()}
         return self._dump_json(result, pretty)
 
     @cherrypy.expose
@@ -88,9 +95,18 @@ class DBInterface(object):
         uri2crawl = defaultdict(list)
         n_results = 0
         n_skipped = 0
-        print "query:", "%s%s " % (self.keyprefix, query_domain)
+        # print "query:", "%s%s " % (self.keyprefix, query_domain)
 
-        for db in self.dbs:
+        relevant_crawls = [query_crawl]
+        if not query_crawl:
+            relevant_crawls = self.dbs.keys()
+        else:
+            assert query_crawl in self.dbs.keys()
+        for db_crawl in relevant_crawls:
+            if query_crawl and db_crawl != query_crawl:
+                # This is the wrong db to serve this crawl
+                continue
+            db = self.dbs[db_crawl]
             it = db.iteritems()
             it.seek("%s%s " % (self.keyprefix, query_domain))
             for key, value in it:
@@ -99,10 +115,8 @@ class DBInterface(object):
                     break
                 key = key[len(self.keyprefix):]
                 tld, uri, crawl = key.split(" ", 2)
+                assert crawl == db_crawl
                 if query_domain != tld:  # went too far
-                    break
-                if query_crawl and query_crawl != crawl:
-                    # this db has the wrong crawl
                     break
                 suffix, path = split_uri(uri)[1:]
                 if query_suffix and query_suffix != suffix:
