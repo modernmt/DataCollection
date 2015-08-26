@@ -35,7 +35,7 @@ def json_error(status, message, traceback, version):
 class DBInterface(object):
 
     def __init__(self, db_directories, pretty=False, verbose=0,
-                 max_results=10000, keyprefix=""):
+                 max_results=10000):
 
         self.dbs = {}
 
@@ -56,7 +56,6 @@ class DBInterface(object):
 
         self.pretty = pretty
         self.verbose = verbose
-        self.keyprefix = keyprefix
         self.max_results = max_results
 
     def _dump_json(self, data, pretty=False):
@@ -68,7 +67,7 @@ class DBInterface(object):
     def crawls(self, **kwargs):
         cherrypy.response.headers['Content-Type'] = 'application/json'
         pretty = kwargs.get("pretty", 0) > 0
-        result = {"crawls": self.dbs.keys()}
+        result = {"crawls": sorted(self.dbs.keys())}
         return self._dump_json(result, pretty)
 
     @cherrypy.expose
@@ -108,12 +107,9 @@ class DBInterface(object):
                 continue
             db = self.dbs[db_crawl]
             it = db.iteritems()
-            it.seek("%s%s " % (self.keyprefix, query_domain))
+            it.seek("%s %s" % (query_domain, domain))
             for key, value in it:
                 n_skipped += 1
-                if not key.startswith(self.keyprefix):
-                    break
-                key = key[len(self.keyprefix):]
                 tld, uri, crawl = key.split(" ", 2)
                 assert crawl == db_crawl
                 if query_domain != tld:  # went too far
@@ -160,7 +156,6 @@ if __name__ == "__main__":
     parser.add_argument('-pretty',
                         action='store_true',
                         help='pretty print json')
-    parser.add_argument('-keyprefix', help='prefix to db keys', default='')
     parser.add_argument('-logprefix',
                         help='logfile prefix, default: write to stderr')
     parser.add_argument('-verbose',
@@ -186,5 +181,4 @@ if __name__ == "__main__":
     cherrypy.quickstart(DBInterface(args.db,
                                     pretty=args.pretty,
                                     verbose=args.verbose,
-                                    max_results=args.maxresults,
-                                    keyprefix=args.keyprefix))
+                                    max_results=args.maxresults))
