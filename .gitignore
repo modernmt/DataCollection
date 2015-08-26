@@ -1,1 +1,5 @@
 .history.buck
+*.pyc
+*.xz
+*.gz
+dc.sublime-workspace
