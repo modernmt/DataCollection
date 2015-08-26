@@ -101,23 +101,29 @@ class DBInterface(object):
             relevant_crawls = self.dbs.keys()
         else:
             assert query_crawl in self.dbs.keys()
+
+        db_key = "%s %s" % (query_domain, domain)
+        result["db_key"] = db_key
+        result["skipped_keys"] = []
+
         for db_crawl in relevant_crawls:
-            if query_crawl and db_crawl != query_crawl:
-                # This is the wrong db to serve this crawl
-                continue
             db = self.dbs[db_crawl]
             it = db.iteritems()
-            it.seek("%s %s" % (query_domain, domain))
+            it.seek(db_key)
             for key, value in it:
                 n_skipped += 1
                 tld, uri, crawl = key.split(" ", 2)
+                if 'exact' in kwargs and uri != domain:
+                    break
                 assert crawl == db_crawl
                 if query_domain != tld:  # went too far
                     break
                 suffix, path = split_uri(uri)[1:]
                 if query_suffix and query_suffix != suffix:
+                    result["skipped_keys"].append(key)
                     continue
                 if query_path and not path.startswith(query_path):
+                    result["skipped_keys"].append(key)
                     continue
                 n_results += 1
                 if n_results > max_results:
