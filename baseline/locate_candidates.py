@@ -33,7 +33,7 @@ if __name__ == "__main__":
     parser.add_argument('outfile', type=argparse.FileType('w'),
                         default=sys.stdout)
     parser.add_argument('-server', help='metadata server location',
-                        default='http://localhost:8080/query_domain')
+                        default='http://localhost:8080/query_prefix')
     parser.add_argument('-slang', help='source language (e.g. en)',
                         default='en')
     parser.add_argument('-tlang', help='source language (e.g. it)',
@@ -42,24 +42,22 @@ if __name__ == "__main__":
 
     n, errors = 0, 0
     for line in args.candidates:
+        line = line.decode("utf-8")
         _, src_url, src_crawl, tgt_url, tgt_crawl = line.strip().split()
         n += 1
 
         for url, crawl, lang in ((src_url, src_crawl, args.slang),
                                  (tgt_url, tgt_crawl, args.tlang)):
 
-            payload = {'domain': url, 'crawl': crawl, 'full': 1,
+            payload = {'url': url, 'crawl': crawl,
                        'max_results': 1, 'verbose': 1, 'exact': 1}
             r = requests.get(args.server, params=payload)
-            data = r.json()['data']
-            if r.json()['skipped'] > 1:
-                print r.json()['skipped']
+            assert 'locations' in r.json(), line
+            data = r.json()['locations']
             if url not in data:
-                payload['max_results'] = 1000
-                r = requests.get(args.server, params=payload)
-                data = r.json()['data']
-                if url not in data:
-                    errors += 1
-                    print "Errors: %d/%d=%.2f\t%s %s" % (errors, n, 100. * errors / n, url, crawl)
+                assert len(data) == 0
+                errors += 1
+                sys.stderr.write("Errors: %d/%d = %.2f%%\t%s\t%s\n" %
+                                 (errors, n, 100. * errors / n, crawl, url))
 
-        # sys.exit()
+                    # sys.exit()
