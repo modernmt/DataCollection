@@ -71,73 +71,62 @@ class DBInterface(object):
         return self._dump_json(result, pretty)
 
     @cherrypy.expose
-    def query_domain(self, **kwargs):
+    def query_prefix(self, **kwargs):
         cherrypy.response.headers['Content-Type'] = 'application/json'
         start_time = time.time()
-        domain = kwargs["domain"]
-        send_data = kwargs.get("full", 0) > 0
+        query_url = kwargs["url"]
         query_crawl = kwargs.get("crawl", "")
+        if query_crawl:
+            assert query_crawl in self.dbs.keys()
         pretty = kwargs.get("pretty", 0) > 0
+        verbose = kwargs.get("verbose", 0) > 0
+        exact = kwargs.get("exact", 0) > 0
         max_results = int(kwargs.get("max_results", self.max_results))
 
-        if not domain.startswith("http://"):
-            domain = "http://%s" % domain
-        # if domain.startswith("https://"):
-        #     domain = "http://%s" % domain[8:]
+        if not (query_url.startswith("http://") or
+                query_url.startswith("https://")):
+            query_url = "http://%s" % query_url
 
-        query_domain, query_suffix, query_path = split_uri(domain)
+        query_domain, query_suffix, query_path = split_uri(query_url)
+        db_key = "%s %s" % (query_domain, query_url)
 
         result = {"query_domain": query_domain,
                   "query_crawl": query_crawl,
-                  "query_path": query_path}
+                  "query_path": query_path,
+                  "db_key": db_key}
 
-        uri2crawl = defaultdict(list)
         n_results = 0
-        n_skipped = 0
-        # print "query:", "%s%s " % (self.keyprefix, query_domain)
 
-        relevant_crawls = [query_crawl]
-        if not query_crawl:
-            relevant_crawls = self.dbs.keys()
-        else:
-            assert query_crawl in self.dbs.keys()
+        relevant_crawls = [query_crawl] if query_crawl else self.dbs.keys()
 
-        db_key = "%s %s" % (query_domain, domain)
-        result["db_key"] = db_key
         result["skipped_keys"] = []
+        result["locations"] = defaultdict(list)
 
         for db_crawl in relevant_crawls:
             db = self.dbs[db_crawl]
             it = db.iteritems()
             it.seek(db_key)
             for key, value in it:
-                n_skipped += 1
+                key = key.decode("utf-8")
+                if not key.startswith(db_key):
+                    # We've gone too far
+                    break
+
                 tld, uri, crawl = key.split(" ", 2)
-                if 'exact' in kwargs and uri != domain:
-                    break
                 assert crawl == db_crawl
-                if query_domain != tld:  # went too far
-                    break
-                suffix, path = split_uri(uri)[1:]
-                if query_suffix and query_suffix != suffix:
-                    result["skipped_keys"].append(key)
+
+                if exact and uri != query_url:
                     continue
-                if query_path and not path.startswith(query_path):
-                    result["skipped_keys"].append(key)
-                    continue
+
                 n_results += 1
                 if n_results > max_results:
                     break
                 data = json.loads(value)
-                uri2crawl[uri].append((crawl, data))
+                data["crawl"] = db_crawl
+                result["locations"][uri].append(data)
 
-        result["unique_urls"] = uri2crawl.keys()
-        if send_data:
-            result["data"] = uri2crawl
-
-        if "verbose" in kwargs:
+        if verbose:
             result["time"] = "%.2fs" % (time.time() - start_time)
-            result["skipped"] = n_skipped - n_results
         return self._dump_json(result, pretty)
 
 
