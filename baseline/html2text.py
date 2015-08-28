@@ -18,7 +18,8 @@ block_level_elements = set([u'address', u'article', u'aside', u'audio',
                             u'tfoot', u'ul', u'video'])
 
 
-def html2text(html):
+def html2text(html, sanitize=False):
+    """ Takes utf-8 encoded page and returns unicode text """
     p = html5lib.HTMLParser(tree=treebuilders.getTreeBuilder("dom"))
     dom_tree = p.parse(html.decode("utf-8"))
     walker = treewalkers.getTreeWalker("dom")
@@ -58,7 +59,12 @@ def html2text(html):
 
     if current_line:
         outbuf.append(u"".join(current_line))
-    return TextSanitizer.clean_whitespace("\n".join(outbuf))
+
+    text = "\n".join(outbuf)
+    if sanitize:
+        text = TextSanitizer.clean_utf8(text)
+    text = TextSanitizer.clean_whitespace(text)
+    return text
 
 
 if __name__ == "__main__":
