@@ -25,11 +25,11 @@ def get_tld(uri):
     return tld
 
 
-def get_location(url, crawl, server):
+def get_location(session, url, crawl, server):
     """ Returns success and location """
     payload = {'url': url, 'crawl': crawl,
                'max_results': 1, 'verbose': 1, 'exact': 1}
-    r = requests.get(server, params=payload)
+    r = session.get(server, params=payload)
     assert 'locations' in r.json(), line
     data = r.json()['locations']
     if url not in data:
@@ -60,22 +60,25 @@ if __name__ == "__main__":
     args = parser.parse_args(sys.argv[1:])
 
     total_lines, total_errors = 0, 0
-    for line in args.candidates:
-        total_lines += 1
-        line = line.decode("utf-8")
-        _, src_url, src_crawl, tgt_url, tgt_crawl = line.strip().split()
+    with requests.Session() as session:
+        for line in args.candidates:
+            total_lines += 1
+            line = line.decode("utf-8")
+            _, src_url, src_crawl, tgt_url, tgt_crawl = line.strip().split()
 
-        src_success, src_loc = get_location(src_url, src_crawl, args.server)
-        if not src_success:
-            total_errors += 1
-            report_error(src_url, src_crawl, total_errors, total_lines)
+            src_success, src_loc = get_location(session, src_url,
+                                                src_crawl, args.server)
+            if not src_success:
+                total_errors += 1
+                report_error(src_url, src_crawl, total_errors, total_lines)
 
-        tgt_success, tgt_loc = get_location(tgt_url, tgt_crawl, args.server)
-        if not tgt_success:
-            total_errors += 1
-            report_error(tgt_url, tgt_crawl, total_errors, total_lines)
-        if src_success and tgt_success:
-            args.outfile.write("%s\t%s\t%s\n" %
-                               (src_url, src_crawl, json.dumps(src_loc)))
-            args.outfile.write("%s\t%s\t%s\n" %
-                               (tgt_url, tgt_crawl, json.dumps(tgt_loc)))
+            tgt_success, tgt_loc = get_location(session, tgt_url,
+                                                tgt_crawl, args.server)
+            if not tgt_success:
+                total_errors += 1
+                report_error(tgt_url, tgt_crawl, total_errors, total_lines)
+            if src_success and tgt_success:
+                args.outfile.write("%s\t%s\t%s\n" %
+                                   (src_url, src_crawl, json.dumps(src_loc)))
+                args.outfile.write("%s\t%s\t%s\n" %
+                                   (tgt_url, tgt_crawl, json.dumps(tgt_loc)))
