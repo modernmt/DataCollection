@@ -42,7 +42,7 @@ class DBInterface(object):
         for db_directory in db_directories:
             opts = rocksdb.Options()
             opts.create_if_missing = False
-            opts.max_open_files = 1000
+            opts.max_open_files = 100
             opts.num_levels = 6
             db = rocksdb.DB(db_directory, opts, read_only=True)
             it = db.iterkeys()
