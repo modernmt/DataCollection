@@ -46,7 +46,7 @@ def process_json(line, args):
     filename = args.prefix + container_data["Filename"]
     filename = make_full_path(args.crawl, args.folder, filename)
     mime_type = data.get("type", "UNKNOWN")
-    valuedict = {"filename": filename, "offset:": offset,
+    valuedict = {"filename": filename, "offset": offset,
                  "length": length, "mime": mime_type.encode('utf-8')}
     return key, valuedict
 

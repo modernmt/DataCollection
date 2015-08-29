@@ -122,6 +122,11 @@ class DBInterface(object):
                 if n_results > max_results:
                     break
                 data = json.loads(value)
+
+                # work around stupid error
+                if 'offset:' in data:
+                    data['offset'] = data.pop('offset:')
+
                 data["crawl"] = db_crawl
                 result["locations"][uri].append(data)
 
