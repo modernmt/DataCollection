@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     downloader = CCDownloader()
 
-    payload = {"domain": args.domain, "max_results": 1000000, "full": 1}
+    payload = {"url": args.domain, "max_results": 1000000, "full": 1}
     resp = requests.get(args.api, params=payload)
 
     data = resp.json()['data']
