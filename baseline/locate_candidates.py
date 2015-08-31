@@ -30,7 +30,10 @@ def get_location(session, url, crawl, server):
     payload = {'url': url, 'crawl': crawl,
                'max_results': 1, 'verbose': 1, 'exact': 1}
     r = session.get(server, params=payload)
-    assert 'locations' in r.json(), line
+    assert 'locations' in r.json(), "line:%s\nquery: %s\nrespons:%s\n" % \
+        (line,
+         json.dumps(payload),
+         json.dumps(r.json()))
     data = r.json()['locations']
     if url not in data:
         assert len(data) == 0
