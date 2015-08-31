@@ -40,14 +40,14 @@ class CCDownloader(object):
             return ""
         try:
             page = zlib.decompress(resp.content, zlib.MAX_WBITS | 16)
-            if html_only:  # cut off WARC headers
-                page = self.extract_html(page)
-            return page
         except:
             sys.stderr.write("Error decompressing %d bytes from %s: %d-%d\n"
                              % (len(resp.content),
                                 location, start_range, end_range))
             return ""
+        if html_only:  # cut off WARC headers
+            page = self.extract_html(page)
+        return page
 
     # TODO: check if we can deprecate this
     def download_and_write(self, line, outfile, crawl, html_only=False):
