@@ -79,7 +79,7 @@ def process_old_json(line, uri, args):
         #                                         mime_type.encode('utf-8')))
         return None, None
 
-    valuedict = {"filename": filename, "offset:": offset,
+    valuedict = {"filename": filename, "offset": offset,
                  "length": length, "mime": mime_type.encode('utf-8')}
     return key, valuedict
 
@@ -113,7 +113,7 @@ def process_cdx(line, args):
     mime_type = data.get("mime", "UNKNOWN")
     offset = data["offset"]
     length = data["length"]
-    valuedict = {"filename": filename, "offset:": offset,
+    valuedict = {"filename": filename, "offset": offset,
                  "length": length, "mime": mime_type.encode('utf-8')}
     return key, valuedict
 
