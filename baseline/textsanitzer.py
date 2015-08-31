@@ -41,6 +41,8 @@ class TextSanitizer():
     @staticmethod
     def to_unicode(text):
         """ Produce unicode from text of unknown encoding """
+        if not text:
+            return u''
         try:
             text = text.decode("utf-8")
         except:
@@ -64,6 +66,8 @@ class TextSanitizer():
     def read_text(filehandle, sanitize=True, clean_whitespace=True):
         """ Read from filehandle and use best-effort decoding/cleaning """
         text = filehandle.read()
+        if not text:
+            return u''
         text = TextSanitizer.to_unicode(text)
         return TextSanitizer.clean_text(text, sanitize, clean_whitespace)
 
