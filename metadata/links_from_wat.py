@@ -4,7 +4,6 @@ import sys
 import json
 import tldextract
 from urlparse import urlparse, urlsplit, urlunsplit
-from urlparse import urljoin
 from urllib import quote, quote_plus
 
 
@@ -13,9 +12,11 @@ def is_pdf_link(link):
         return False
     if link["path"].split("@", 1)[0] != 'A':
         return False
-    if not link["url"].lower().endswith('.pdf'):
-        return False
-    return True
+    if link["url"].lower().endswith('.pdf'):
+        return True
+    if 'pdf' in link['text'].lower():
+        return True
+    return False
 
 
 def quote_spaces(s):
@@ -25,6 +26,17 @@ def quote_spaces(s):
     path = quote(path, '/%()')
     qs = quote_plus(qs, ':&=')
     return urlunsplit((scheme, netloc, path, qs, anchor))
+
+
+def normalize_whitepace(s):
+    res = None
+    if isinstance(s, unicode):
+        s = s.encode('utf-8', 'ignore')
+        res = " ".join(s.split())
+        res.decode("utf-8")
+    else:
+        res = " ".join(s.split())
+    return res
 
 if __name__ == "__main__":
     import argparse
@@ -56,20 +68,21 @@ if __name__ == "__main__":
             continue
 
         if args.pdf:
+            uri = uri.encode('utf-8', 'ignore')
+            uri = normalize_whitepace(uri)
             for link in links:
                 if is_pdf_link(link):
                     try:
-                        url = link['url']
-                        # url = quote_spaces(url)
-                        text = link.get('text', "")
-                        text = u' '.join(text.split())
-                        output = "%s\t%s\t%s\n" % (uri.encode('utf-8','ignore'),
-                                                   url.encode('utf-8','ignore'),
-                                                   text.encode('utf-8','ignore'))
+                        url = link['url'].encode('utf-8', 'ignore')
+                        url = normalize_whitepace(url)
+                        text = link.get('text', "").encode('utf-8', 'ignore')
+                        text = normalize_whitepace(text)
+
+                        output = "%s\t%s\t%s\n" % (uri, url, text)
                         sys.stdout.write(output)
                     except UnicodeDecodeError:
                         continue
-                     
+
             continue
 
         res = {"container": container, "uri": uri, "type": content_type}
