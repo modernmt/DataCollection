@@ -134,6 +134,62 @@ class DBInterface(object):
             result["time"] = "%.2fs" % (time.time() - start_time)
         return self._dump_json(result, pretty)
 
+    @cherrypy.expose
+    def query_tld(self, **kwargs):
+        cherrypy.response.headers['Content-Type'] = 'application/json'
+        start_time = time.time()
+        query_tld = kwargs["tld"]
+        query_crawl = kwargs.get("crawl", "")
+        if query_crawl:
+            assert query_crawl in self.dbs.keys()
+        pretty = kwargs.get("pretty", 0) > 0
+        verbose = kwargs.get("verbose", 0) > 0
+        max_results = int(kwargs.get("max_results", self.max_results))
+
+        if not (query_tld.startswith("http://") or
+                query_tld.startswith("https://")):
+            query_tld = "http://%s" % query_tld
+
+        tld, _suffix, _path = split_uri(query_tld)
+        db_key = "%s " % (tld)
+
+        result = {"query_tld": query_tld, "db_key": db_key}
+
+        n_results = 0
+
+        relevant_crawls = [query_crawl] if query_crawl else self.dbs.keys()
+
+        result["locations"] = defaultdict(list)
+
+        for db_crawl in relevant_crawls:
+            db = self.dbs[db_crawl]
+            it = db.iteritems()
+            it.seek(db_key)
+            for key, value in it:
+                key = key.decode("utf-8")
+                if not key.startswith(db_key):
+                    # We've gone too far
+                    break
+
+                tld, uri, crawl = key.split(" ", 2)
+                assert crawl == db_crawl
+
+                n_results += 1
+                if n_results > max_results:
+                    break
+                data = json.loads(value)
+
+                # work around stupid error
+                if 'offset:' in data:
+                    data['offset'] = data.pop('offset:')
+
+                data["crawl"] = db_crawl
+                result["locations"][uri].append(data)
+
+        if verbose:
+            result["time"] = "%.2fs" % (time.time() - start_time)
+        return self._dump_json(result, pretty)
+
 
 if __name__ == "__main__":
     import argparse
