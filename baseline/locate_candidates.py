@@ -85,3 +85,6 @@ if __name__ == "__main__":
                                    (src_url, src_crawl, json.dumps(src_loc)))
                 args.outfile.write("%s\t%s\t%s\n" %
                                    (tgt_url, tgt_crawl, json.dumps(tgt_loc)))
+
+    sys.stderr.write("Done: ")
+    report_error(tgt_url, tgt_crawl, total_errors, total_lines)
