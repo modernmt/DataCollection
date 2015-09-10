@@ -10,11 +10,13 @@ from urllib import quote, quote_plus
 def is_pdf_link(link):
     if "path" not in link:
         return False
+    if "url" not in link:
+        return False
     if link["path"].split("@", 1)[0] != 'A':
         return False
     if link["url"].lower().endswith('.pdf'):
         return True
-    if 'pdf' in link['text'].lower():
+    if 'pdf' in link.get('text', '').lower():
         return True
     return False
 
