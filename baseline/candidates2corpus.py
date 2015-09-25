@@ -7,6 +7,7 @@ import sys
 from ccdownloader import CCDownloader
 from html2text import html2text
 from textsanitzer import TextSanitizer
+from external_processor import TextProcessor
 
 
 def process_candidates(candidates, outfile):
@@ -28,8 +29,21 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-outfile', type=argparse.FileType('w'),
                         help='output file', default=sys.stdout)
+    parser.add_argument('-source_tokenizer',
+                        help='call to source tokenizer, incl. args')
+    parser.add_argument('-source_splitter',
+                        help='call to source sentence splitter, incl. args')
+    parser.add_argument('-target_tokenizer',
+                        help='call to target tokenizer, incl. args')
+    parser.add_argument('-target_splitter',
+                        help='call to target sentence splitter, incl. args')
     args = parser.parse_args(sys.argv[1:])
+
     downloader = CCDownloader()
+    source_text_processor = TextProcessor(splitter=args.source_splitter,
+                                          tokenizer=args.source_tokenizer)
+    target_text_processor = TextProcessor(splitter=args.target_splitter,
+                                          tokenizer=args.target_tokenizer)
 
     candidates = []
     for linenr, line in enumerate(sys.stdin):
@@ -43,13 +57,18 @@ if __name__ == "__main__":
         # Workaround server error
         if 'offset:' in data:
             data['offset'] = data.pop('offset:')
-        
+
         html = downloader.download(data['filename'],
                                    int(data[u'offset']),
                                    int(data['length']),
                                    html_only=True)
         html = TextSanitizer.to_unicode(html)
         text = html2text(html.encode('utf-8'), sanitize=True)
+        if len(candidates) == 0:
+            text = source_text_processor.process(text)
+        else:
+            assert len(candidates) == 1
+            text = target_text_processor.process(text)
         candidates.append((url, text, html))
 
         if len(candidates) == 2:
