@@ -31,8 +31,11 @@ if __name__ == "__main__":
     for line in args.infile:
         n_total += 1
         source, target, score = line.split("\t")
+        source = source.decode('utf-8', 'ignore')
+        target = target.decode('utf-8', 'ignore')
         if float(score) < args.minscore:
             deletions["low score"].append('')
+            continue
         if source == target:
             deletions["identical"].append(target)
             continue
@@ -54,8 +57,8 @@ if __name__ == "__main__":
                 "%s\t%s\t%f" % (target, langid_target[0], langid_target[1]))
             continue
 
-        source = source.decode('utf-8', 'ignore')
-        target = target.decode('utf-8', 'ignore')
+        # source = source.decode('utf-8', 'ignore')
+        # target = target.decode('utf-8', 'ignore')
         if float((len(source) + 15)) / float(len(target) + 15) > 1.5:
             deletions["source_too_long"].append("%s\t%s" % (source, target))
         elif float((len(target) + 15)) / float(len(source) + 15) > 1.5:
