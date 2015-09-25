@@ -34,6 +34,8 @@ class TextSanitizer():
     @staticmethod
     def clean_utf8(s):
         """ Removes most funny characters from Unicode """
+        if not isinstance(s, unicode):
+            return s
         s = unicodedata.normalize('NFC', s)
         s = u"".join(map(TextSanitizer._sanitize, s))
         return s
