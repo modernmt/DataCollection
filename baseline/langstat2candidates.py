@@ -95,7 +95,7 @@ class LanguageStripper(object):
 
     def strip_query(self, query):
         result = []
-        for k, v in urlparse.parse_qsl(query):
+        for k, v in urlparse.parse_qsl(query, keep_blank_values=True):
             v = self.re_code.sub('', v)
             result.append((k, v))
         return urllib.urlencode(result)
