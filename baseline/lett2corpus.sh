@@ -1,6 +1,8 @@
 #!/bin/bash
 
-set -e -o pipefail
+# Exit as soon as any command fails
+set -e
+set -o pipefail
 
 DICT=$1
 LETT=$2
@@ -11,30 +13,43 @@ RIDX=${LETT/lett/ridx}
 DIST=${LETT/lett/dist}
 DOCS=${LETT/lett/docs}
 SENT=${LETT/lett/sent}
-LOG=${LETT/lett/log}
 
 BT=/home/buck/net/build/bitextor/bin
 
-mv ${LETT} ${LETT}.bak
-/home/buck/net/build/DataCollection/baseline/filter_emty_text_from_lett.py < ${LETT}.bak > ${LETT}
-echo -n "LETT .. LETTR .. "
-${BT}/bitextor-lett2lettr < ${LETT} > ${LETTR}
-echo -n "IDX .. "
-python ${BT}/bitextor-lett2idx < ${LETTR} > ${IDX}
-echo -n "RIDX .. "
-python ${BT}/bitextor-idx2ridx < ${IDX} -d ${DICT} --lang1 en --lang2 fr > ${RIDX}
-echo -n "DIST .. "
-${BT}/bitextor-distancefilter -l ${LETTR} ${RIDX}  > ${DIST}
-echo -n "DOCS .. "
-${BT}/bitextor-align-documents ${RIDX} -l ${LETTR}  > ${DOCS}
-echo -n "SENTS .. "
-${BT}/bitextor-align-segments --lang1 en --lang2 fr -d ${DICT} < ${DOCS} > ${SENT} 2> ${LOG}
-echo -n "Cleaning up .. "
-rm -f ${IDX} ${LETTR} ${RIDX} ${DIST} ${DOCS} ${LOG}
-rm ${LETT}
-mv ${LETT}.bak ${LETT}
-echo "Done! "
-echo -n "EN: " 
-cut -f 3 ${SENT} | wc
-echo -n "FR: " 
-cut -f 4 ${SENT} | wc
+DONEFILE=${LETT/.lett/.done}
+LOG=${LETT/.lett/.log}
+
+if [ ! -f ${DONEFILE} ]; then
+    source /home/buck/net/build/virtualenvs/crawl/bin/activate
+    # Need to have the punk tokenizer from nltk
+    # echo -e "import nltk\nnltk.download('punkt')" | python 2> /dev/null
+
+    ls -lh ${LETT}
+    mv  ${LETT} ${LETT}.bak
+    /home/buck/net/build/DataCollection/baseline/filter_emty_text_from_lett.py < ${LETT}.bak > ${LETT}
+    date  >> ${LOG}
+    echo "LETT .. LETTR .. " >> ${LOG}
+    ${BT}/bitextor-lett2lettr < ${LETT} > ${LETTR}
+    echo "IDX .. " >> ${LOG}
+    python ${BT}/bitextor-lett2idx --lang1 en --lang2 fr < ${LETTR} > ${IDX}
+    echo "RIDX .. " >> ${LOG}
+    python ${BT}/bitextor-idx2ridx < ${IDX} -d ${DICT} --lang1 en --lang2 fr > ${RIDX}
+    echo "DIST .. " >> ${LOG}
+    python ${BT}/bitextor-distancefilter -l ${LETTR} ${RIDX}  > ${DIST}
+    echo "DOCS .. " >> ${LOG}
+    python  ${BT}/bitextor-align-documents ${RIDX} -l ${LETTR}  > ${DOCS}
+    echo "SENTS .. " >> ${LOG}
+    python  ${BT}/bitextor-align-segments --lang1 en --lang2 fr -d ${DICT} < ${DOCS} > ${SENT} 2>> ${LOG}
+    echo "Cleaning up .. " >> ${LOG}
+    rm -f ${IDX} ${LETTR} ${RIDX} ${DIST} ${DOCS}
+    rm ${LETT}
+    mv ${LETT}.bak ${LETT}
+    echo "Done! " >> ${LOG}
+    echo -n "EN: " >> ${LOG}
+    cut -f 3 ${SENT} | wc >> ${LOG}
+    echo -n "FR: " >> ${LOG}
+    cut -f 4 ${SENT} | wc >> ${LOG}
+
+    date  >> ${LOG}
+    touch ${DONEFILE}
+fi
