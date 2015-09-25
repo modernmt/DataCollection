@@ -84,7 +84,8 @@ class DistanceScorer(object):
         return 0
 
     def _extract(self, source_corpus, target_corpus):
-        """ This is called before scoring of pairs. Overwrite to extract const data """
+        """ This is called before scoring of pairs. Overwrite to extract const
+        data """
         pass
 
     def score(self, source_corpus, target_corpus):
