@@ -1,3 +1,4 @@
+regex
 cffi==1.0.3
 chardet==2.3.0
 CherryPy==3.7.0
