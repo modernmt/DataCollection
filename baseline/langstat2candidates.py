@@ -86,18 +86,32 @@ class LanguageStripper(object):
             "|".join(keys))
         self.re_strip = re.compile(regexp_string, re.IGNORECASE)
 
+        self.re_punct_at_start = re.compile(r'^[^a-zA-Z0-9]+')
+        self.re_punct_at_end = re.compile(r'[^a-zA-Z0-9]+$')
+
     def strip_path(self, path):
         components = []
         for c in path.split('/'):
-            c = self.re_strip.sub('', c)
-            components.append(self.re_code.sub('', c))
+            stripped = self.re_strip.sub('', c)
+            stripped = self.re_code.sub('', stripped)
+            if stripped:
+                if not self.re_punct_at_start.match(c) and \
+                        self.re_punct_at_start.match(stripped):
+                    stripped = self.re_punct_at_start.sub('', stripped)
+            if stripped:
+                if not self.re_punct_at_end.match(c) and \
+                        self.re_punct_at_end.match(stripped):
+                    stripped = self.re_punct_at_end.sub('', stripped)
+            if stripped:
+                components.append(stripped)
         return '/'.join(components)
 
     def strip_query(self, query):
         result = []
         for k, v in urlparse.parse_qsl(query, keep_blank_values=True):
-            v = self.re_code.sub('', v)
-            result.append((k, v))
+            stripped_v = self.re_code.sub('', v)
+            if stripped_v == v or stripped_v:
+                result.append((k, v))
         return urllib.urlencode(result)
 
     def stripn(self, uri):
@@ -203,7 +217,18 @@ if __name__ == "__main__":
         stripped_path = language_stripper.strip_path(parsed_uri.path)
         stripped_path = re.sub(r'//+', '/', stripped_path)
         stripped_path = re.sub(r'__+', '_', stripped_path)
+        stripped_path = re.sub(r'/_+', '/', stripped_path)
+        stripped_path = re.sub(r'_/', '/', stripped_path)
         stripped_path = re.sub(r'--+', '-', stripped_path)
+
+        # remove new trailing /
+        if stripped_path and stripped_path[-1] == '/' \
+                and parsed_uri.path and parsed_uri.path[-1] != '/':
+            stripped_path = stripped_path[:-1]
+
+        # add removed trailing /
+        if not stripped_path.endswith('/') and parsed_uri.path.endswith('/'):
+            stripped_path += '/'
 
         stripped_query = language_stripper.strip_query(parsed_uri.query)
 
@@ -221,11 +246,6 @@ if __name__ == "__main__":
                                             params='',
                                             query=stripped_query,
                                             fragment='').geturl()
-
-        # remove new trailing /
-        if stripped_uri and stripped_uri[-1] == '/' \
-                and parsed_uri.path and parsed_uri.path[-1] != '/':
-            stripped_uri = stripped_uri[:-1]
 
         if candidates:
             if stripped_uri in candidates:
