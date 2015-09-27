@@ -27,11 +27,9 @@ if [ ! -f ${DONEFILE} ]; then
     #echo -e "import nltk\nnltk.download('punkt')" | python 2> /dev/null
 
     ls -lh ${LETT}
-    mv  ${LETT} ${LETT}.bak
-    /home/buck/net/build/DataCollection/baseline/filter_emty_text_from_lett.py < ${LETT}.bak > ${LETT}
     date  >> ${LOG}
     echo "LETT .. LETTR .. " >> ${LOG}
-    ${BT}/bitextor-lett2lettr < ${LETT} > ${LETTR}
+    cat ${LETT} | /home/buck/net/build/DataCollection/baseline/filter_emty_text_from_lett.py | python ${BT}/bitextor-lett2lettr > ${LETTR}
     
     echo "RIDX .. " >> ${LOG}
     /home/buck/net/build/DataCollection/baseline/bitextor_util/lett2ridx_map.py ${LETTR}  -lang1 en -lang2 fr > ${RIDXS} 2>> ${LOG}
@@ -48,8 +46,6 @@ if [ ! -f ${DONEFILE} ]; then
     python  ${BT}/bitextor-align-segments --lang1 en --lang2 fr -d ${DICT} < ${DOCS} > ${SENT} 2>> ${LOG}
     echo "Cleaning up .. " >> ${LOG}
     rm -f ${IDX} ${LETTR} ${RIDX} ${DIST} ${DOCS} ${RIDXS} ${RIDXT}
-    rm ${LETT}
-    mv ${LETT}.bak ${LETT}
     echo "Done! " >> ${LOG}
     echo -n "EN: " >> ${LOG}
     cut -f 3 ${SENT} | wc >> ${LOG}
