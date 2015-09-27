@@ -11,6 +11,10 @@ from collections import defaultdict
 
 
 def split_uri(uri, encoding='idna'):
+    if not (uri.startswith("http://") or
+            uri.startswith("https://")):
+        uri = "http://%s" % uri
+
     parsed_uri = urlparse.urlparse(uri)
 
     if not parsed_uri.netloc:
@@ -83,10 +87,6 @@ class DBInterface(object):
         exact = kwargs.get("exact", 0) > 0
         max_results = int(kwargs.get("max_results", self.max_results))
 
-        if not (query_url.startswith("http://") or
-                query_url.startswith("https://")):
-            query_url = "http://%s" % query_url
-
         query_domain, query_suffix, query_path = split_uri(query_url)
         db_key = "%s %s" % (query_domain, query_url)
 
@@ -146,10 +146,6 @@ class DBInterface(object):
         verbose = kwargs.get("verbose", 0) > 0
         max_results = int(kwargs.get("max_results", self.max_results))
 
-        if not (query_tld.startswith("http://") or
-                query_tld.startswith("https://")):
-            query_tld = "http://%s" % query_tld
-
         tld, _suffix, _path = split_uri(query_tld)
         db_key = "%s " % (tld)
 
@@ -173,6 +169,10 @@ class DBInterface(object):
 
                 tld, uri, crawl = key.split(" ", 2)
                 assert crawl == db_crawl
+
+                # This allows to query a suffix (e.g. .com) as well
+                if query_tld not in urlparse.urlparse(uri).netloc:
+                    continue
 
                 n_results += 1
                 if n_results > max_results:
