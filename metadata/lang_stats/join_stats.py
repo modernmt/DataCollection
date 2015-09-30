@@ -7,14 +7,15 @@ from itertools import izip
 from math import log
 
 """ join language stat files together, possibly
-    filering by langauge 
+    filtering by langauge
 
     input data are several file of format
 
-    entropy domain l1 b1 [l2 b2 [l3 b3 [...]]]
+    [entropy] domain l1 b1 [l2 b2 [l3 b3 [...]]]
     where
     * ln is a language identifier and
     * bn is the number of byes in that language
+    * entropy is optional and ignored
 
     Example:
     -0.000089 www.hammockforums.net en 22430509 da 155
@@ -46,7 +47,8 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('infile', nargs='+', help="statistics files")
+    parser.add_argument('infiles', nargs='+', help="statistics files",
+                        type=argparse.FileType('r'))
     parser.add_argument('-lang', nargs='*',
                         help="Ignore all other languages but these.")
     parser.add_argument('-nomono', action='store_true',
@@ -59,11 +61,14 @@ if __name__ == "__main__":
 
     stats = defaultdict(lambda: defaultdict(int))
 
-    for filename in args.infile:
-        for line in open(filename):
-            _entropy, domain, data = line.split(' ', 2)
-            data = data.split()
+    for f in args.infiles:
+        for line in f:
+            data = line.split()
+            if len(data) % 2 == 0:  # Line contrains entropy in first column
+                _entropty = data.pop(0)
+            domain = data.pop(0)
             for l, b in izip(data[::2], data[1::2]):
+                l = l.lower()
                 if valid_languages and l not in valid_languages:
                     continue
                 stats[domain][l] += int(b)
