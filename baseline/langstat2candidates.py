@@ -64,6 +64,9 @@ class LanguageStripper(object):
                      'en-in', 'en-ie', 'en-jm', 'en-nz', 'en-ph', 'en-za',
                      'en-tt', 'inglese']:
             self.code_to_language[code] = "en"
+        for code in ["romanian", "romana", "romlang", 'rom', 'ro-ro', 'ro']:
+            self.code_to_language[code] = "ro"
+
 
         if languages is not None:
             kv_pairs = [(k, v) for k, v in self.code_to_language.items()
