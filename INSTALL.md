@@ -27,6 +27,7 @@ source ~/net/build/crawl/bin/activate
 
 # Install requirements
 cd DataCollection/
+pip install --upgrade 'git+https://github.com/GregBowyer/cld2-cffi.git'
 pip install -r requirements.txt
 
 
