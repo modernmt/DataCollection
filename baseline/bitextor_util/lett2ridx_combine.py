@@ -28,7 +28,7 @@ if __name__ == "__main__":
     parser.add_argument('target', help='translated target tokens')
     parser.add_argument('-max_candidates', type=int, default=10,
                         help='maximum number of candidates per document')
-    parser.add_argument('-buffersize', type=int, default=1000,
+    parser.add_argument('-buffersize', type=int, default=2000,
                         help='number of source documents held im memory')
     args = parser.parse_args()
 
