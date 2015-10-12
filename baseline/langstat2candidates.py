@@ -35,6 +35,7 @@ class LanguageStripper(object):
 
     def __init__(self, languages=None):
         self.code_to_language = {}
+        # These should all be lower-case, matching is case-insensitive
         for code in ["arabic", "ara", "ar"]:
             self.code_to_language[code] = "ar"
         for code in ["bulgarian", "bul", "bg"]:
@@ -66,7 +67,9 @@ class LanguageStripper(object):
             self.code_to_language[code] = "en"
         for code in ["romanian", "romana", "romlang", 'rom', 'ro-ro', 'ro']:
             self.code_to_language[code] = "ro"
-
+        for code in ["soma", "som", "so", 'somal', 'somali', 'so-so',
+                     'af-soomaali', 'soomaali']:
+            self.code_to_language[code] = "so"
 
         if languages is not None:
             kv_pairs = [(k, v) for k, v in self.code_to_language.items()
