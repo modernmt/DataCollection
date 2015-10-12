@@ -185,7 +185,8 @@ if __name__ == "__main__":
     parser.add_argument('-candidates',
                         help='candidates from url strippper',
                         type=argparse.FileType('r'))
-
+    parser.add_argument('-nostrip', help='accept only exact matches',
+                        action='store_true')
     args = parser.parse_args(sys.argv[1:])
 
     candidates = {}
@@ -195,7 +196,17 @@ if __name__ == "__main__":
     language_stripper = LanguageStripper(languages=[args.lang])
 
     for line in sys.stdin:
-        k, v = line.split("\t")
+        split_line = line.split('\t')
+        k, v = split_line[-2:]
+        tld, uri, crawl = k.split(' ')
+
+        if len(split_line) == 2 and args.nostrip \
+                and candidates and uri not in candidates:
+            # We're matching candidates agains a KV list without stripping,
+            # i.e. target candidate is stripped and source candidate isn't
+            # This allows for a cheap reject.
+            continue
+
         languages = json.loads(v)['languages']
 
         if args.lang not in [l for l, b in languages]:
@@ -203,7 +214,13 @@ if __name__ == "__main__":
             # we're looking for
             continue
 
-        tld, uri, crawl = k.split(' ')
+        if len(split_line) == 4:  # Input is output of previous run
+            stripped_uri, _lang = line[:2]
+            assert candidates, 'need to supply candidates\n'
+            assert args.nostrip, 'no need to strip again\n'
+            if stripped_uri in candidates:
+                print_match(stripped_uri, uri, crawl, candidates)
+                continue
 
         if candidates and uri in candidates:
             print_match(uri, uri, crawl, candidates)
