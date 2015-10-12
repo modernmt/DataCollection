@@ -1,12 +1,46 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import argparse
-import sys
-import langid
 from collections import defaultdict
+import argparse
+import cld2
+import langid
+import sys
 
 """ Removes some wrongly aligned pairs from hunalign output """
+
+
+class LanguageIdentifier(object):
+
+    def __init__(self, use_cld2, valid_languages=None):
+        self.use_cld2 = use_cld2
+        self.valid_languages = [l.lower() for l in valid_languages]
+        if not use_cld2 and valid_languages:
+            langid.set_languages(self.valid_languages)
+
+    def is_language(self, s, expected_lang):
+        """ Check if the language of the segment cannot be reliably identified
+        as another language. If another than the expected language is
+        detected return False """
+        expected_lang = expected_lang.lower()
+        if self.valid_languages:
+            assert expected_lang in self.valid_languages
+        if self.use_cld2:
+            reliable, _text_bytes, details = cld2.detect(s.encode("utf-8"))
+            if reliable:
+                for _lang, langcode, confidence, score in details:
+                    if langcode == expected_lang and confidence >= 10:
+                        return True
+                return False
+            else:  # unreliable is still counted as OK
+                return True
+        else:
+            lang, confidence = langid.classify(source)
+            if lang != expected_lang and confidence > 0.9:
+                # confidence for wrong language higher than 90%
+                return False
+            else:
+                return True
 
 
 if __name__ == "__main__":
@@ -15,27 +49,29 @@ if __name__ == "__main__":
                         default=sys.stdin)
     parser.add_argument('outfile', nargs='?', type=argparse.FileType('w'),
                         default=sys.stdout)
+    parser.add_argument('-deleted', help='file to keep deleted lines',
+                        type=argparse.FileType('w'))
     parser.add_argument('-minscore', type=float, default=0,
                         help='minimum score from hunalign')
-    parser.add_argument('-s', '--lang1', help='source language',
+    parser.add_argument('-slang', '--lang1', help='source language',
                         dest='source_lang', default='en')
-    parser.add_argument('-t', '--lang2', help='target language',
+    parser.add_argument('-tlang', '--lang2', help='target language',
                         dest='target_lang', default='fr')
+    parser.add_argument('-cld2', help='use CLD2 instead of langid.py',
+                        action='store_true')
     args = parser.parse_args()
 
     deletions = defaultdict(list)
 
     n_written = 0
     n_total = 0
-    langid.set_languages([args.source_lang, args.target_lang])
+    lid = LanguageIdentifier(args.cld2, [args.source_lang, args.target_lang])
     for line in args.infile:
         n_total += 1
-        source, target, score = line.split("\t")
+        source, target, score = line.rstrip('\n').split("\t")[-3:]
         source = source.decode('utf-8', 'ignore')
         target = target.decode('utf-8', 'ignore')
-        if float(score) < args.minscore:
-            deletions["low score"].append('')
-            continue
+
         if source == target:
             deletions["identical"].append(target)
             continue
@@ -45,31 +81,34 @@ if __name__ == "__main__":
         elif not target.strip():
             deletions["target_empty"].append('')
             continue
-
-        langid_source = langid.classify(source.lower())
-        if langid_source[0] != args.source_lang and langid_source[1] > 0.9:
-            deletions["source_lang"].append(
-                "%s\t%s\t%f" % (source, langid_source[0], langid_source[1]))
-            continue
-        langid_target = langid.classify(target.lower())
-        if langid_target[0] != args.target_lang and langid_target[1] > 0.9:
-            deletions["target_lang"].append(
-                "%s\t%s\t%f" % (target, langid_target[0], langid_target[1]))
+        if float(score) < args.minscore:
+            deletions["low score"].append("\t".join((source, target, score)))
             continue
 
-        # source = source.decode('utf-8', 'ignore')
-        # target = target.decode('utf-8', 'ignore')
         if float((len(source) + 15)) / float(len(target) + 15) > 1.5:
             deletions["source_too_long"].append("%s\t%s" % (source, target))
-        elif float((len(target) + 15)) / float(len(source) + 15) > 1.5:
+            continue
+        if float((len(target) + 15)) / float(len(source) + 15) > 1.5:
             deletions["source_too_short"].append("%s\t%s" % (source, target))
-        else:
-            args.outfile.write(line)
-            n_written += 1
-    print "Written: %d of %d = %f percent" % (n_written, n_total,
-                                              100. * n_written / n_total)
-    for reason, deleted in deletions.iteritems():
-        print "Deleted %d items due to %s" % (len(deleted), reason)
-        for line in deleted:
-            if line.strip():
-                print "\t%s" % line.encode('utf-8')
+            continue
+
+        if not lid.is_language(source, args.source_lang):
+            deletions["source_lang"].append(source)
+            continue
+        if not lid.is_language(target, args.target_lang):
+            deletions["target_lang"].append(target)
+            continue
+
+        args.outfile.write(line)
+        n_written += 1
+
+    if args.deleted:
+        args.deleted.write("Written: %d of %d = %f percent\n" %
+                           (n_written, n_total,
+                            100. * n_written / max((1, n_total))))
+        for reason, deleted in deletions.iteritems():
+            args.deleted.write("Deleted %d items due to %s\n"
+                               % (len(deleted), reason))
+            for line in deleted:
+                if line.strip():
+                    args.deleted.write("\t%s\n" % line.encode('utf-8'))
