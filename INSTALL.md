@@ -26,9 +26,12 @@ virtualenv crawl
 source ~/net/build/crawl/bin/activate
 
 # Install requirements
+```
+sudo apt-get install libffi-dev
 cd DataCollection/
 pip install --upgrade 'git+https://github.com/GregBowyer/cld2-cffi.git'
 pip install -r requirements.txt
+```
 
 
 ## Running a baseline ##
