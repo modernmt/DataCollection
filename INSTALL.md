@@ -29,6 +29,7 @@ source ~/net/build/crawl/bin/activate
 ```
 sudo apt-get install libffi-dev
 sudo apt-get install libssl-dev
+sudo apt-get install liblapack-dev
 cd DataCollection/
 pip install --upgrade 'git+https://github.com/GregBowyer/cld2-cffi.git'
 pip install -r requirements.txt
