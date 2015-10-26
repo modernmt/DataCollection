@@ -15,6 +15,7 @@ from keras.utils import np_utils
 from keras.preprocessing.text import Tokenizer
 from keras.layers.advanced_activations import PReLU, LeakyReLU
 from keras.callbacks import Callback
+from keras.optimizers import SGD
 salts = ["a", "b", "c", "d", "e", "f", "g", "h"]  # more secure than debian
 
 
@@ -24,35 +25,43 @@ def hashfunc(salt):
     return h
 
 
-def ngrams(sentence, order=1, sep='#'):
+def ngrams(sentence, order=1, vocab=None, sep='#'):
     for n in range(1, order + 1):
-        prefix = ''
-        if n > 1:
+        if n == 2:
             sentence.insert(0, '<s>')
             sentence.append('</s>')
         for i in range(len(sentence) - n + 1):
-            yield prefix + sep.join(sentence[i:i + n])
+            ngram_words = sentence[i:i + n]
+            skip = False
+            for w in ngram_words:
+                if vocab and w not in vocab:
+                    skip = True
+                    break
+            if not skip:
+                yield sep.join(ngram_words)
 
 
-def hash_line(line, salts, n, size, order=1):
-    line = line.strip().split()
+def hash_line(line, salts, n, size, order=1, vocab=None):
+    line = line.strip().lower().split()
     res = []
-    for w in ngrams(line, order):
+    for w in ngrams(line, order, vocab):
         for s in salts[:n]:
-            h = hashfunc(s)
-            h.update(w)
-            res.append(int(int(h.hexdigest(), 16) % size))
+            # h = hashfunc(s)
+            # h.update(w)
+            # res.append(int(int(h.hexdigest(), 16) % size))
+            res.append(hash("%s\t%s" % (s, w)) % size)
     res = list(set(res))
     res.sort()
+    # print ("%d => %d" %(len(line), len(res)))
     return res
 
 
-def _read_corpus(args):
+def _read_corpus(args, target_vocab):
     source_corpus, target_corpus = [], []
     for line in args.train:
         s, t = line.split(' ||| ')
         s = hash_line(s, salts, args.n, args.size, args.order)
-        t = hash_line(t, salts, args.n, args.size, args.order)
+        t = hash_line(t, salts, args.n, args.size, args.order, target_vocab)
         source_corpus.append(s)
         target_corpus.append(t)
     return source_corpus, target_corpus
@@ -63,27 +72,22 @@ def sparse_to_dense(sparse_matrix, max_idx):
     for i in range(len(sparse_matrix)):
         for j in sparse_matrix[i]:
             m[i, j] = 1
+        # m[i] /= sum(m[i])
     return m
 
 
-def read_corpus(args):
-    source_corpus, target_corpus = _read_corpus(args)
+def read_corpus(args, target_vocab):
+    source_corpus, target_corpus = _read_corpus(args, target_vocab)
     n_examples = len(source_corpus)
     n_test = n_examples / 10
 
-    print(source_corpus[n_test])
-    print(target_corpus[n_test])
+    print("First source: ", source_corpus[n_test][:10])
+    print("First target: ", target_corpus[n_test][:10])
 
-    print("Vectorizing sequence data...")
-
-    # tokenizer = Tokenizer(args.size)
-    # X_train = tokenizer.sequences_to_matrix(
-    #     source_corpus[n_test:], mode="binary")
-    # X_test = tokenizer.sequences_to_matrix(
-    #     source_corpus[:n_test], mode="binary")
     X_train = sparse_to_dense(source_corpus[n_test:], args.size)
     X_test = sparse_to_dense(source_corpus[:n_test], args.size)
-    print('X_train shape:', X_train.shape)
+    print('X_train shape:', X_train.shape, "active:",
+          sum(sum(X_train)) / X_train.size)
     print('X_test shape:', X_test.shape)
 
     # Y_train = tokenizer.sequences_to_matrix(
@@ -92,16 +96,19 @@ def read_corpus(args):
     #     target_corpus[:n_test], mode="binary")
     Y_train = sparse_to_dense(target_corpus[n_test:], args.size)
     Y_test = sparse_to_dense(target_corpus[:n_test], args.size)
-    print('Y_train shape:', Y_train.shape)
-    print(Y_train[0])
+    print('Y_train shape:', Y_train.shape, "active:",
+          sum(sum(Y_train)) / Y_train.size)
+    print("First target mapped: ", Y_train[0][:10])
     print('Y_test shape:', Y_test.shape)
 
     return X_train, X_test, Y_train, Y_test
+    # return X_train, X_test, X_train, X_test
 
 
 class EvalCorrelation(Callback):
 
     def __init__(self, args):
+        self.target_vocab = set(["<s>", "</s>"])
         self.read_eval(args)
 
     def read_eval(self, args):
@@ -114,6 +121,8 @@ class EvalCorrelation(Callback):
                 hash_line(source, salts, args.n, args.size, args.order))
             target_corpus.append(
                 hash_line(target, salts, args.n, args.size, args.order))
+            for w in target.strip().split():
+                self.target_vocab.add(w)
             self.scores.append(float(score))
         # self.X_eval = tokenizer.sequences_to_matrix(
         #     source_corpus, mode="binary")
@@ -122,20 +131,63 @@ class EvalCorrelation(Callback):
         self.X_eval = sparse_to_dense(source_corpus, args.size)
         self.Y_eval = sparse_to_dense(target_corpus, args.size)
 
+    def get_target_vocab(self):
+        return self.target_vocab
+
+    def pos_prob(self, x, y):
+        # return sum(np.log(x[y > 0])) / sum(y)
+        pos_probs = np.log(x[y > 0])
+        pos_probs = np.nan_to_num(pos_probs)
+        return sum(pos_probs)
+
+    def min_prob(self, x, y):
+        """ the minimum probability of those fields, that should have
+        been > .5 """
+        return min(x[y > 0])
+
+    def max_prob(self, x, y):
+        return max(x[y < 1])
+
+    def all_prob(self, x, y):
+        # return sum(np.log(x[y > 0])) / sum(y)
+        pos_probs = np.log(x[y > 0])
+        pos_probs = np.nan_to_num(pos_probs)
+        neg_probs = np.log(1 - x[y < 1])
+        neg_probs = np.nan_to_num(neg_probs)
+        return sum(pos_probs) + sum(neg_probs)
+
+    def count_correct(self, x, y):
+        return sum((x > .5) == y) / sum(y)
+
+    def print_score(self, probs, dist_func, name):
+        dist = [dist_func(a, b) for a, b in zip(probs, self.Y_eval)]
+        pearson, p = pearsonr(self.scores, dist)
+        spearman, p = spearmanr(self.scores, dist)
+        print ("[%s] Sum: %f\tP: %f\tS: %f" %
+               (name, sum(dist), pearson, spearman))
+
     def eval_model(self, model):
-        probs = model.predict_proba(self.X_eval)
-        dist = [distance.cosine(a, b) for a, b in zip(probs, self.Y_eval)]
-        r, p = pearsonr(self.scores, dist)
-        print ("Pearson's r:\t", r)
-        r, p = spearmanr(self.scores, dist)
-        print ("Spearmans's r:\t", r)
-        dist = [distance.euclidean(a, b) for a, b in zip(probs, self.Y_eval)]
-        r, p = pearsonr(self.scores, dist)
-        print ("Pearson's r:\t", r)
-        r, p = spearmanr(self.scores, dist)
-        print ("Spearmans's r:\t", r)
-        dist = [sum((a > .5) == b) for a, b in zip(probs, self.Y_eval)]
-        print ("Correct:", sum(dist))
+        # probs = model.predict_proba(self.X_eval)
+        probs = model.predict(self.X_eval)
+        assert probs.shape == self.Y_eval.shape
+
+        for f, n in ((distance.cosine, "Cosine"),
+                     (distance.euclidean, "Eulidean"),
+                     (distance.correlation, "Correlation"),
+                     (distance.braycurtis, "Bray-Curtis"),
+                     (distance.canberra, "Canberra"),
+                     (distance.chebyshev, "Chebyshev"),
+                    #  (distance.mahalanobis, "Mahalanobis"),
+                     (distance.matching, "Matching"),
+                     (distance.russellrao, "Russelrao"),
+                     (self.pos_prob, "PosProb", ),
+                     (self.all_prob, "AllProb"),
+                     (self.min_prob, "MinProb"),
+                     (self.max_prob, "MaxProb"),
+                     (self.count_correct, "CorrectPercent")):
+            self.print_score(probs, f, n)
+
+        print ("Predicted:", sum(sum(probs > .5)))
 
     def on_epoch_end(self, epoch, logs={}):
         self.eval_model(self.model)
@@ -162,13 +214,9 @@ if __name__ == "__main__":
                         type=int, default=5)
     parser.add_argument('-epochs', help='number of training iterations',
                         type=int, default=50)
-    parser.add_argument('-o', action='store', dest='order',
-                        help='order of n-grams (default 1)',
+    parser.add_argument('-order', help='order of n-grams (default 1)',
                         type=int, default=1)
     args = parser.parse_args(sys.argv[1:])
-
-    # Read corpus
-    X_train, X_test, Y_train, Y_test = read_corpus(args)
 
     print("Building model...")
     model = Sequential()
@@ -185,7 +233,7 @@ if __name__ == "__main__":
 
         if args.activation.lower() == "prelu":
             model.add(PReLU())
-        elif args.activation.lower() == "leakyrelU":
+        elif args.activation.lower() == "leakyrelu":
             model.add(LeakyReLU())
         else:
             model.add(Activation(args.activation))
@@ -193,21 +241,38 @@ if __name__ == "__main__":
 
     model.add(Dense(args.size))
     model.add(Activation('sigmoid'))
+    # sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
+    # model.compile(loss='binary_crossentropy', optimizer=sgd)
     model.compile(loss='binary_crossentropy', optimizer='adam')
+    # model.compile(loss='binary_crossentropy', optimizer='rmsprop')
+    # model.compile(loss='categorical_crossentropy', optimizer='adam')
+    # model.compile(loss='mean_squared_error', optimizer='adam')
+    # model.compile(loss='hinge', optimizer='adam')
+    # model.compile(loss='categorical_crossentropy', optimizer='adam')
+#
+    # model.compile(loss='mean_squared_error', optimizer='adam')
 
     evaluator = EvalCorrelation(args)
     evaluator.eval_model(model)
 
+    # Read corpus
+    # X_train, X_test, Y_train, Y_test = read_corpus(
+    #     args, evaluator.get_target_vocab())
+    X_train, X_test, Y_train, Y_test = read_corpus(
+        args, None)
+
     print("Training model...")
-    proba = model.predict_proba(X_train, batch_size=args.batchsize)
-    print(proba[0])
+    proba = model.predict(X_train, batch_size=args.batchsize)
+    print(proba[0][:10])
+    # print((proba[0] > 0.5 == Y_train[0])[:10])
     history = model.fit(X_train, Y_train, nb_epoch=args.epochs,
                         batch_size=args.batchsize, shuffle=True,
                         verbose=1, validation_split=0.1,
                         callbacks=[evaluator])
 
-    proba = model.predict_proba(X_train, batch_size=args.batchsize, verbose=0)
-    print(proba[0])
+    proba = model.predict(X_train, batch_size=args.batchsize, verbose=0)
+    print(proba[0][:10])
+    # print((proba[0] > 0.5 == Y_train[0])[:10])
     score = model.evaluate(
         X_test, Y_test, batch_size=args.batchsize, verbose=1)
     print('Test score:', score)
