@@ -61,7 +61,6 @@ cd moses
 make -f contrib/Makefiles/install-dependencies.gmake
 ```
 
-
 ## Running a baseline ##
 ```
 cd
