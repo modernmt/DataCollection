@@ -7,6 +7,7 @@ import cld2
 import langid
 import sys
 
+
 """ Removes some wrongly aligned pairs from hunalign output """
 
 
@@ -35,7 +36,7 @@ class LanguageIdentifier(object):
             else:  # unreliable is still counted as OK
                 return True
         else:
-            lang, confidence = langid.classify(s)
+            lang, confidence = langid.classify(source.lower())
             if lang != expected_lang and confidence > 0.9:
                 # confidence for wrong language higher than 90%
                 return False
