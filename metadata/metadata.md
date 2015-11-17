@@ -36,6 +36,24 @@ python ~/net/build/DataCollection/metadata/metadatabase.py --cdx 2015_40 cdx | \
 /home/buck/net/build/DataCollection/metadata/rocksdb/insertkv /home/buck/net/cc/meta/db/2015_40/
 ```
 
+## Running MetaData Server ##
+Install pyrocksdb following these instructions: http://pyrocksdb.readthedocs.org/en/latest/installation.html
+Instead of
+```
+	make shared_lib
+```
+Run
+```
+	PORTABLE=1 make shared_lib
+```
+as above to make the binary independent of the underlying CPU revision
+
+Run the server with
+```
+/home/buck/net/build/DataCollection/metadata/md_server.py /PATH_TO_DBS/db/rdb_201*/ -ip 129.215.197.184 -port 8080
+```
+(change IP and Port)
+
 
 ## Getting the language distribution data
 

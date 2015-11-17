@@ -95,21 +95,5 @@ cat candidates.en-de.locations | /home/buck/net/build/DataCollection/baseline/ca
 TBD
 
 
-## Building MetaDataBase ##
-cd net/build/
-git clone git@github.com:facebook/rocksdb.git
-sudo apt-get install
-cd rocksdb
-PORTABLE=1 make -j 4 all
-
-# Optional: edit Makefile to point to directory where rocksdb was compiled
-cd ~/net/build/DataCollection/metadata/rocksdb
-make
-
-## Running MetaData Server ##
-Install pyrocksdb following these instructions: http://pyrocksdb.readthedocs.org/en/latest/installation.html
-Instead of
-	make shared_lib
-Run
-	PORTABLE=1 make -j 4 shared_lib
-to make the binary independent of the underlying CPU revision
+## Building/Running MetaDataBase ##
+see metadata/metadata.md
