@@ -7,18 +7,33 @@ For each page in CommonCrawl we hold as metadata
 
 ## Getting location data
 
-Example: crawl 2015_22
+Example: crawl 2015_40
 
 For recent crawls we use the data files from the common crawl index. These are just 300 gzipped files containing key-value pairs.
 
 ```
-for i in `seq -w 0 299`; do wget -c https://aws-publicdatasets.s3.amazonaws.com/common-crawl/cc-index/collections/CC-MAIN-2015-22/indexes/cdx-00${i}.gz; done
+mkdir 2015_40
+cd 2015_40
+for i in `seq -w 0 299`; do wget -c https://aws-publicdatasets.s3.amazonaws.com/common-crawl/cc-index/collections/CC-MAIN-2015-40/indexes/cdx-00${i}.gz; done
+```
+Restart the above until all files are completed.
+
+## Building the Binaries for rocksdbs
+```
+cd ~/net/build
+git clone git@github.com:facebook/rocksdb.git
+cd rocksdb
+PORTABLE=1 make shared_lib static_lib
 ```
 
 ## Building data database from location data
 
 ```
-  for f in /fs/nas/eikthyrnir0/commoncrawl/cdx/2015_22/cdx-00???.gz; do echo `date` $f ; zcat $f | nice python ~/net/build/DataCollection/metadata/metadatabase.py --cdx 2015_22 cdx --db db_2015_22 --batchsize 100000; done
+mkdir -p /home/buck/net/cc/meta/db/2015_40
+pv 2015_40/cdx-00???.gz | \
+gzip -cd | \
+python ~/net/build/DataCollection/metadata/metadatabase.py --cdx 2015_40 cdx | \
+/home/buck/net/build/DataCollection/metadata/rocksdb/insertkv /home/buck/net/cc/meta/db/2015_40/
 ```
 
 
@@ -38,7 +53,7 @@ wget https://aws-publicdatasets.s3.amazonaws.com/common-crawl/crawl-data/CC-MAIN
 zcat wet.paths.gz | sed 's/^/https:\/\/aws-publicdatasets.s3.amazonaws.com\//' > $wet.paths.http
 
 # Make subdirectories
-for f in `zcat wet.paths.gz |  cut -d '/' -f 5 | sort | uniq`; do mkdir -p $f; done; 
+for f in `zcat wet.paths.gz |  cut -d '/' -f 5 | sort | uniq`; do mkdir -p $f; done;
 
 # Collect monolingual data
 # Set number of jobs to roughly half the number of cores, e.g. -j8 on a 16-core machine.
@@ -61,34 +76,34 @@ gzip -9 > 2015_22.kv.gz
 
 ## Metadata API
 
-The metadata API allows querying with a partial URL prefix and (optionally) a crawl name. 
+The metadata API allows querying with a partial URL prefix and (optionally) a crawl name.
 
     $ curl "http://data.statmt.org:8080/query_prefix?url=hettahuskies&crawl=2013_20&pretty=1&max_results=2"
     {
-      "query_path": "", 
-      "query_crawl": "2013_20", 
+      "query_path": "",
+      "query_crawl": "2013_20",
       "locations": {
         "http://hettahuskies.com/": [
           {
-            "filename": "https://aws-publicdatasets.s3.amazonaws.com/common-crawl/crawl-data/CC-MAIN-2013-20/segments/1368699684236/warc/CC-MAIN-20130516102124-00033-ip-10-60-113-184.ec2.internal.warc.gz", 
-            "length": "4194", 
-            "mime": "UNKNOWN", 
-            "offset": "127252350", 
+            "filename": "https://aws-publicdatasets.s3.amazonaws.com/common-crawl/crawl-data/CC-MAIN-2013-20/segments/1368699684236/warc/CC-MAIN-20130516102124-00033-ip-10-60-113-184.ec2.internal.warc.gz",
+            "length": "4194",
+            "mime": "UNKNOWN",
+            "offset": "127252350",
             "crawl": "2013_20"
           }
-        ], 
+        ],
         "http://hettahuskies.com/Location/Areaattractions/aaintro.php": [
           {
-            "filename": "https://aws-publicdatasets.s3.amazonaws.com/common-crawl/crawl-data/CC-MAIN-2013-20/segments/1368700212265/warc/CC-MAIN-20130516103012-00009-ip-10-60-113-184.ec2.internal.warc.gz", 
-            "length": "4140", 
-            "mime": "UNKNOWN", 
-            "offset": "123806691", 
+            "filename": "https://aws-publicdatasets.s3.amazonaws.com/common-crawl/crawl-data/CC-MAIN-2013-20/segments/1368700212265/warc/CC-MAIN-20130516103012-00009-ip-10-60-113-184.ec2.internal.warc.gz",
+            "length": "4140",
+            "mime": "UNKNOWN",
+            "offset": "123806691",
             "crawl": "2013_20"
           }
         ]
-      }, 
-      "query_domain": "hettahuskies", 
-      "db_key": "hettahuskies http://hettahuskies", 
+      },
+      "query_domain": "hettahuskies",
+      "db_key": "hettahuskies http://hettahuskies",
       "skipped_keys": []
     }
 
@@ -97,20 +112,20 @@ If 'crawl' is not specified, we get results from all crawls at once. Get a list 
     $ curl "http://data.statmt.org:8080/crawls?pretty=1"
     {
       "crawls": [
-        "2012", 
-        "2013_20", 
-        "2014_15", 
-        "2014_23", 
-        "2014_35", 
-        "2014_41", 
-        "2014_42", 
-        "2014_49", 
-        "2014_52", 
-        "2015_06", 
-        "2015_11", 
-        "2015_14", 
-        "2015_18", 
-        "2015_22", 
+        "2012",
+        "2013_20",
+        "2014_15",
+        "2014_23",
+        "2014_35",
+        "2014_41",
+        "2014_42",
+        "2014_49",
+        "2014_52",
+        "2015_06",
+        "2015_11",
+        "2015_14",
+        "2015_18",
+        "2015_22",
         "2015_27"
       ]
     }
@@ -149,4 +164,4 @@ The 'locations' field hold url-location pairs the point into Amazon S3 where the
 
 Format is warc header, empty line, http response header, empty line, html content. Check out [download_candidates.py](https://github.com/ModernMT/DataCollection/blob/master/baseline/download_candidates.py) for downloading code in python using connection pools.
 
-Results from the metadata API are limited to 10000 per request by default, just to keep the result size reasonable. Set max_results to a higher value to increase this limit. For batch processing we can access the DB locally and use the C++ interface. 
+Results from the metadata API are limited to 10000 per request by default, just to keep the result size reasonable. Set max_results to a higher value to increase this limit. For batch processing we can access the DB locally and use the C++ interface.
