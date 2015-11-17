@@ -120,6 +120,8 @@ def process_cdx(line, args):
 
 def read_cdx(args):
     for line in sys.stdin:
+#        yield process_cdx(line, args)
+#        continue
         try:
             if line.count('}') == 1:
                 yield process_cdx(line, args)
@@ -129,14 +131,15 @@ def read_cdx(args):
         except ValueError:
             sys.stderr.write("Malformed line: %s\n" % line)
             continue
-        except:
-            sys.stderr.write("Error processing: %s\n" % line)
+        except Exception as e:
+            sys.stderr.write("Error %s while processing: %s\n" % (e, line))
+            import traceback
+            sys.stderr.write(traceback.format_exc())
+            sys.exit()
             continue
-
 
 def read_json(args):
     for line in sys.stdin:
-        # yield process_json(line, args)
         try:
             yield process_json(line, args)
         except KeyError:
