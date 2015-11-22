@@ -17,7 +17,6 @@ def original_url(html):
         return "unknown_url"
     return m.groups()[0]
 
-@profile
 def langsplit(uri, text):
     cmd = [
         "/home/buck/net/build/mtma_bitext/html_convert/langsplit",
@@ -60,7 +59,6 @@ def extract_language(langsplit_output, expected_lang):
 
     return "\n".join(text)
 
-@profile
 def split_sentences(text, sentence_splitter_cmd, lang):
     sentences = []
     proc = Popen([sentence_splitter_cmd, "-l", lang],
@@ -76,7 +74,6 @@ def split_sentences(text, sentence_splitter_cmd, lang):
 
     return sentences
 
-@profile
 def tokenize(text, tokenizer_cmd, lang):
     proc = Popen([tokenizer_cmd, "-a", "-l", lang],
                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
@@ -85,7 +82,6 @@ def tokenize(text, tokenizer_cmd, lang):
     output = proc.communicate()[0].decode("utf-8")
     return output
 
-@profile
 def normalize(text, normalizer_cmd, lang):
     proc = Popen([normalizer_cmd, lang],
                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
