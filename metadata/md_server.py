@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
 import sys
 import json
 import urlparse
@@ -8,6 +9,9 @@ import time
 import cherrypy
 import rocksdb
 from collections import defaultdict
+
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
+from baseline.ccdownloader import CCDownloader
 
 
 def split_uri(uri, encoding='idna'):
@@ -42,6 +46,7 @@ class DBInterface(object):
                  max_results=10000):
 
         self.dbs = {}
+        self.ccdownloader = CCDownloader
 
         for db_directory in db_directories:
             opts = rocksdb.Options()
@@ -85,6 +90,7 @@ class DBInterface(object):
         pretty = kwargs.get("pretty", 0) > 0
         verbose = kwargs.get("verbose", 0) > 0
         exact = kwargs.get("exact", 0) > 0
+        get_html = kwargs.get("html", 0) > 0
         max_results = int(kwargs.get("max_results", self.max_results))
 
         query_domain, query_suffix, query_path = split_uri(query_url)
@@ -99,7 +105,7 @@ class DBInterface(object):
 
         relevant_crawls = [query_crawl] if query_crawl else self.dbs.keys()
 
-        result["skipped_keys"] = []
+        # result["skipped_keys"] = []
         result["locations"] = defaultdict(list)
 
         for db_crawl in relevant_crawls:
@@ -132,7 +138,20 @@ class DBInterface(object):
 
         if verbose:
             result["time"] = "%.2fs" % (time.time() - start_time)
+
+        if get_html:
+            for uri in result["locations"]:
+                for data in result["locations"][uri]:
+                    data["html"] = self.get_html(data)
+
         return self._dump_json(result, pretty)
+
+    def get_html(self, data):
+        html = self.ccdownloader(data["filename"],
+                                 data["offset"],
+                                 data["length"],
+                                 html_only=True)
+        return html
 
     @cherrypy.expose
     def query_tld(self, **kwargs):

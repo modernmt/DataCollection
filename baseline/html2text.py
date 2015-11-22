@@ -63,7 +63,7 @@ def html2text(html, sanitize=False):
     text = "\n".join(outbuf)
     if sanitize:
         text = TextSanitizer.clean_utf8(text)
-    text = TextSanitizer.clean_whitespace(text)
+    text = TextSanitizer.clean_text(text)
     return text
 
 

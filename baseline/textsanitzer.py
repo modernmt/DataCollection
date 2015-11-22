@@ -37,8 +37,11 @@ class TextSanitizer():
         if not isinstance(s, unicode):
             return s
         s = unicodedata.normalize('NFC', s)
-        s = u"".join(map(TextSanitizer._sanitize, s))
-        return s
+        sanitized_lines = []
+        for line in s.split("\n"):
+            sanitized_lines.append(u"".join(map(TextSanitizer._sanitize,
+                                                line)))
+        return "\n".join(sanitized_lines)
 
     @staticmethod
     def to_unicode(text):
@@ -61,7 +64,7 @@ class TextSanitizer():
         if sanitize:
             text = TextSanitizer.clean_utf8(text)
         if clean_whitespace:
-            text = clean_whitespace(text)
+            text = TextSanitizer.clean_whitespace(text)
         return text
 
     @staticmethod
