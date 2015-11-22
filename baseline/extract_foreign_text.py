@@ -17,7 +17,7 @@ def original_url(html):
         return "unknown_url"
     return m.groups()[0]
 
-
+@profile
 def langsplit(uri, text):
     cmd = [
         "/home/buck/net/build/mtma_bitext/html_convert/langsplit",
@@ -60,24 +60,23 @@ def extract_language(langsplit_output, expected_lang):
 
     return "\n".join(text)
 
-
+@profile
 def split_sentences(text, sentence_splitter_cmd, lang):
     sentences = []
+    proc = Popen([sentence_splitter_cmd, "-l", lang],
+                 stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    proc.stdin.write(text.replace("\n", "\n\n").strip().encode("utf-8"))
+    proc.stdin.write("\n")
+    output = proc.communicate()[0].decode("utf-8")
+    for line in output.split("\n"):
+        line = line.strip()
+        if not line or line == "<P>":
+            continue
+        sentences.append(line)
 
-    for line in text.split("\n"):
-        # FIXME: starting a new process for each line is terribly inefficient
-        proc = Popen([sentence_splitter_cmd, "-l", lang],
-                     stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        proc.stdin.write(line.strip().encode("utf-8"))
-        proc.stdin.write("\n")
-        output = proc.communicate()[0].decode("utf-8")
-        for line in output.split("\n"):
-            if not line.strip():
-                continue
-            sentences.append(line.strip())
     return sentences
 
-
+@profile
 def tokenize(text, tokenizer_cmd, lang):
     proc = Popen([tokenizer_cmd, "-a", "-l", lang],
                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
@@ -86,7 +85,7 @@ def tokenize(text, tokenizer_cmd, lang):
     output = proc.communicate()[0].decode("utf-8")
     return output
 
-
+@profile
 def normalize(text, normalizer_cmd, lang):
     proc = Popen([normalizer_cmd, lang],
                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
