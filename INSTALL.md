@@ -51,6 +51,7 @@ cd DataCollection/
 pip install --upgrade 'git+https://github.com/GregBowyer/cld2-cffi.git'
 pip install -r requirements.txt
 ```
+When encountering issues with installing NLTK data, you might have to hand-edit `DEFAULT_URL` in `/usr/lib/python2.7/dist-packages/nltk/downloader.py` from `http://nltk.googlecode.com/svn/trunk/nltk_data/index.xml` to `http://www.nltk.org/nltk_data/`.
 
 # Install moses
 ```
