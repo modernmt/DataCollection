@@ -67,6 +67,8 @@ Like described at http://sourceforge.net/p/bitextor/wiki/Home/ (used 4.1.0-rc4 f
 
 Potentially needed option when configuring: `./configure --without-apertium`
 
+Download `de-en.dict` from Bitextor sourceforge website.
+
 ## Running a baseline ##
 ```
 cd
