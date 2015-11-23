@@ -108,6 +108,8 @@ pv en-de.down | parallel --pipe /usr/local/bin/bitextor-align-segments --lang1 e
 ```
 When using `cat` instead of `pv` the machine might run out of memory.
 
+The resulting `en-de.sent` file has 4 columns: source URL, target URL, source text, target text. The columns can be extracted into individual files using the `cut` command, e.g. `cut -f 3 en-de.sent` to extract the source text.
+
 
 ## Building/Running MetaDataBase ##
 see metadata/metadata.md
