@@ -108,8 +108,14 @@ pv en-de.down | parallel --pipe /usr/local/bin/bitextor-align-segments --lang1 e
 ```
 When using `cat` instead of `pv` the machine might run out of memory.
 
-The resulting `en-de.sent` file has 4 columns: source URL, target URL, source text, target text. The columns can be extracted into individual files using the `cut` command, e.g. `cut -f 3 en-de.sent` to extract the source text.
+The resulting `en-de.sent` file has 5 columns: source URL, target URL, source text, target text, and hunalign score. The columns can be extracted into individual files using the `cut` command, e.g. `cut -f 3 en-de.sent` to extract the source text.
 
+# Step 5: Clean parallel sentences
+
+```
+cut -f 3- en-de.sent | /home/buck/net/build/DataCollection/baseline/filter_hunalign_bitext.py - en-de.filtered --lang1 en --lang2 de -cld2 -deleted del
+```
+This needs cld2-cffi and langid so run `pip install langid cld2-cffi` first. The resulting file has 3 columns: source text, target text, and hunalign score. As above use `cut` to get source/target.
 
 ## Building/Running MetaDataBase ##
 see metadata/metadata.md
