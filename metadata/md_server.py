@@ -46,7 +46,7 @@ class DBInterface(object):
                  max_results=10000):
 
         self.dbs = {}
-        self.ccdownloader = CCDownloader
+        self.ccdownloader = CCDownloader()
 
         for db_directory in db_directories:
             opts = rocksdb.Options()
@@ -84,6 +84,11 @@ class DBInterface(object):
         cherrypy.response.headers['Content-Type'] = 'application/json'
         start_time = time.time()
         query_url = kwargs["url"]
+
+        if not (query_url.startswith("http://") or
+                query_url.startswith("https://")):
+            query_url = "http://%s" % query_url
+
         query_crawl = kwargs.get("crawl", "")
         if query_crawl:
             assert query_crawl in self.dbs.keys()
@@ -133,6 +138,9 @@ class DBInterface(object):
                 if 'offset:' in data:
                     data['offset'] = data.pop('offset:')
 
+                data['offset'] = int(data['offset'])
+                data['length'] = int(data['length'])
+
                 data["crawl"] = db_crawl
                 result["locations"][uri].append(data)
 
@@ -147,10 +155,10 @@ class DBInterface(object):
         return self._dump_json(result, pretty)
 
     def get_html(self, data):
-        html = self.ccdownloader(data["filename"],
-                                 data["offset"],
-                                 data["length"],
-                                 html_only=True)
+        html = self.ccdownloader.download(data["filename"],
+                                          data["offset"],
+                                          data["length"],
+                                          html_only=True)
         return html
 
     @cherrypy.expose
