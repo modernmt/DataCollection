@@ -150,7 +150,7 @@ class DBInterface(object):
         if get_html:
             for uri in result["locations"]:
                 for data in result["locations"][uri]:
-                    data["html"] = self.get_html(data)
+                    data["html"] = self.get_html(data)  # .encode("utf-8")
 
         return self._dump_json(result, pretty)
 
@@ -256,6 +256,8 @@ if __name__ == "__main__":
                             'server.socket_host': args.ip})
     cherrypy.config.update({'error_page.default': json_error})
     cherrypy.config.update({'log.screen': True})
+    cherrypy.config.update({'tools.sessions.on': True,
+                            'tools.encode.on': True})
     if args.logprefix:
         cherrypy.config.update({'log.access_file': "%s.access.log"
                                 % args.logprefix,

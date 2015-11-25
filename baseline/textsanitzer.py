@@ -53,8 +53,10 @@ class TextSanitizer():
         except:
             encoding = chardet.detect(text)
             try:
+                sys.stderr.write("Encoding: %s\n" % encoding["encoding"])
                 text = text.decode(encoding["encoding"])
             except:
+                sys.stderr.write("Falling back to UTF-8\n")
                 return text.decode("utf-8", errors='ignore')
         return text
 

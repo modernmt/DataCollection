@@ -1,6 +1,7 @@
 import requests
 import zlib
 import sys
+from textsanitzer import TextSanitizer
 
 
 class CCDownloader(object):
@@ -47,6 +48,7 @@ class CCDownloader(object):
             return ""
         if html_only:  # cut off WARC headers
             page = self.extract_html(page)
+        page = TextSanitizer.to_unicode(page)
         return page
 
     # TODO: check if we can deprecate this
