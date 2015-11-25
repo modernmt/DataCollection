@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from textsanitzer import TextSanitizer
 import base64
 import langid
 import re
 import subprocess
 import sys
 import threading
+
+from html2text import html2text
+from textsanitzer import TextSanitizer
 
 magic_numer = "df6fa1abb58549287111ba8d776733e9"
 
@@ -145,14 +147,20 @@ if __name__ == "__main__":
     parser.add_argument(
         '-tokenizer', help='moses tokenization script',
         default="/home/buck/net/build/moses-clean/scripts/tokenizer/tokenizer.perl")
+    parser.add_argument(
+        '-fromhtml', help='re-extract text from HTML', action='store_true')
 
     args = parser.parse_args(sys.argv[1:])
 
     for line in sys.stdin:
-        line = line.decode('utf-8')
         lang, mime_type, enc, uri, html, text = line.split("\t")
-        # html = base64.b64decode(html).decode("utf-8")
-        # text = base64.b64decode(text).decode("utf-8")
+        uri = TextSanitizer.to_unicode(uri)
+
+        if args.fromhtml:
+            text = html2text(base64.b64decode(html), sanitize=True,
+                             ignore_br=True)
+        else:
+            text = base64.b64decode(text).decode("utf-8")
 
         if not text.strip():
             sys.stderr.write("no text found in %s\n" % uri)
@@ -188,5 +196,5 @@ if __name__ == "__main__":
             if not foreign_line.strip():
                 continue
             args.outfile.write("%s\t%s\n"
-                               % (uri,
+                               % (uri.encode("utf-8"),
                                   foreign_line.strip().encode("utf-8")))
