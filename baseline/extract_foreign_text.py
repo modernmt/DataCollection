@@ -1,13 +1,55 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys
-import base64
-import re
-from subprocess import Popen, PIPE
-import langid
 from textsanitzer import TextSanitizer
+import base64
+import langid
+import re
+import subprocess
+import sys
+import threading
 
 magic_numer = "df6fa1abb58549287111ba8d776733e9"
+
+
+class ExternalTextProcessor(object):
+
+    def __init__(self, cmd):
+        self.cmd = cmd
+        self.proc = None
+        self.output = ""
+
+    def process(self, text, timeout=60.0):
+        # timeout in seconds
+        assert isinstance(text, unicode)
+
+        def target():
+            self.proc = subprocess.Popen(self.cmd,
+                                         stdin=subprocess.PIPE,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         shell=True)
+            if not self.input.endswith('\n'):
+                self.input += "\n"
+            self.output = self.proc.communicate(
+                input=self.input.encode('utf-8'))[0].decode('utf-8')
+
+        self.input = text
+
+        thread = threading.Thread(target=target)
+        thread.start()
+
+        thread.join(timeout)
+        if thread.is_alive():
+            print 'Terminating process'
+            print "failed for", repr(text)
+            print "command:", self.cmd
+            f = open("fail", 'wc')
+            f.write(text.encode('utf-8'))
+            f.close()
+            print "written 'fail'"
+            self.proc.kill()
+            thread.join()
+        return self.output
 
 
 def original_url(html):
@@ -17,17 +59,16 @@ def original_url(html):
         return "unknown_url"
     return m.groups()[0]
 
+
 def langsplit(uri, text):
     cmd = [
         "/home/buck/net/build/mtma_bitext/html_convert/langsplit",
         "--printchunks"]
-    proc = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    proc = ExternalTextProcessor(cmd)
     tld = uri.split("/")[0].split(".")[-1]
-    header = "%s tld:%s uri:%s\n" % (magic_numer, tld, uri)
-    proc.stdin.write(header)
-    proc.stdin.write(text.encode("utf-8"))
-    proc.stdin.write("\n")
-    output = proc.communicate()[0].decode("utf-8")
+    header = u"%s tld:%s uri:%s\n" % (magic_numer, tld, uri)
+    output = proc.process(u"\n".join([header, text]))
+
     if not output.strip():
         res = langid.classify(text)
         lang = res[0]
@@ -59,13 +100,12 @@ def extract_language(langsplit_output, expected_lang):
 
     return "\n".join(text)
 
+
 def split_sentences(text, sentence_splitter_cmd, lang):
     sentences = []
-    proc = Popen([sentence_splitter_cmd, "-l", lang],
-                 stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    proc.stdin.write(text.replace("\n", "\n\n").strip().encode("utf-8"))
-    proc.stdin.write("\n")
-    output = proc.communicate()[0].decode("utf-8")
+    proc = ExternalTextProcessor([sentence_splitter_cmd, "-l", lang])
+    output = proc.process(text.replace("\n", "\n\n"))
+
     for line in output.split("\n"):
         line = line.strip()
         if not line or line == "<P>":
@@ -74,20 +114,16 @@ def split_sentences(text, sentence_splitter_cmd, lang):
 
     return sentences
 
+
 def tokenize(text, tokenizer_cmd, lang):
-    proc = Popen([tokenizer_cmd, "-a", "-l", lang],
-                 stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    proc.stdin.write(text.strip().encode("utf-8"))
-    proc.stdin.write("\n")
-    output = proc.communicate()[0].decode("utf-8")
+    proc = ExternalTextProcessor([tokenizer_cmd, "-a", "-l", lang])
+    output = proc.process(text.strip())
     return output
 
+
 def normalize(text, normalizer_cmd, lang):
-    proc = Popen([normalizer_cmd, lang],
-                 stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    proc.stdin.write(text.strip().encode("utf-8"))
-    proc.stdin.write("\n")
-    output = proc.communicate()[0].decode("utf-8")
+    proc = ExternalTextProcessor([normalizer_cmd, lang])
+    output = proc.process(text.strip())
     return output
 
 if __name__ == "__main__":
@@ -113,9 +149,10 @@ if __name__ == "__main__":
     args = parser.parse_args(sys.argv[1:])
 
     for line in sys.stdin:
+        line = line.decode('utf-8')
         lang, mime_type, enc, uri, html, text = line.split("\t")
-        html = base64.b64decode(html).decode("utf-8")
-        text = base64.b64decode(text).decode("utf-8")
+        # html = base64.b64decode(html).decode("utf-8")
+        # text = base64.b64decode(text).decode("utf-8")
 
         if not text.strip():
             sys.stderr.write("no text found in %s\n" % uri)
@@ -134,8 +171,8 @@ if __name__ == "__main__":
         # sys.exit()
 
         if not foreign_text:
-            sys.stderr.write("no '%s' text found in %s\n" %
-                             (args.lang, uri))
+            # sys.stderr.write("no '%s' text found in %s\n" %
+            #                  (args.lang, uri))
             continue
 
         for foreign_line in split_sentences(foreign_text,
