@@ -69,7 +69,15 @@ if __name__ == "__main__":
     lid = LanguageIdentifier(args.cld2, [args.source_lang, args.target_lang])
     for line in args.infile:
         n_total += 1
-        source, target, score = line.rstrip('\n').split("\t")[-3:]
+        score = 1.0
+        split_line = line.rstrip('\n').split("\t")
+        if len(split_line) == 5:
+            split_line = split_line[-3:]
+        if len(split_line) == 3:
+            source, target, score = split_line
+        else:
+            assert len(split_line) == 2
+            source, target = split_line
         source = source.decode('utf-8', 'ignore')
         target = target.decode('utf-8', 'ignore')
 
