@@ -53,6 +53,8 @@ if __name__ == "__main__":
     parser.add_argument('tgtlang', help="target langauge e.g. fr")
     parser.add_argument('lett', type=argparse.FileType('w'),
                         help='output lett file')
+    parser.add_argument('-ignore_br', help="ignore <br> tags in HTML",
+                        action='store_true', default=False)
 
     mime_type = "text/html"
     enc = "charset=utf-8"
@@ -67,7 +69,9 @@ if __name__ == "__main__":
             continue
         data = tar.extractfile(tarinfo).read()
         data = encoding.convert_to_utf8(data)
-        text = html2text(data.encode("utf-8"))  # utf-8 input expected
+        text = html2text(data.encode("utf-8"),  # utf-8 input expected
+                         sanitize=True,
+                         ignore_br=args.ignore_br)
         uri = tarinfo.name
         if uri not in lang_stats:
             sys.stderr.write("No langstats for file %s\n" % uri)
