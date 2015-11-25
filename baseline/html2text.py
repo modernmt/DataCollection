@@ -25,41 +25,54 @@ def html2text(html, sanitize=False, ignore_br=False):
     walker = treewalkers.getTreeWalker("dom")
     stream = walker(dom_tree)
 
+    space_introducing_tags = set(['th', 'td'])
+    # Add space around spans
+    # This technically violates the standard as spans
+    # don't introduce whitespace. In practice whitespace
+    # is often added via CSS and spans rarely end in the
+    # middle of a word.
+    space_introducing_tags.add('span')
+
+    line_break_tags = block_level_elements
+    line_break_tags.add('tr')
+
+    if ignore_br:
+        space_introducing_tags.add('br')
+    else:
+        line_break_tags.add('br')
+
     in_script = False
     outbuf = []
     current_line = []
     for token in stream:
         token_name = token.get('name', "").lower()
 
+        # ignore everything in scripts
         if token_name in ['script', 'style', 'noscript']:
             in_script = token.get('type', None) == 'StartTag'
         if in_script:
             continue
 
-        if ignore_br and token_name == 'br':
-            current_line.append(u" ")
-            continue
-        elif token_name in block_level_elements or token_name == "br":
+        # Should we start a new line?
+        if token_name in line_break_tags:
             if current_line:
                 outbuf.append(u"".join(current_line))
                 current_line = []
 
-        # Add space in front of span
-        # This technically violates the standard as spans
-        # don't introduce whitespace. In practice whitespace
-        # is often added via CSS and spans rarely end in the
-        # middle of a word.
-        if token_name == 'span':
+        # Add space before data
+        if token_name in space_introducing_tags:
             current_line.append(u" ")
 
         if token.get(u'type', None) == u'Characters':
             current_line.append(token['data'])
+
+        # Unify any space to standard spaces
         if token.get(u'type', None) == u'SpaceCharacters':
             if current_line and current_line[-1] != u" ":
                 current_line.append(u" ")
 
-        # Add space after end of span
-        if token_name == 'span':
+        # Add space after data
+        if token_name in space_introducing_tags:
             current_line.append(u" ")
 
     if current_line:
