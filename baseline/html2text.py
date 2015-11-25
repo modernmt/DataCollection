@@ -18,7 +18,7 @@ block_level_elements = set([u'address', u'article', u'aside', u'audio',
                             u'tfoot', u'ul', u'video'])
 
 
-def html2text(html, sanitize=False):
+def html2text(html, sanitize=False, ignore_br=False):
     """ Takes utf-8 encoded page and returns unicode text """
     p = html5lib.HTMLParser(tree=treebuilders.getTreeBuilder("dom"))
     dom_tree = p.parse(html.decode("utf-8"))
@@ -36,11 +36,15 @@ def html2text(html, sanitize=False):
         if in_script:
             continue
 
-        if token_name in block_level_elements or token_name == "br":
+        if ignore_br and token_name == 'br':
+            current_line.append(u" ")
+            continue
+        elif token_name in block_level_elements or token_name == "br":
             if current_line:
                 outbuf.append(u"".join(current_line))
                 current_line = []
 
+        # Add space in front of span
         # This technically violates the standard as spans
         # don't introduce whitespace. In practice whitespace
         # is often added via CSS and spans rarely end in the
@@ -54,6 +58,7 @@ def html2text(html, sanitize=False):
             if current_line and current_line[-1] != u" ":
                 current_line.append(u" ")
 
+        # Add space after end of span
         if token_name == 'span':
             current_line.append(u" ")
 
