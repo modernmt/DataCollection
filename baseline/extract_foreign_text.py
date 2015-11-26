@@ -3,55 +3,13 @@
 import base64
 import langid
 import re
-import subprocess
 import sys
-import threading
 
 from html2text import html2text
 from textsanitzer import TextSanitizer
+from external_processor import ExternalTextProcessor
 
 magic_numer = "df6fa1abb58549287111ba8d776733e9"
-
-
-class ExternalTextProcessor(object):
-
-    def __init__(self, cmd):
-        self.cmd = cmd
-        self.proc = None
-        self.output = ""
-
-    def process(self, text, timeout=60.0):
-        # timeout in seconds
-        assert isinstance(text, unicode)
-
-        def target():
-            self.proc = subprocess.Popen(self.cmd,
-                                         stdin=subprocess.PIPE,
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         shell=True)
-            if not self.input.endswith('\n'):
-                self.input += "\n"
-            self.output = self.proc.communicate(
-                input=self.input.encode('utf-8'))[0].decode('utf-8')
-
-        self.input = text
-
-        thread = threading.Thread(target=target)
-        thread.start()
-
-        thread.join(timeout)
-        if thread.is_alive():
-            print 'Terminating process'
-            print "failed for", repr(text)
-            print "command:", self.cmd
-            f = open("fail", 'wc')
-            f.write(text.encode('utf-8'))
-            f.close()
-            print "written 'fail'"
-            self.proc.kill()
-            thread.join()
-        return self.output
 
 
 def original_url(html):
@@ -158,7 +116,7 @@ if __name__ == "__main__":
 
         if args.fromhtml:
             text = html2text(base64.b64decode(html), sanitize=True,
-                             ignore_br=True)
+                             ignore_br=False)
         else:
             text = base64.b64decode(text).decode("utf-8")
 
