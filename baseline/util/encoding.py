@@ -1,42 +1,33 @@
-import chardet
-from chardet.universaldetector import UniversalDetector
+from bs4 import UnicodeDammit
 
-def guess_encoding_incremental(data):
-    sys.stderr.write("running incremental chardet\n")
-    detector = UniversalDetector()
-    for line in data.split("\n"):
-        detector.feed(line)
-        if detector.done:
-            break
-    detector.close()
-    encoding = detector.result
-    return encoding["encoding"]
+"""
+Util to convert everything to Unicode
+"""
 
 
-def guess_encoding(data):
-    sys.stderr.write("running full chardet\n")
-    encoding = chardet.detect(data)
-    return encoding["encoding"]
+def to_unicode(data, is_html=False, detwingle=False):
+    " converts everything to unicode"
+    dammit = UnicodeDammit(data, is_html=is_html)
+    if detwingle and dammit.original_encoding == 'windows-1252':
+        new_data = UnicodeDammit.detwingle(data)
+        dammit = UnicodeDammit(new_data, is_html=is_html)
+    return dammit.unicode_markup
 
+if __name__ == "__main__":
+    import sys
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-infile', type=argparse.FileType('w'),
+                        help='output file', default=sys.stdin)
+    parser.add_argument('-outfile', type=argparse.FileType('w'),
+                        help='output file', default=sys.stdout)
+    parser.add_argument('-html', action='store_true',
+                        help='input is HTLM')
+    parser.add_argument('-detwingle', action='store_true',
+                        help='fix mixed UTF-8 and windows-1252 encodings')
+    args = parser.parse_args()
 
-def convert_to_utf8(data, force_chardet=False):
-    encoding = "utf-8"
-    try:
-        if force_chardet:
-            raise
-        data = data.decode(encoding)
-    except:
-        encoding = guess_encoding_incremental(data)
-        try:
-            data = data.decode(encoding)
-        except:
-            encoding = guess_encoding(data)
-            try:
-                data = data.decode(encoding)
-            except:
-                sys.stderr.write("Fallback: ignoring errors.\n")
-                return data.decode("utf-8", errors='ignore')
-    # sys.stderr.write("Detected encoding: %s\n"
-    #                  % encoding)
-    return data
-
+    data = args.infile.read()
+    unicode_data = to_unicode(
+        data, is_html=args.html, detwingle=args.detwingle)
+    args.output.write(unicode_data.encode('utf-8'))

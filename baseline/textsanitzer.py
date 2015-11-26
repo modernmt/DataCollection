@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import chardet
 import re
 import sys
 import unicodedata
+from util import encoding
 
 """ Utility functions to reliably read text with
     unknown of broken encoding and return proper
@@ -46,19 +46,7 @@ class TextSanitizer():
     @staticmethod
     def to_unicode(text):
         """ Produce unicode from text of unknown encoding """
-        if not text:
-            return u''
-        try:
-            text = text.decode("utf-8")
-        except:
-            encoding = chardet.detect(text)
-            try:
-                sys.stderr.write("Encoding: %s\n" % encoding["encoding"])
-                text = text.decode(encoding["encoding"])
-            except:
-                sys.stderr.write("Falling back to UTF-8\n")
-                return text.decode("utf-8", errors='ignore')
-        return text
+        return encoding.to_unicode(text)
 
     @staticmethod
     def clean_text(text, sanitize=True, clean_whitespace=True):

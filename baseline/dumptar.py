@@ -27,7 +27,7 @@ if __name__ == "__main__":
         if not tarinfo.isreg():
             continue
         data = tar.extractfile(tarinfo).read()
-        data = encoding.convert_to_utf8(data)
+        data = encoding.to_unicode(data, is_html=True)
         args.outfile.write("%s uri:%s\n" % (magic_number, tarinfo.name))
         args.outfile.write(data.encode("utf-8"))
         args.outfile.write("\n")
