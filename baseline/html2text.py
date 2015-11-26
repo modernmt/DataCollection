@@ -34,7 +34,9 @@ def html2text(html, sanitize=False, ignore_br=False):
     space_introducing_tags.add('span')
 
     line_break_tags = block_level_elements
-    line_break_tags.add('tr')
+    line_break_tags.add('tr')  # <tr> introduces line-break
+    line_break_tags.add('li')  # <li> introduces line-break
+    line_break_tags.add('option')  # <option> introduces line-break
 
     if ignore_br:
         space_introducing_tags.add('br')
@@ -78,10 +80,9 @@ def html2text(html, sanitize=False, ignore_br=False):
     if current_line:
         outbuf.append(u"".join(current_line))
 
-    text = "\n".join(outbuf)
-    if sanitize:
-        text = TextSanitizer.clean_utf8(text)
-    text = TextSanitizer.clean_text(text)
+    text = u"\n".join(outbuf)
+    text = TextSanitizer.clean_text(
+        text, sanitize=sanitize, clean_whitespace=True)
     return text
 
 
