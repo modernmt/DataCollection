@@ -16,6 +16,9 @@ def process_candidates(candidates, outfile):
     src_url, src_text, src_html = candidates[0]
     tgt_url, tgt_text, tgt_html = candidates[1]
 
+    if not src_text or not tgt_text:
+        return
+
     outfile.write("\t".join((src_url,
                              tgt_url,
                              base64.b64encode(src_text.encode('utf-8')),
@@ -47,11 +50,11 @@ if __name__ == "__main__":
 
     candidates = []
     for linenr, line in enumerate(sys.stdin):
-        if linenr > 0:
-            if linenr % 100 == 0:
-                sys.stderr.write('.')
-            if linenr % 1000 == 0:
-                sys.stderr.write("[%d]\n" % linenr)
+        # if linenr > 0:
+        #     if linenr % 100 == 0:
+        #         sys.stderr.write('.')
+        #     if linenr % 1000 == 0:
+        #         sys.stderr.write("[%d]\n" % linenr)
         url, _crawl, data = line.split('\t', 2)
         data = json.loads(data)
         # Workaround server error
@@ -62,13 +65,16 @@ if __name__ == "__main__":
                                    int(data[u'offset']),
                                    int(data['length']),
                                    html_only=True)
-        html = TextSanitizer.to_unicode(html)
-        text = html2text(html.encode('utf-8'), sanitize=True)
-        if len(candidates) == 0:
-            text = source_text_processor.process(text)
-        else:
-            assert len(candidates) == 1
-            text = target_text_processor.process(text)
+        text = u""
+        if html:
+            html = TextSanitizer.to_unicode(html)
+            text = html2text(html.encode('utf-8'), sanitize=True)
+            if len(candidates) == 0:
+                text = source_text_processor.process(text)
+            else:
+                assert len(candidates) == 1
+                text = target_text_processor.process(text)
+
         candidates.append((url, text, html))
 
         if len(candidates) == 2:

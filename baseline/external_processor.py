@@ -56,10 +56,10 @@ class ExternalLineProcessor(object):
             self._lock = threading.Lock()
 
     def process(self, line):
-        if self.cmd is None or not line.strip():
-            return line
         assert isinstance(line, unicode), 'Expecting unicode input\n'
         assert '\n' not in line, 'Expecting a single line; found newline\n'
+        if not line.strip():
+            return line
         u_string = u"%s\n" % line
         u_string = u_string.encode("utf-8")
         result = u_string  # fallback: return input

@@ -19,15 +19,16 @@ class CCDownloader(object):
                "/segments/%d" % (int(folder)) +\
                "/warc/%s" % filename.replace("warc.wat.gz", "warc.gz")
 
-    def extract_html(self, raw_page):
-        """ Cut off WARC headers """
+    def _split_record(self, raw_page):
+        """ Split common-crawl record into HTML and WARC header """
         empty_lines_seen = 0
         page = raw_page.split("\n")
         for linenr, line in enumerate(page):
             if not line.strip():
                 empty_lines_seen += 1
                 if empty_lines_seen == 2:
-                    return "\n".join(page[linenr + 1:])
+                    return "\n".join(page[linenr + 1:]), \
+                           "\n".join(page[:linenr])
         raise ValueError("Input must contain two empty lines")
 
     def download(self, location, offset, length, html_only=False):
@@ -37,19 +38,25 @@ class CCDownloader(object):
         try:
             resp = self.session.get(location, headers=r)
         except:
+            # restart session
             self.session = requests.Session()
-            return ""
+            try:
+                resp = self.session.get(location, headers=r)
+            except:
+                sys.stderr.write("Error downloading:%s\n" % (str(r)))
+                return u""
         try:
             page = zlib.decompress(resp.content, zlib.MAX_WBITS | 16)
         except:
             sys.stderr.write("Error decompressing %d bytes from %s: %d-%d\n"
                              % (len(resp.content),
                                 location, start_range, end_range))
-            return ""
-        if html_only:  # cut off WARC headers
-            page = self.extract_html(page)
+            return u''
+        page, header = self._split_record(page)
         page = TextSanitizer.to_unicode(page)
-        return page
+        if html_only:
+            return page
+        return u"%s\n\n%s" % (header.strip(), page)
 
     # TODO: check if we can deprecate this
     def download_and_write(self, line, outfile, crawl, html_only=False):
