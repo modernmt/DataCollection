@@ -31,17 +31,17 @@ class CCDownloader(object):
                            "\n".join(page[:linenr])
         raise ValueError("Input must contain two empty lines")
 
-    def download(self, location, offset, length, html_only=False):
+    def download(self, location, offset, length, html_only=False, timeout=5):
         start_range = offset
         end_range = offset + length - 1
         r = {'Range': "bytes=%d-%d" % (start_range, end_range)}
         try:
-            resp = self.session.get(location, headers=r)
+            resp = self.session.get(location, headers=r, timeout=timeout)
         except:
             # restart session
             self.session = requests.Session()
             try:
-                resp = self.session.get(location, headers=r)
+                resp = self.session.get(location, headers=r, timeout=timeout)
             except:
                 sys.stderr.write("Error downloading:%s\n" % (str(r)))
                 return u""
