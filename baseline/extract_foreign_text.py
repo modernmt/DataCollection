@@ -20,10 +20,8 @@ def original_url(html):
     return m.groups()[0]
 
 
-def langsplit(uri, text):
-    cmd = [
-        "/home/buck/net/build/mtma_bitext/html_convert/langsplit",
-        "--printchunks"]
+def langsplit(uri, langsplit_exec, text):
+    cmd = [langsplit_exec, "--printchunks"]
     proc = ExternalTextProcessor(cmd)
     tld = uri.split("/")[0].split(".")[-1]
     header = u"%s tld:%s uri:%s\n" % (magic_numer, tld, uri)
@@ -105,6 +103,8 @@ if __name__ == "__main__":
     parser.add_argument(
         '-tokenizer', help='moses tokenization script',
         default="/home/buck/net/build/moses-clean/scripts/tokenizer/tokenizer.perl")
+    parser.add_argument('-langsplit', help='langsplit executable',
+        default="/home/buck/net/build/mtma_bitext/html_convert/langsplit")
     parser.add_argument(
         '-fromhtml', help='re-extract text from HTML', action='store_true')
 
@@ -124,7 +124,7 @@ if __name__ == "__main__":
             sys.stderr.write("no text found in %s\n" % uri)
             continue
 
-        langsplit_output = langsplit(uri, text)
+        langsplit_output = langsplit(uri, args.langsplit, text)
         # print langsplit_output.encode("utf-8")
         # sys.exit()
         # langsplit_output.decode("utf-8")
