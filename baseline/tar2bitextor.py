@@ -8,9 +8,8 @@ processed by bitextor pipeline
 
 import sys
 import tarfile
-from util import encoding
 from html2text import html2text
-#from base64 import base64
+from textsanitzer import TextSanitizer
 import base64
 
 magic_number = "df6fa1abb58549287111ba8d776733e9"
@@ -68,7 +67,7 @@ if __name__ == "__main__":
         if not tarinfo.isreg():
             continue
         data = tar.extractfile(tarinfo).read()
-        data = encoding.convert_to_utf8(data)
+        data = TextSanitizer.to_unicode(data)
         text = html2text(data.encode("utf-8"),  # utf-8 input expected
                          sanitize=True,
                          ignore_br=args.ignore_br)
