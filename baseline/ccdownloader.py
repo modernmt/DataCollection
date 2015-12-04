@@ -1,6 +1,7 @@
 import requests
 import zlib
 import sys
+import time
 from textsanitzer import TextSanitizer
 
 
@@ -31,28 +32,60 @@ class CCDownloader(object):
                            "\n".join(page[:linenr])
         raise ValueError("Input must contain two empty lines")
 
+    def _restart_session(self, wait_before_restart=1):
+        self.session.close()
+        time.sleep(wait_before_restart)
+        self.session = requests.Session()
+
+    def _try_request(self, location, headers, timeout=5, retries=5,
+                     use_session=True):
+        resp = None
+        try:
+            if use_session:
+                resp = self.session.get(
+                    location, headers=headers, timeout=timeout)
+            else:
+                resp = requests.get(location, headers=headers, timeout=timeout)
+        except requests.exceptions.RequestException:
+            self._restart_session()
+            if retries == 1:
+                return self._try_request(location, headers, timeout,
+                                         retries - 1, use_session=False)
+            elif retries > 1:
+                return self._try_request(location, headers, timeout,
+                                         retries - 1, use_session)
+
+            sys.stderr.write("Error downloading: %s from %s\n" %
+                             (str(headers), location))
+            return False, None
+
+        # Handle bad status, i.e. everything but code 2XX
+        if resp.status_code < 200 or resp.status_code > 299:
+            sys.stderr.write("Got status %s - error downloading: %s : %s\n" %
+                             (resp.status_code, str(headers), location))
+            return False, resp
+
+        return True, resp
+
     def download(self, location, offset, length, html_only=False, timeout=5):
         start_range = offset
         end_range = offset + length - 1
         r = {'Range': "bytes=%d-%d" % (start_range, end_range)}
+        success, resp = self._try_request(location, r, timeout)
+
+        if not success:
+            return u''
+
+        warc_record = None
         try:
-            resp = self.session.get(location, headers=r, timeout=timeout)
-        except:
-            # restart session
-            self.session = requests.Session()
-            try:
-                resp = self.session.get(location, headers=r, timeout=timeout)
-            except:
-                sys.stderr.write("Error downloading:%s\n" % (str(r)))
-                return u""
-        try:
-            page = zlib.decompress(resp.content, zlib.MAX_WBITS | 16)
-        except:
+            warc_record = zlib.decompress(resp.content, zlib.MAX_WBITS | 16)
+        except zlib.error:
             sys.stderr.write("Error decompressing %d bytes from %s: %d-%d\n"
                              % (len(resp.content),
                                 location, start_range, end_range))
             return u''
-        page, header = self._split_record(page)
+
+        page, header = self._split_record(warc_record)
         page = TextSanitizer.to_unicode(page)
         if html_only:
             return page
