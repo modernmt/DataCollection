@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
         if args.fromhtml:
             text = html2text(base64.b64decode(html), sanitize=False,
-                             ignore_br=True)
+                             ignore_br=False)
         else:
             text = base64.b64decode(text).decode("utf-8")
 
