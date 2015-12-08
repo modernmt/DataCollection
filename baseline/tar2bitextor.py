@@ -9,8 +9,8 @@ processed by bitextor pipeline
 import sys
 import tarfile
 from html2text import html2text
-from textsanitzer import TextSanitizer
 import base64
+from textsanitzer import TextSanitizer
 
 magic_number = "df6fa1abb58549287111ba8d776733e9"
 
@@ -46,8 +46,6 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('tarfile', help='tarfile containing a webdir')
-    parser.add_argument(
-        'statsfile', help='language statistics', type=argparse.FileType('r'))
     parser.add_argument('srclang', help="source langauge e.g. en")
     parser.add_argument('tgtlang', help="target langauge e.g. fr")
     parser.add_argument('lett', type=argparse.FileType('w'),
@@ -59,33 +57,31 @@ if __name__ == "__main__":
     enc = "charset=utf-8"
 
     args = parser.parse_args(sys.argv[1:])
-    lang_stats = read_statsfile(args.statsfile)
-
     tar = tarfile.open(args.tarfile, "r:gz")
 
     for tarinfo in tar:
         if not tarinfo.isreg():
             continue
-        data = tar.extractfile(tarinfo).read()
-        data = TextSanitizer.to_unicode(data)
-        text = html2text(data.encode("utf-8"),  # utf-8 input expected
+
+        uri = tarinfo.name
+
+        raw_data = tar.extractfile(tarinfo).read()
+        data = TextSanitizer.to_unicode(raw_data, is_html=True, lang='auto')
+        lang = TextSanitizer.guess_lang_from_data(
+            data, is_html=True, default_lang=None)
+        if not lang:
+            sys.stderr.write("No langs for file %s\n" % uri)
+
+        text = html2text(data.encode('utf-8'),  # utf-8 input expected
                          sanitize=True,
                          ignore_br=args.ignore_br)
-        uri = tarinfo.name
-        if uri not in lang_stats:
-            sys.stderr.write("No langstats for file %s\n" % uri)
-        if uri not in lang_stats:
-            continue
-        lang = lang_stats[uri]
 
         args.lett.write("{l}\t{mime}\t{enc}\t{name}\t{html}\t{text}\n".format(
             l=lang,
             mime=mime_type,
             enc=enc,
             name=uri,
-            html=base64.b64encode(data.encode("utf-8")),
-            text=base64.b64encode(text.encode("utf-8"))))
+            html=base64.b64encode(data.encode('utf-8')),
+            text=base64.b64encode(text.encode('utf-8'))))
 
-        # args.outfile.write("%s uri:%s\n" % (magic_number, tarinfo.name))
-        # args.outfile.write(data.encode("utf-8"))
     tar.close()
