@@ -66,16 +66,18 @@ def html2text(html, sanitize=False, ignore_br=False):
             current_line.append(u" ")
 
         if token.get(u'type', None) == u'Characters':
-            current_line.append(token['data'])
+            current_line.append(
+                TextSanitizer.clean_whitespace(token['data'],
+                    linesep=u' '))
 
         # Unify any space to standard spaces
         if token.get(u'type', None) == u'SpaceCharacters':
-            if current_line and current_line[-1] != u" ":
-                current_line.append(u" ")
+            if current_line and current_line[-1] != u' ':
+                current_line.append(u' ')
 
         # Add space after data
         if token_name in space_introducing_tags:
-            current_line.append(u" ")
+            current_line.append(u' ')
 
     if current_line:
         outbuf.append(u"".join(current_line))
