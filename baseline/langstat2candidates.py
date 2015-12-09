@@ -12,7 +12,7 @@ Take language statistics from stdin and write candidates,
 i.e. url with some language identifier removed to stdout.
 
 If a list of pre-generated candidates is given, only those
-stripped urls that also occur in the list of candidates will
+stripped urls that also occur in the list of candidates iwll
 be written.
 
 Input format:

@@ -27,7 +27,7 @@ if __name__ == "__main__":
                         help='call to target tokenizer, incl. args')
     parser.add_argument('-target_splitter',
                         help='call to target sentence splitter, incl. args')
-    args = parser.parse_args(sys.argv[1:])
+    args = parser.parse_args()
 
     source_text_processor = TextProcessor(splitter=args.source_splitter,
                                           tokenizer=args.source_tokenizer)

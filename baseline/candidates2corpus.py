@@ -27,6 +27,16 @@ def process_candidates(candidates, outfile):
                              base64.b64encode(tgt_html.encode('utf-8')),)))
     outfile.write("\n")
 
+
+def extract(html, lang, text_processor):
+    text = u""
+    if html:
+        html = TextSanitizer.to_unicode(html, is_html=True,
+                                        lang=lang)
+        text = html2text(html.encode('utf-8'), sanitize=True)
+        text = text_processor.process(text)
+    return html, text
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
@@ -40,6 +50,10 @@ if __name__ == "__main__":
                         help='call to target tokenizer, incl. args')
     parser.add_argument('-target_splitter',
                         help='call to target sentence splitter, incl. args')
+    parser.add_argument('-srclang',
+                        help="source langauge e.g. en")
+    parser.add_argument('-tgtlang',
+                        help="target langauge e.g. fr")
     args = parser.parse_args(sys.argv[1:])
 
     downloader = CCDownloader()
@@ -65,15 +79,13 @@ if __name__ == "__main__":
                                    int(data[u'offset']),
                                    int(data['length']),
                                    html_only=True)
+
         text = u""
-        if html:
-            html = TextSanitizer.to_unicode(html)
-            text = html2text(html.encode('utf-8'), sanitize=True)
-            if len(candidates) == 0:
-                text = source_text_processor.process(text)
-            else:
-                assert len(candidates) == 1
-                text = target_text_processor.process(text)
+        if len(candidates) == 0:
+            html, text = extract(html, args.srclang, source_text_processor)
+        else:
+            assert len(candidates) == 1
+            html, text = extract(html, args.tgtlang, target_text_processor)
 
         candidates.append((url, text, html))
 

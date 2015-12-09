@@ -86,7 +86,7 @@ class CCDownloader(object):
             return u''
 
         page, header = self._split_record(warc_record)
-        page = TextSanitizer.to_unicode(page)
+        # page = TextSanitizer.to_unicode(page, is_html=True)
         if html_only:
             return page
         return u"%s\n\n%s" % (header.strip(), page)
