@@ -16,6 +16,67 @@ import unicodedata
 
 
 class TextSanitizer():
+    lang2name = {"ar": "arabic",
+                 "hy": "armenian",
+                 "az": "azerbaijani",
+                 "bn": "bengali",
+                 "bg": "bulgarian",
+                 "ca": "catalan",
+                 "zh": "chinese_simplified",
+                 "zh-Hant": "chinese_traditional",
+                 "ht": "croatian",
+                 "cs": "czech",
+                 "da": "danish",
+                 "nl": "dutch",
+                 "en": "english",
+                 "et": "estonian",
+                 "fi": "finnish",
+                 "fr": "french",
+                 "de": "german",
+                 "el": "greek",
+                 "gu": "gujarati",
+                 "he": "hebrew",
+                 "hi": "hindi",
+                 "hu": "hungarian",
+                 "is": "icelandic",
+                 "id": "indonesian",
+                 "ga": "irish",
+                 "it": "italian",
+                 "jp": "japanese",
+                 "kn": "kannada",
+                 "kk": "kazakh",
+                 "ko": "korean",
+                 "ky": "kyrgyz",
+                 "lv": "latvian",
+                 "lt": "lithuanian",
+                 "ml": "malayalam",
+                 "ms": "malay",
+                 "mt": "maltese",
+                 "ne": "nepali",
+                 "no": "norwegian_bokmal",
+                 "OTHER": "other",
+                 "fa": "persian",
+                 "pl": "polish",
+                 "pt": "portuguese",
+                 "rp": "romanian",
+                 "ru": "russian",
+                 "sr": "serbian",
+                 "sk": "slovak",
+                 "sl": "slovene",
+                 "es": "spanish",
+                 "sv": "swedish",
+                 "tg": "tajik",
+                 "ta": "tamil",
+                 "te": "telugu",
+                 "th": "thai",
+                 "tr": "turkish",
+                 "tk": "turkmen",
+                 "uk": "ukrainian",
+                 "ur": "urdu",
+                 "uz": "uzbek",
+                 "vi": "vietnamese",
+                 "cy": "welsh",
+                 "yo": "yoruba"}
 
     @staticmethod
     def clean_whitespace(s, linesep=u'\n'):
@@ -61,13 +122,14 @@ class TextSanitizer():
 
     @staticmethod
     def _to_unicode_chared(data, lang='en', verbose=False):
-        lang2name = {
-            'en': 'english',
-            'de': 'german',
-            'fr': 'french',
-            'it': 'italian'}
-        assert lang in lang2name, "unknown language: %s\n" % lang
-        model_path = chared.detector.get_model_path(lang2name[lang])
+
+        if lang not in TextSanitizer.lang2name:
+            sys.stderr.write(
+                "Unknown language %s. Defaulting to OTHER\n" % (lang))
+            lang = "OTHER"
+        assert lang in TextSanitizer.lang2name, "unknown language: %s\n" % lang
+        model_path = chared.detector.get_model_path(
+            TextSanitizer.lang2name[lang])
         model = chared.detector.EncodingDetector.load(model_path)
         encodings = model.classify(data)
         if verbose:
