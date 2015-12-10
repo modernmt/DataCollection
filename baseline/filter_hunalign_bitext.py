@@ -27,7 +27,11 @@ class LanguageIdentifier(object):
         if self.valid_languages:
             assert expected_lang in self.valid_languages
         if self.use_cld2:
-            reliable, _text_bytes, details = cld2.detect(s.encode("utf-8"))
+            reliable, _text_bytes, details = cld2.detect(
+                s.encode("utf-8"),
+                isPlainText=True,
+                useFullLangTables=True,
+                bestEffort=True)
             if reliable:
                 for _lang, langcode, confidence, score in details:
                     if langcode == expected_lang and confidence >= 10:
