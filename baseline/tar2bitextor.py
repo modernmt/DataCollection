@@ -52,6 +52,10 @@ if __name__ == "__main__":
                         help='output lett file')
     parser.add_argument('-ignore_br', help="ignore <br> tags in HTML",
                         action='store_true', default=False)
+    parser.add_argument('-filter-other-languages',
+                        dest='filter',
+                        help='remove pages in other languages',
+                        action='store_true')
 
     mime_type = "text/html"
     enc = "charset=utf-8"
@@ -59,7 +63,7 @@ if __name__ == "__main__":
     args = parser.parse_args(sys.argv[1:])
     tar = tarfile.open(args.tarfile, "r:gz")
 
-    for tarinfo in tar:
+    for filenr, tarinfo in enumerate(tar):
         if not tarinfo.isreg():
             continue
 
@@ -69,12 +73,19 @@ if __name__ == "__main__":
         data = TextSanitizer.to_unicode(raw_data, is_html=True, lang='auto')
         lang = TextSanitizer.guess_lang_from_data(
             data, is_html=True, default_lang=None)
+
         if not lang:
             sys.stderr.write("No langs for file %s\n" % uri)
+            continue
+        if args.filter and lang != args.srclang and lang != args.tgtlang:
+            # sys.stderr.write("Skipping %s because lang=%s\n" % (uri, lang))
+            continue
 
         text = html2text(data.encode('utf-8'),  # utf-8 input expected
                          sanitize=True,
                          ignore_br=args.ignore_br)
+
+        sys.stderr.write("Processed file Nr. %d : %s\n" % (filenr, uri))
 
         args.lett.write("{l}\t{mime}\t{enc}\t{name}\t{html}\t{text}\n".format(
             l=lang,

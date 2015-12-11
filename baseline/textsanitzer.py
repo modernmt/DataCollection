@@ -16,67 +16,33 @@ import unicodedata
 
 
 class TextSanitizer():
-    lang2name = {"ar": "arabic",
-                 "hy": "armenian",
-                 "az": "azerbaijani",
-                 "bn": "bengali",
-                 "bg": "bulgarian",
-                 "ca": "catalan",
-                 "zh": "chinese_simplified",
-                 "zh-Hant": "chinese_traditional",
-                 "ht": "croatian",
-                 "cs": "czech",
-                 "da": "danish",
-                 "nl": "dutch",
-                 "en": "english",
-                 "et": "estonian",
-                 "fi": "finnish",
-                 "fr": "french",
-                 "de": "german",
-                 "el": "greek",
-                 "gu": "gujarati",
-                 "he": "hebrew",
-                 "hi": "hindi",
-                 "hu": "hungarian",
-                 "is": "icelandic",
-                 "id": "indonesian",
-                 "ga": "irish",
-                 "it": "italian",
-                 "jp": "japanese",
-                 "kn": "kannada",
-                 "kk": "kazakh",
-                 "ko": "korean",
-                 "ky": "kyrgyz",
-                 "lv": "latvian",
-                 "lt": "lithuanian",
-                 "ml": "malayalam",
-                 "ms": "malay",
-                 "mt": "maltese",
-                 "ne": "nepali",
-                 "no": "norwegian_bokmal",
-                 "OTHER": "other",
-                 "fa": "persian",
-                 "pl": "polish",
-                 "pt": "portuguese",
-                 "rp": "romanian",
-                 "ru": "russian",
-                 "sr": "serbian",
-                 "sk": "slovak",
-                 "sl": "slovene",
-                 "es": "spanish",
-                 "sv": "swedish",
-                 "tg": "tajik",
-                 "ta": "tamil",
-                 "te": "telugu",
-                 "th": "thai",
-                 "tr": "turkish",
-                 "tk": "turkmen",
-                 "uk": "ukrainian",
-                 "ur": "urdu",
-                 "uz": "uzbek",
-                 "vi": "vietnamese",
-                 "cy": "welsh",
-                 "yo": "yoruba"}
+    lang2name = {'en': 'english',
+                 'zh': 'chinese_simplified',
+                 'ca': 'catalan',
+                 'zh-Hant': 'chinese_traditional',
+                 'bg': 'bulgarian',
+                 'cs': 'czech',
+                 'et': 'estonian',
+                 'az': 'azerbaijani',
+                 'nl': 'dutch', 'ne': 'nepali',
+                 'tk': 'turkmen',
+                 'tg': 'tajik',
+                 'fr': 'french',
+                 'hy': 'armenian',
+                 'yo': 'yoruba',
+                 'bn': 'bengali',
+                 'de': 'german',
+                 'ht': 'croatian',
+                 'da': 'danish',
+                 'OTHER': 'other',
+                 'fi': 'finnish',
+                 'uz': 'uzbek',
+                 'kk': 'kazakh',
+                 'kn': 'kannada',
+                 'ar': 'arabic',
+                 'ky': 'kyrgyz'}
+
+    chared_models = {}
 
     @staticmethod
     def clean_whitespace(s, linesep=u'\n'):
@@ -124,19 +90,22 @@ class TextSanitizer():
     def _to_unicode_chared(data, lang='en', verbose=False):
 
         if lang not in TextSanitizer.lang2name:
-            sys.stderr.write(
-                "Unknown language %s. Defaulting to OTHER\n" % (lang))
+            if verbose:
+                sys.stderr.write(
+                    "Unknown language %s. Defaulting to OTHER\n" % (lang))
             lang = "OTHER"
         assert lang in TextSanitizer.lang2name, "unknown language: %s\n" % lang
-        model_path = chared.detector.get_model_path(
-            TextSanitizer.lang2name[lang])
-        model = chared.detector.EncodingDetector.load(model_path)
-        encodings = model.classify(data)
+        if lang not in TextSanitizer.chared_models:
+            model_path = chared.detector.get_model_path(
+                TextSanitizer.lang2name[lang])
+            model = chared.detector.EncodingDetector.load(model_path)
+            TextSanitizer.chared_models[lang] = model
+        encodings = TextSanitizer.chared_models[lang].classify(data)
         if verbose:
             sys.stderr.write("Chared Encoding: %s\n" % (str(encodings)))
 
-        # try all detected encodings
-        for enc in encodings:
+        # try all detected encodings and then some
+        for enc in encodings + ['utf-8', 'iso-8859-1', 'windows‑1252']:
             try:
                 return data.decode(enc)
             except UnicodeDecodeError:
@@ -216,6 +185,21 @@ if __name__ == "__main__":
     parser.add_argument('-detwingle', action='store_true',
                         help='fix mixed UTF-8 and windows-1252 encodings')
     args = parser.parse_args()
+
+    # valid_models = []
+    # for lang in TextSanitizer.lang2name:
+    #     model_path = chared.detector.get_model_path(
+    #         TextSanitizer.lang2name[lang])
+    #     try:
+    #         model = chared.detector.EncodingDetector.load(model_path)
+    #         valid_models.append(lang)
+    #     except ValueError:
+    #         sys.stderr.write("Cannot read model: %s\n" % (model_path))
+
+    # print {k: v for k, v in TextSanitizer.lang2name.items() if k in
+    # valid_models}
+
+    # sys.exit()
 
     data = args.infile.read()
     unicode_data = TextSanitizer.to_unicode(data, is_html=args.html,
