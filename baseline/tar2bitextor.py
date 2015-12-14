@@ -79,7 +79,7 @@ if __name__ == "__main__":
         if not tarinfo.isreg():
             continue
 
-        uri = tarinfo.name
+        filename = tarinfo.name
 
         raw_data = tar.extractfile(tarinfo).read()
         data = TextSanitizer.to_unicode(raw_data, is_html=True, lang='auto')
@@ -87,10 +87,11 @@ if __name__ == "__main__":
             data, is_html=True, default_lang=None)
 
         if not lang:
-            sys.stderr.write("No langs for file %s\n" % uri)
+            sys.stderr.write("No langs for file %s\n" % filename)
             continue
         if args.filter and lang != args.srclang and lang != args.tgtlang:
-            # sys.stderr.write("Skipping %s because lang=%s\n" % (uri, lang))
+            sys.stderr.write("Skipping %s because lang=%s\n" %
+                             (filename, lang))
             continue
 
         text = html2text(data.encode('utf-8'),  # utf-8 input expected
@@ -100,7 +101,7 @@ if __name__ == "__main__":
         original_uri = original_url(data)
 
         sys.stderr.write("Processed file Nr. %d : %s = %s\n" %
-                         (filenr, uri, original_uri.encode('utf-8')))
+                         (filenr, filename, original_uri.encode('utf-8')))
 
         args.lett.write("{l}\t{mime}\t{enc}\t{name}\t{html}\t{text}\n".format(
             l=lang,
