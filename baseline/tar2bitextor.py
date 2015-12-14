@@ -8,8 +8,10 @@ processed by bitextor pipeline
 
 import sys
 import tarfile
-from html2text import html2text
 import base64
+import re
+
+from html2text import html2text
 from textsanitzer import TextSanitizer
 
 magic_number = "df6fa1abb58549287111ba8d776733e9"
@@ -41,6 +43,16 @@ def read_statsfile(f):
                     continue
                 stats[url] = name2code[lang]
     return stats
+
+
+def original_url(html):
+    """ Extracts the original url from HTTrack comment """
+    m = re.search(r"<!-- Mirrored from ([^>]+) by HTTrack Website Copier",
+                  html)
+    if m is None:
+        return "unknown_url"
+    return m.groups()[0]
+
 
 if __name__ == "__main__":
     import argparse
@@ -85,13 +97,16 @@ if __name__ == "__main__":
                          sanitize=True,
                          ignore_br=args.ignore_br)
 
-        sys.stderr.write("Processed file Nr. %d : %s\n" % (filenr, uri))
+        original_uri = original_url(data)
+
+        sys.stderr.write("Processed file Nr. %d : %s = %s\n" %
+                         (filenr, uri, original_uri.encode('utf-8')))
 
         args.lett.write("{l}\t{mime}\t{enc}\t{name}\t{html}\t{text}\n".format(
             l=lang,
             mime=mime_type,
             enc=enc,
-            name=uri,
+            name=original_uri.encode('utf-8'),
             html=base64.b64encode(data.encode('utf-8')),
             text=base64.b64encode(text.encode('utf-8'))))
 
