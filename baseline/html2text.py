@@ -68,7 +68,7 @@ def html2text(html, sanitize=False, ignore_br=False):
         if token.get(u'type', None) == u'Characters':
             current_line.append(
                 TextSanitizer.clean_whitespace(token['data'],
-                    linesep=u' '))
+                                               linesep=u' '))
 
         # Unify any space to standard spaces
         if token.get(u'type', None) == u'SpaceCharacters':
