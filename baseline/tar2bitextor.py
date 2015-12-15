@@ -62,6 +62,8 @@ if __name__ == "__main__":
     parser.add_argument('tgtlang', help="target langauge e.g. fr")
     parser.add_argument('lett', type=argparse.FileType('w'),
                         help='output lett file')
+    parser.add_argument('-mapping', type=argparse.FileType('w'),
+                        help='mapping between filenames and urls')
     parser.add_argument('-ignore_br', help="ignore <br> tags in HTML",
                         action='store_true', default=False)
     parser.add_argument('-filter-other-languages',
@@ -107,8 +109,12 @@ if __name__ == "__main__":
             l=lang,
             mime=mime_type,
             enc=enc,
-            name=original_uri.encode('utf-8'),
+            name=filename,
             html=base64.b64encode(data.encode('utf-8')),
             text=base64.b64encode(text.encode('utf-8'))))
+
+        if args.mapping:
+            args.mapping.write(
+                "%s\t%s\n" % (filename, original_uri.encode('utf-8')))
 
     tar.close()
