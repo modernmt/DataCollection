@@ -7,13 +7,21 @@ from languagestripper import LanguageStripper
 import urlparse
 
 
-def read_urls(infile):
-    urls = defaultdict(set)
+def read_urls(infile, source_lang='fr', target_lang='en'):
+    source_urls, target_urls, other_urls = [], [], []
     for line in infile:
-        url = line.strip()
-        url = normalize_url(url)
-        urls[url].add(url)
-    return urls
+        line = line.strip().split('\t')
+        if len(line) != 2:
+            continue
+        lang, url = line
+        url = normalize_url(url.strip())
+        if lang == source_lang:
+            source_urls.append(url)
+        elif lang == target_lang:
+            target_urls.append(url)
+        else:
+            other_urls.append(url)
+    return source_urls, target_urls, other_urls
 
 
 def read_reference(infile):
@@ -38,7 +46,11 @@ def n_longest(l, n=2, discounted=None):
 
 
 def normalize_url(url):
+    """ It seems some URLs have an empty query string.
+    This function removes the trailing '?' """
     url = url.rstrip('?')
+    if not url.startswith("http://"):
+        url = ''.join(("http://", url))
     return url
 
 
@@ -52,11 +64,27 @@ def get_netloc(uri):
     return netloc
 
 
+def strip_urls(urls, lang):
+    stripped = defaultdict(set)
+    language_stripper = LanguageStripper(languages=[lang])
+
+    for url in urls:
+        stripped_url, success = language_stripper.strip_uri(url)
+        if success:
+            stripped[stripped_url].add(url)
+
+    return stripped
+
+
+def find_matches(source_stripped, target_stripped):
+    matches = {}
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('-sourcelang', default='en')
-    parser.add_argument('-targetlang', default='fr')
+    parser.add_argument('-sourcelang', default='fr')
+    parser.add_argument('-targetlang', default='en')
     parser.add_argument('-devset',
                         help='correct pairs in dev set',
                         type=argparse.FileType('r'))
@@ -75,8 +103,12 @@ if __name__ == "__main__":
                         action='store_true')
     args = parser.parse_args(sys.argv[1:])
 
-    urls = read_urls(sys.stdin)
-    sys.stderr.write("Read %d URLs from stdin\n" % (len(urls)))
+    source_urls, target_urls, other_urls = read_urls(
+        sys.stdin, args.sourcelang, args.targetlang)
+
+    sys.stderr.write("Read %d/%d/%d %s/%s/other URLs from stdin\n" % (
+        len(source_urls), len(target_urls), len(other_urls), args.sourcelang,
+        args.targetlang))
 
     devset = None
     if args.devset:
@@ -84,14 +116,22 @@ if __name__ == "__main__":
 
         sys.stderr.write("Check if all pairs in devset can be reached\n")
         unreachable = []
-        for url_pair in devset:
-            for url in url_pair:
-                if url not in urls:
-                    sys.stderr.write(
-                        "URL %s not found in candidate URLs\n" % url)
-                    unreachable.append(url)
+        for source_url, target_url in devset:
+            if source_url not in source_urls:
+                sys.stderr.write(
+                    "Source URL %s not found in candidate URLs\n" % source_url)
+                unreachable.append(source_url)
+            if target_url not in target_urls:
+                sys.stderr.write(
+                    "Target URL %s not found in candidate URLs\n" % target_url)
+                unreachable.append(target_url)
+
         sys.stderr.write("%d urls missing from candidates\n" %
                          (len(unreachable)))
+
+    source_stripped = strip_urls(source_urls, args.sourcelang)
+    target_stripped = strip_urls(target_urls, args.targetlang)
+    sys.exit()
 
     unstripped_urls = set(urls.keys())
 
