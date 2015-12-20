@@ -9,7 +9,7 @@ class ExternalTextProcessor(object):
     def __init__(self, cmd):
         self.cmd = cmd
         self.proc = None
-        self.output = ""
+        self.output = u""
 
     def process(self, text, timeout=60.0):
         # timeout in seconds
