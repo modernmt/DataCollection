@@ -7,13 +7,25 @@ from languagestripper import LanguageStripper
 import urlparse
 
 
-def read_urls(infile, source_lang='fr', target_lang='en'):
+def read_urls(infile, source_lang='fr', target_lang='en', mapping=None):
+    filename2url = {}
+    if mapping:
+        for line in mapping:
+            filename, url = line.strip().split('\t')
+            assert filename not in filename2url, \
+                "duplicate entry: %s\n" % filename
+            filename2url[filename] = url
+
     source_urls, target_urls, other_urls = [], [], []
     for line in infile:
         line = line.strip().split('\t')
         if len(line) != 2:
             continue
         lang, url = line
+        # if filename2url[url] == "unknown_url":
+        #     print "Unknown url: ", url
+        if filename2url and filename2url[url] != "unknown_url":
+            url = filename2url[url]
         url = normalize_url(url.strip())
         if lang == source_lang:
             source_urls.append(url)
@@ -69,8 +81,11 @@ def strip_urls(urls, lang):
     language_stripper = LanguageStripper(languages=[lang])
 
     for url in urls:
-        stripped_url, success = language_stripper.strip_uri(url)
+        stripped_url, success = language_stripper.strip_uri(
+            url, expected_language=lang)
         if success:
+            # if stripped_url in stripped:
+            #     print stripped_url, url, stripped[stripped_url]
             stripped[stripped_url].add(url)
 
     return stripped
@@ -101,10 +116,12 @@ if __name__ == "__main__":
                         action='store_true')
     parser.add_argument('-augment', help='augment matches with similar URLs',
                         action='store_true')
+    parser.add_argument('-mapping', type=argparse.FileType('r'),
+                        help='mapping of filename to actual URLs')
     args = parser.parse_args(sys.argv[1:])
 
     source_urls, target_urls, other_urls = read_urls(
-        sys.stdin, args.sourcelang, args.targetlang)
+        sys.stdin, args.sourcelang, args.targetlang, mapping=args.mapping)
 
     sys.stderr.write("Read %d/%d/%d %s/%s/other URLs from stdin\n" % (
         len(source_urls), len(target_urls), len(other_urls), args.sourcelang,
@@ -131,6 +148,39 @@ if __name__ == "__main__":
 
     source_stripped = strip_urls(source_urls, args.sourcelang)
     target_stripped = strip_urls(target_urls, args.targetlang)
+    print "%d/%d stripped source/target urls" % (len(source_stripped),
+                                                 len(target_stripped))
+
+    pairs = []
+    # stripped source url matches unstripped target url
+    # e.g. mypage.net/index.html?lang=fr <-> mypage.net/index.html
+    for stripped_source_url in set(
+            source_stripped.iterkeys()).intersection(target_urls):
+        tu = stripped_source_url
+        for su in source_stripped[stripped_source_url]:
+            pairs.append((su, tu))
+    sys.stderr.write("Found %s stripped source + unmodified target pairs\n"
+                     % (len(pairs)))
+
+    # stripped target url matches unstripped source url.
+    # e.g. lesite.fr/en/bonsoir <-> lesite.fr/bonsoir
+    for stripped_target_url in set(
+            target_stripped.iterkeys()).intersection(source_urls):
+        su = stripped_target_url
+        for tu in target_stripped[stripped_target_url]:
+            pairs.append((su, tu))
+    sys.stderr.write("Found %s stripped target + unmodified source pairs\n"
+                     % (len(pairs)))
+
+    # stripped source url matches stripped target url
+    # e.g. page.net/fr <-> page.net/en
+    for stripped_source_url, source_url in source_stripped.iteritems():
+        if stripped_source_url in target_stripped:
+            for su in source_url:
+                for tu in target_stripped[stripped_source_url]:
+                    pairs.append((su, tu))
+
+    sys.stderr.write("Found %s pairs\n" % (len(pairs)))
     sys.exit()
 
     unstripped_urls = set(urls.keys())
@@ -152,7 +202,6 @@ if __name__ == "__main__":
     for key, mapped_urls in urls.iteritems():
         if len(mapped_urls) > 1:
             n_pairs += 1
-    sys.stderr.write("Found %s pairs\n" % (n_pairs))
 
     pairs = {}
     for key, mapped_urls in urls.iteritems():
