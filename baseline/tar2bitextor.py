@@ -47,11 +47,11 @@ def read_statsfile(f):
 
 def original_url(html):
     """ Extracts the original url from HTTrack comment """
-    m = re.search(r"<!-- Mirrored from ([^>]+) by HTTrack Website Copier",
-                  html)
-    if m is None:
-        return "unknown_url"
-    return m.groups()[0]
+    url = "unknown_url"
+    for m in re.finditerr(
+        "<!-- Mirrored from ([^>]+) by HTTrack Website Copier", html):
+        url = m.groups()[0]
+    return url
 
 
 if __name__ == "__main__":
