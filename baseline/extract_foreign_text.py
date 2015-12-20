@@ -39,7 +39,7 @@ def langsplit(uri, langsplit_exec, text):
 
 def extract_language(langsplit_output, expected_lang):
     text = []
-    l = None
+    l = None  # language of current span
     for line in langsplit_output.split("\n"):
         # df6fa1abb58549287111ba8d776733e9 tld:www
         # uri:www.hettahuskies.com/doghotel/hotel.html language:en offset:0
@@ -49,6 +49,7 @@ def extract_language(langsplit_output, expected_lang):
             continue
 
         if not line.startswith(magic_numer):
+            assert l is not None
             if l == expected_lang:
                 text.append(line)
         else:
@@ -56,7 +57,7 @@ def extract_language(langsplit_output, expected_lang):
                 if kv.startswith("language:"):
                     l = kv.split(":", 1)[1]
 
-    return "\n".join(text)
+    return u'\n'.join(text)
 
 
 def split_sentences(text, sentence_splitter_cmd, lang):
@@ -104,7 +105,7 @@ if __name__ == "__main__":
         '-tokenizer', help='moses tokenization script',
         default="/home/buck/net/build/moses-clean/scripts/tokenizer/tokenizer.perl")
     parser.add_argument('-langsplit', help='langsplit executable',
-        default="/home/buck/net/build/mtma_bitext/html_convert/langsplit")
+                        default="/home/buck/net/build/mtma_bitext/html_convert/langsplit")
     parser.add_argument(
         '-fromhtml', help='re-extract text from HTML', action='store_true')
 
