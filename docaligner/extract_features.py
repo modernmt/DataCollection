@@ -3,6 +3,7 @@
 import math
 import numpy as np
 import sys
+import json
 from scipy.stats import pearsonr, spearmanr
 
 from htmlprocessor import HTMLSequencer
@@ -13,6 +14,8 @@ from scorer import LinkDistance
 from scorer import SimhashDistance
 from scorer import NERDistance
 from scorer import StructureScorer
+from scorer import GaleChurchAlignmentDistance
+from scorer import DictionaryScorer
 from tokenizer import ExternalProcessor, SpaceTokenizer
 from matching import get_best_match, get_best_matching
 from ratio import ratio, quick_ratio, real_quick_ratio, jaccard
@@ -35,6 +38,23 @@ def get_nbest(source_corpus, target_corpus, scores, n=10):
     mlen = min(len(source_corpus), len(target_corpus))
     sys.stderr.write("Correct in %d-best: %d out of %d = %f%%\n" %
                      (n, mlen - err, mlen, (1. * mlen - err) / mlen))
+
+
+def get_ground_truth(source_corpus, target_corpus):
+    t = np.zeros((len(source_corpus), len(target_corpus)))
+    stripper = LanguageStripper()
+    stripped_source_urls = map(stripper.strip, source_corpus.keys())
+    stripped_target_urls = map(stripper.strip, target_corpus.keys())
+
+    for s_idx, su in enumerate(stripped_source_urls):
+        for t_idx, tu in enumerate(stripped_target_urls):
+            if su == tu:
+                t[s_idx, t_idx] = 1.0
+                break
+    sys.stderr.write("Marked %d url pairs\n" % (int(sum(sum(t)))))
+    # check 1-1 correspondance
+    print "These should be 0:", sum(t.sum(axis=0) > 1), sum(t.sum(axis=1) > 1)
+    return t
 
 
 def get_class_value_pairs(source_corpus, target_corpus, scores,
@@ -63,6 +83,30 @@ def get_ranks(source_corpus, target_corpus, scores):
                 break
 
 
+def write_url2dim(source_corpus, target_corpus, fh, file2url):
+    f2u = {}
+    if file2url is not None:
+        for line in file2url:
+            filename, url = line.decode('utf-8', 'ignore').strip().split('\t')
+            if filename in source_corpus or filename in target_corpus:
+                f2u[filename.encode('utf-8', 'ignore')] = url.encode('utf-8', 'ignore')
+
+    mapping = {'index_to_source_url': {},
+               'index_to_target_url': {},
+               'source_url_to_index': {},
+               'target_url_to_index': {}}
+    for s_idx, su in enumerate(source_corpus.iterkeys()):
+        su = f2u.get(su, su)
+        mapping['index_to_source_url'][s_idx] = su
+        mapping['source_url_to_index'][su] = s_idx
+
+    for t_idx, tu in enumerate(target_corpus.iterkeys()):
+        tu = f2u.get(tu, tu)
+        mapping['index_to_target_url'][t_idx] = tu
+        mapping['target_url_to_index'][tu] = t_idx
+
+    json.dump(mapping, fh)
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
@@ -73,11 +117,19 @@ if __name__ == "__main__":
         default=sys.stdout)
     parser.add_argument('feature',
                         choices=['LinkDistance', 'BOW', 'Simhash',
-                                 'Structure'])
+                                 'Structure', 'GaleChurch', 'TranslatedBOW'])
+    parser.add_argument('-dictfile', help='dictionary file for TranslatedBOW')
+    parser.add_argument('-targets', help='output file for target matrix',
+                        type=argparse.FileType('w'))
     parser.add_argument('-ngram_size', help="length of ngram from Simhash",
                         default=2, type=int)
     parser.add_argument('-xpath', help="xpath for LinkDistance",
                         default="//a/@href")
+    parser.add_argument('-urlmapping',
+                        help="outfile for url <-> index mapping",
+                        type=argparse.FileType('w'))
+    parser.add_argument('-file2url', help='mapping to real url',
+                        type=argparse.FileType('r'))
     parser.add_argument('-slang', help='source language', default='en')
     parser.add_argument('-tlang', help='target language', default='fr')
     parser.add_argument(
@@ -101,12 +153,20 @@ if __name__ == "__main__":
                      (len(s), args.slang,
                       len(t), args.tlang, args.lettfile.name))
 
+    if args.targets:
+        np.savetxt(args.targets, get_ground_truth(s, t))
+    if args.urlmapping:
+        write_url2dim(s, t, args.urlmapping, args.file2url)
+        sys.exit()  # TODO: remove
+
     scorer = None
+    print "Using feature: ", args.feature
     if args.feature == 'LinkDistance':
         scorer = LinkDistance(xpath=args.xpath, ratio=jaccard)
     elif args.feature == 'BOW':
         scorer = BOWScorer(source_tokenizer=source_tokenizer,
-                           target_tokenizer=target_tokenizer)
+                           target_tokenizer=target_tokenizer,
+                           n=args.ngram_size)
     elif args.feature == 'Simhash':
         scorer = SimhashDistance(source_tokenizer=source_tokenizer,
                                  target_tokenizer=target_tokenizer,
@@ -116,17 +176,50 @@ if __name__ == "__main__":
             length_function=lambda x: len(x.split()),
             growth_function=lambda x: 1 + math.log(x),
             ratio_function=quick_ratio)
+    elif args.feature == 'GaleChurch':
+        scorer = GaleChurchAlignmentDistance()
+    elif args.feature == 'TranslatedBOW':
+        assert args.dictfile is not None, "Need dictfile for TranslatedBOW"
+        scorer = DictionaryScorer(
+            source_tokenizer, target_tokenizer, args.dictfile,
+            args.slang, args.tlang)
     assert scorer is not None, "Need to instantiate scorer first"
     m = scorer.score(s, t)
+    get_best_match(s, t, m)
+    # get_best_matching(s, t, m)
+
+    # print "Finding best matching"
+    # targets = get_ground_truth(s, t)
+    # correct, errors = [], []
+    # score_matrix = predicted.reshape((n_source, n_target))
+    # score_matrix = m
+    # np.savetxt("scores", score_matrix)
+    # for s_idx in range(len(s)):
+    # print np.argmax(score_matrix[s_idx]), s_idx
+    #     t_idx = np.argmax(score_matrix[s_idx])
+    # if targets[s_idx * n_target + t_idx] > 0:
+    #     if targets[s_idx, t_idx] > 0:
+    #         correct.append(s_idx)
+    #     else:
+    #         errors.append(s_idx)
+    # total = len(correct) + len(errors)
+    # print "Right: %d/%d, Wrong: %d/%d = %f%%" \
+    #     % (len(correct), total, len(errors), total, 100. * len(errors) / total)
+    # sys.exit()
+
+    m = (m - np.mean(m)) / np.std(m)
+    np.savetxt(args.outfile, m)
 
     # print info
     ranks = list(get_ranks(s, t, m))
     sys.stderr.write("Avg. Rank: %f\n" % (float(sum(ranks)) / len(ranks)))
-    n_errors(sum(1 for r in ranks if r > 0))
-    print "Err: %d / %d = %f" % (n_errors, len(ranks),
-                                 float(n_errors) / len(ranks))
-    print sum(1 for r in ranks if r < 20)
+    n_errors = sum(1 for r in ranks if r > 0)
+    print "Err: %d / %d = %f%%" % (n_errors, len(ranks),
+                                   100. * float(n_errors) / len(ranks))
+    # print sum(1 for r in ranks if r < 20)
     get_nbest(s, t, m, n=20)
+
+    sys.exit()
 
     # np.savetxt(args.outfile, m)
     # success, value = [], []

@@ -22,7 +22,7 @@ LOG=${LETT/.lett/.log}
 if [ ! -f ${DONEFILE} ]; then
     source /home/buck/net/build/virtualenvs/crawl/bin/activate
     # Need to have the punk tokenizer from nltk
-    # echo -e "import nltk\nnltk.download('punkt')" | python 2> /dev/null
+    echo -e "import nltk\nnltk.download('punkt')" | python 2> /dev/null
 
     ls -lh ${LETT}
     mv  ${LETT} ${LETT}.bak

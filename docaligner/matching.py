@@ -20,8 +20,8 @@ def get_best_match(source_corpus, target_corpus, scores):
         success = stripper.strip(t_url) == stripper.strip(s_page.url)
         if not success:
             err += 1
-        sys.stdout.write("%f\t%s\t%s\t%s\n" %
-                         (scores[s_idx, max_idx], success, s_url, t_url))
+        # sys.stdout.write("%f\t%s\t%s\t%s\n" %
+        #                  (scores[s_idx, max_idx], success, s_url, t_url))
     n = min(len(source_corpus), len(target_corpus))
     sys.stderr.write("Correct (greedy): %d out of %d = %f%%\n" %
                      (n - err, n, (1. * n - err) / n))
@@ -41,8 +41,8 @@ def get_best_matching(source_corpus, target_corpus, scores):
         success = stripper.strip(t_url) == stripper.strip(s_url)
         if not success:
             err += 1
-        sys.stdout.write("%f\t%s\t%s\t%s\n" %
-                         (scores[row, column], success, s_url, t_url))
+        # sys.stdout.write("%f\t%s\t%s\t%s\n" %
+        #                  (scores[row, column], success, s_url, t_url))
 
     n = min(len(source_corpus), len(target_corpus))
     sys.stderr.write("Correct: %d out of %d = %f%%\n" %

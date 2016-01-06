@@ -11,6 +11,7 @@ import lxml.html
 import numpy as np
 import re
 import sys
+import codecs
 
 from tokenizer import SpaceTokenizer
 from htmlprocessor import HTMLSequencer
@@ -153,26 +154,22 @@ class NERDistance(DistanceScorer):
 
 class BOWScorer(DistanceScorer):
 
-    def __init__(self, source_tokenizer=None, target_tokenizer=None):
+    def __init__(self, source_tokenizer, target_tokenizer, n=3):
         self.name = "Bag of Words Scorer"
         self.sbow = []
         self.tbow = []
-
         self.source_tokenizer = source_tokenizer
-        if not source_tokenizer:
-            self.source_tokenizer = SpaceTokenizer()
-
         self.target_tokenizer = target_tokenizer
-        if not target_tokenizer:
-            self.target_tokenizer = SpaceTokenizer()
+        self.n = n
 
     def _words_from_text(self, text, tokenizer):
-        words = set()
-        # for line in tokenizer.process(text):
+        words = []
         for line in text.split("\n"):
             for w in tokenizer.process(line).lower().split():
-                words.add(w)
-        return words
+                words.append(w)
+        ngrams = [" ".join(words[i:i + self.n]) for i in
+                  range(max(len(words) - self.n + 1, 1))]
+        return set(ngrams)
 
     def _extract(self, source_corpus, target_corpus):
         for idx, (url, page) in enumerate(source_corpus.iteritems()):
@@ -183,20 +180,31 @@ class BOWScorer(DistanceScorer):
                 self._words_from_text(page.text, self.target_tokenizer))
 
     def _jaccard(self, set1, set2):
+        """ Jaccard Similarity Coeff, high is good """
+        if len(set1) == 0 and len(set2) == 0:
+            return 1.0
         return float(len(set1.intersection(set2))) / len(set1.union(set2))
+
+    def _dice(self, set1, set2):
+        if len(set1) == 0 and len(set2) == 0:
+            return 1.0
+        return 2.0 * len(set1.intersection(set2)) / (len(set1) + len(set2))
 
     def _score_pair(self, s_idx, s_page, t_idx, t_page):
         return self._jaccard(self.sbow[s_idx], self.tbow[t_idx])
+        # return self._dice(self.sbow[s_idx], self.tbow[t_idx])
 
 
 class DictionaryScorer(DistanceScorer):
 
-    def __init__(self, source_tokenizer=None, target_tokenizer=None,
+    def __init__(self, source_tokenizer, target_tokenizer,
                  dictfile, lang1, lang2):
         self.name = "Bitextor-style dictionary scorer"
         self.sdocs = []
         self.tdocs = []
-        self.dictionary = self.read_dictionary(lang1, lang2)
+        self.s_words = set()
+        self.t_words = set()
+        self.read_dictionary(dictfile, lang1, lang2)
 
         self.source_tokenizer = source_tokenizer
         if not source_tokenizer:
@@ -206,11 +214,12 @@ class DictionaryScorer(DistanceScorer):
         if not target_tokenizer:
             self.target_tokenizer = SpaceTokenizer()
 
-    def read_dictionary(self, lang1, lang2):
-        d = defaultdict(list)
+    def read_dictionary(self, filename, lang1, lang2):
+        self.dictionary = defaultdict(set)
         swap = False  # switch columns in dict file
-        with codecs.open(filename, 'r', 'utf-8') as dict_file:
+        with codecs.open(filename, 'r', 'utf-8', errors='ignore') as dict_file:
             l1, l2 = dict_file.readline().strip().lower().split('\t')
+            sys.stderr.write("Translating %s -> %s\n" % (l2, l1))
             if l2 == lang1 and l1 == lang2:
                 swap = True
             else:
@@ -218,52 +227,80 @@ class DictionaryScorer(DistanceScorer):
                     "unexpected language pair: %s-%s\n" % (l1, l2)
 
             for line in dict_file:
-                w1, w2 = line.strip().split('\t')
+                if not line.strip():
+                    continue
+                line = line.strip().lower().split('\t')
+                if len(line) != 2:
+                    sys.stderr.write("Weird entry: %s\n" % (repr(line)))
+                    continue
+                w1, w2 = line
                 if swap:
                     w1, w2 = w2, w1
-                d[w2].append(w1)   # We're translating lang2 -> lang1
-        sys.stderr.write("Read dictionary of %d %s words\n" % (len(d), lang2))
-        return d
+                # We're translating lang2 -> lang1 e.g. en -> de
+                self.dictionary[w2.strip()].add(w1.strip())
+        sys.stderr.write("Read dictionary of %d %s words\n"
+                         % (len(self.dictionary), lang2))
 
-    def extend_dictionary(dictionary, voc1, voc2, quiet=False):
+    def _extend_dictionary(self, quiet=False):
         n_added = 0
-        for w in voc1.intersection(voc2):
-            if w not in dictionary[w]:
+        for w in self.s_words.intersection(self.t_words):
+            if w not in self.dictionary[w]:
                 n_added += 1
-                dictionary[w].append(w)
+                self.dictionary[w].add(w)
         if not quiet:
             sys.stderr.write("Added %d 1-1 translations\n" % (n_added))
-            sys.stderr.write("Final dictionary size: %d\n" % (len(dictionary)))
-        return dictionary
+            sys.stderr.write("Final dictionary size: %d\n" %
+                             (len(self.dictionary)))
+
+    def _translate_bow(self, bow):
+        translation = set()
+        n_translated = 0
+        for w in bow:
+            if w in self.dictionary:
+                n_translated += 1
+                translation.update(self.dictionary[w])
+        return n_translated, translation
 
     def _words_from_text(self, text, tokenizer):
         words = set()
-        # for line in tokenizer.process(text):
         for line in text.split("\n"):
             for w in tokenizer.process(line).lower().split():
                 words.add(w)
         return words
 
     def _extract(self, source_corpus, target_corpus):
-        s_words = set()
-        t_words = set()
         for idx, (url, page) in enumerate(source_corpus.iteritems()):
             words = self._words_from_text(page.text, self.source_tokenizer)
-            s_words.update(words)
-            self.sbow.append(
-                )
+            self.s_words.update(words)
+            self.sdocs.append(words)
 
         for idx, (url, page) in enumerate(target_corpus.iteritems()):
             words = self._words_from_text(page.text, self.target_tokenizer)
-            t_words.update(words)
-            self.tbow.append(
-                )
+            self.t_words.update(words)
+            self.tdocs.append(words)
 
-    def _jaccard(self, set1, set2):
-        return float(len(set1.intersection(set2))) / len(set1.union(set2))
+        self._extend_dictionary()
+
+    def _bitextor_distance(self, set1, set2):
+        # TODO: check if translation is performed in right direction
+        n_translated, translated_set2 = self._translate_bow(set2)
+        # print set1
+        # print set2
+        # print n_translated, translated_set2
+        # print translated_set2.intersection(set1)
+        # sys.exit()
+        # size_bigger = max(len(set1), len(set2))
+        size_smaller = min(len(set1), len(set2))
+        n_common = len(translated_set2.intersection(set1))
+        if size_smaller == 0 or n_translated == 0:
+            return 0.
+        return float(n_common)  # / float(n_translated)
+        # return float(size_smaller) / float(size_bigger)
+        # return float(size_bigger) / float(size_smaller)
+        #     float(n_common) / float(n_translated)
 
     def _score_pair(self, s_idx, s_page, t_idx, t_page):
-        return self._jaccard(self.sbow[s_idx], self.tbow[t_idx])
+        return self._bitextor_distance(self.sdocs[s_idx], self.tdocs[t_idx])
 
 
 class StructureScorer(DistanceScorer):
