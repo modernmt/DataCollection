@@ -11,6 +11,8 @@ from external_processor import ExternalTextProcessor
 
 magic_numer = "df6fa1abb58549287111ba8d776733e9"
 
+timeout = 10.0
+
 
 def original_url(html):
     m = re.search(r"<!-- Mirrored from ([^>]+) by HTTrack Website Copier",
@@ -61,6 +63,9 @@ def extract_language(langsplit_output, expected_lang):
 
 
 def split_sentences(text, sentence_splitter_cmd, lang):
+    if not sentence_splitter_cmd:
+        return text.split('\n')
+
     sentences = []
     proc = ExternalTextProcessor([sentence_splitter_cmd, "-l", lang])
     output = proc.process(text.replace("\n", "\n\n"))
