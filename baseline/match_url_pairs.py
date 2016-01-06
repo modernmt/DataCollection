@@ -114,10 +114,11 @@ def find_pairs(source_urls, target_urls,
         tu = stripped_source_url
         for su in source_stripped[stripped_source_url]:
             pairs.append((su, tu))
-    sys.stderr.write("Found %s stripped source + unmodified target pairs\n"
-                     % (len(pairs)))
-    sys.stderr.write("%d pairs from devset\n" %
-                     (len(set(devset).intersection(pairs))))
+    npairs = len(set(pairs))
+    sys.stderr.write(
+        "Found %d %s pairs (total: %d) covering %d pairs from devset\n"
+        % (npairs, "stripped source + unmodified target",
+           npairs, len(set(devset).intersection(pairs))))
 
     # stripped target url matches unstripped source url.
     # e.g. lesite.fr/en/bonsoir <-> lesite.fr/bonsoir
@@ -126,22 +127,29 @@ def find_pairs(source_urls, target_urls,
         su = stripped_target_url
         for tu in target_stripped[stripped_target_url]:
             pairs.append((su, tu))
-    sys.stderr.write("Found %s stripped target + unmodified source pairs\n"
-                     % (len(pairs)))
-    sys.stderr.write("%d pairs from devset\n" %
-                     (len(set(devset).intersection(pairs))))
+
+    oldpairs = npairs
+    npairs = len(set(pairs))
+    sys.stderr.write(
+        "Found %d %s pairs (total: %d) covering %d pairs from devset\n"
+        % (npairs - oldpairs, "stripped target + unmodified source",
+           npairs, len(set(devset).intersection(pairs))))
 
     # stripped source url matches stripped target url
     # e.g. page.net/fr <-> page.net/en
+    oldpairs = len(pairs)
     for stripped_source_url, source_url in source_stripped.iteritems():
         if stripped_source_url in target_stripped:
             for su in source_url:
                 for tu in target_stripped[stripped_source_url]:
                     pairs.append((su, tu))
 
-    sys.stderr.write("Found %d pairs\n" % (len(pairs)))
-    sys.stderr.write("%d pairs from devset\n" %
-                     (len(set(devset).intersection(pairs))))
+    oldpairs = npairs
+    npairs = len(set(pairs))
+    sys.stderr.write(
+        "Found %d %s pairs (total: %d) covering %d pairs from devset\n"
+        % (npairs - oldpairs, "stripped source + stripped target",
+           npairs, len(set(devset).intersection(pairs))))
 
     return pairs
 
@@ -204,7 +212,10 @@ if __name__ == "__main__":
     pairs = find_pairs(source_urls, target_urls,
                        source_stripped, target_stripped,
                        devset)
+    sys.stderr.write("Total: %d candidate pairs\n" % (len(set(pairs))))
 
+    oldpairs = len(set(pairs))
+    sys.stderr.write("Running agressive stripping for higher recall\n")
     source_stripped = strip_urls(source_urls)
     target_stripped = strip_urls(target_urls)
     print "%d/%d stripped source/target urls" % (len(source_stripped),
@@ -213,8 +224,8 @@ if __name__ == "__main__":
     pairs.extend(find_pairs(source_urls, target_urls,
                             source_stripped, target_stripped,
                             devset))
-    print "%d/%d stripped source/target urls" % (len(source_stripped),
-                                                 len(target_stripped))
+    sys.stderr.write("Added %d pairs (total: %d)\n"
+                     % (len(set(pairs)) - oldpairs, len(set(pairs))))
 
     # Filter pairs so that every url only occurs once
     pairs_s2t, pairs_t2s = {}, {}
@@ -226,7 +237,7 @@ if __name__ == "__main__":
             if args.pairs:
                 args.pairs.write("%s\t%s\n" % (su, tu))
 
-    sys.stderr.write("Found %d pairs\n" % (len(pairs_s2t)))
+    sys.stderr.write("Keeping %d pairs\n" % (len(pairs_s2t)))
     sys.stderr.write("%d pairs from devset\n" %
                      (len(set(devset).intersection(pairs_s2t.items()))))
 
