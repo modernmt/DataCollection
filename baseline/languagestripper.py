@@ -11,43 +11,48 @@ class LanguageStripper(object):
         self._strip_query_variables = []
         if strip_query_variables:
             self._strip_query_variables = [
-                'clang', 'language', 'locale', 'selectedLocale']
+                'lang', 'clang', 'language', 'locale', 'selectedLocale']
         self.code_to_language = {}
         # These should all be lower-case, matching is case-insensitive
-        for code in ["arabic", "ara", "ar"]:
-            self.code_to_language[code] = "ar"
-        for code in ["bulgarian", "bul", "bg"]:
-            self.code_to_language[code] = "bg"
-        for code in ["czech", "cze", "cz", "cs"]:
-            self.code_to_language[code] = "cs"
-        for code in ["deutsch", "german", "ger", "deu", "de"]:
-            self.code_to_language[code] = "de"
-        for code in ["english", "eng", "en"]:
-            self.code_to_language[code] = "en"
-        for code in ["espanol", "spanish", "spa", "esp", "es"]:
-            self.code_to_language[code] = "es"
-        for code in ["french", "francais", "fran", "fra", "fre", "fr"]:
-            self.code_to_language[code] = "fr"
-        for code in ["chinese", "chi", "zh"]:
-            self.code_to_language[code] = "zh"
-        # new, not in "Dirt-Cheap"-paper
-        for code in ["tedesco", "de-de", "de-ch", "de-at", "de-li", 'de-lu',
+        for code in ['arabic', 'ara', 'ar']:
+            self.code_to_language[code] = 'ar'
+        for code in ['bulgarian', 'bul', 'bg']:
+            self.code_to_language[code] = 'bg'
+        for code in ['czech', 'cze', 'cz', 'cs']:
+            self.code_to_language[code] = 'cs'
+        for code in ['deutsch', 'german', 'ger', 'deu', 'de']:
+            self.code_to_language[code] = 'de'
+        for code in ['english', 'eng', 'en']:
+            self.code_to_language[code] = 'en'
+        for code in ['espanol', 'spanish', 'spa', 'esp', 'es']:
+            self.code_to_language[code] = 'es'
+        for code in ['french', 'francais', 'fran', 'fra', 'fre', 'fr']:
+            self.code_to_language[code] = 'fr'
+        for code in ['chinese', 'chi', 'zh']:
+            self.code_to_language[code] = 'zh'
+        # new, not in 'Dirt-Cheap'-paper
+        for code in ['tedesco', 'de-de', 'de-ch', 'de-at', 'de-li', 'de-lu',
                      'allemand']:
-            self.code_to_language[code] = "de"
-        for code in ["fr-be", "fr-ca", "fr-fr", "fr-lu", "fr-ch", 'f']:
-            self.code_to_language[code] = "fr"
-        for code in ["italian", "italiano", "ital", 'ita', 'it-it', 'it-ch',
+            self.code_to_language[code] = 'de'
+        for code in ['fr-be', 'fr-ca', 'fr-fr', 'fr-lu', 'fr-ch', 'f']:
+            self.code_to_language[code] = 'fr'
+        for code in ['italian', 'italiano', 'ital', 'ita', 'it-it', 'it-ch',
                      'it']:
-            self.code_to_language[code] = "it"
-        for code in ["en-en", "en-us", "en-uk", 'en-ca', 'en-bz', 'en-ab',
+            self.code_to_language[code] = 'it'
+        for code in ['en-en', 'en-us', 'en-uk', 'en-ca', 'en-bz', 'en-ab',
                      'en-in', 'en-ie', 'en-jm', 'en-nz', 'en-ph', 'en-za',
                      'en-tt', 'gb', 'en-gb', 'inglese', 'englisch', 'us', 'e']:
-            self.code_to_language[code] = "en"
-        for code in ["romanian", "romana", "romlang", 'rom', 'ro-ro', 'ro']:
-            self.code_to_language[code] = "ro"
-        for code in ["soma", "som", "so", 'somal', 'somali', 'so-so',
+            self.code_to_language[code] = 'en'
+        for code in ['romanian', 'romana', 'romlang', 'rom', 'ro-ro', 'ro']:
+            self.code_to_language[code] = 'ro'
+        for code in ['soma', 'som', 'so', 'somal', 'somali', 'so-so',
                      'af-soomaali', 'soomaali']:
-            self.code_to_language[code] = "so"
+            self.code_to_language[code] = 'so'
+        for code in ['turkish', 'tur', 'turkic', 'tr-tr', 'tr']:
+            self.code_to_language[code] = 'tr'
+        for code in ['finnish', 'finnisch', 'fin', 'suomi', 'suomeksi',
+                     'suominen', 'suomija', 'fi-fi', 'fi']:
+            self.code_to_language[code] = 'fi'
 
         if languages is not None:
             kv_pairs = [(k, v) for k, v in self.code_to_language.items()
@@ -60,14 +65,14 @@ class LanguageStripper(object):
 
         keys = self.code_to_language.keys()
         keys.sort(key=len, reverse=True)
-        regexp_string = "(?<![a-zA-Z0-9])(?:%s)(?![a-zA-Z0-9])" % (
-            "|".join(keys))
+        regexp_string = '(?<![a-zA-Z0-9])(?:%s)(?![a-zA-Z0-9])' % (
+            '|'.join(keys))
         self.re_code = re.compile(regexp_string, re.IGNORECASE)
 
-        # remove "-eng" including the hyphen but not -fr from fr-fr
+        # remove '-eng' including the hyphen but not -fr from fr-fr
         keys = [key for key in keys if '-' not in key and '_' not in key]
-        regexp_string = "[-_](?:%s)(?![a-zA-Z0-9])" % (
-            "|".join(keys))
+        regexp_string = '[-_](?:%s)(?![a-zA-Z0-9])' % (
+            '|'.join(keys))
         self.re_strip = re.compile(regexp_string, re.IGNORECASE)
 
         self.re_punct_at_start = re.compile(r'^[^a-zA-Z0-9]+')
@@ -93,8 +98,15 @@ class LanguageStripper(object):
     def strip_query(self, query):
         result = []
         for k, v in urlparse.parse_qsl(query, keep_blank_values=True):
-            if k.lower() in self._strip_query_variables:
+
+            k_lower = k.lower()
+            ignore = False
+            for v in self._strip_query_variables:
+                if v.endswith(k_lower) or v.startswith(k_lower):
+                    ignore = True
+            if ignore:
                 continue
+
             stripped_k = self.re_code.sub('', k)
             if not stripped_k:
                 continue
@@ -113,13 +125,13 @@ class LanguageStripper(object):
         for match in self.re_code.findall(uri):
             match = match.lower()
             assert match in self.code_to_language, \
-                "Unknown match: %s\n" % match
+                'Unknown match: %s\n' % match
             return self.code_to_language[match]
-        return ""
+        return ''
 
     def strip_uri(self, uri, expected_language=None,
                   remove_index=False):
-        """ Returns (stripped_uri, success) """
+        ''' Returns (stripped_uri, success) '''
         parsed_uri = urlparse.urlparse(uri)
 
         matched_languages = [self.match(parsed_uri.path),
@@ -130,7 +142,7 @@ class LanguageStripper(object):
             # we removed a bit of the URL but is does not support our
             # hope to find expected_language, e.g. removed /fr/ when we were
             # looking for Italian pages.
-            return "", False
+            return '', False
 
         stripped_path = self.strip_path(parsed_uri.path)
 
@@ -163,9 +175,9 @@ class LanguageStripper(object):
         if ':' in netloc:
             netloc = netloc.split(':')[0]
         if not netloc:
-            return "", False
+            return '', False
 
-        stripped_uri = urlparse.ParseResult(scheme="http",
+        stripped_uri = urlparse.ParseResult(scheme='http',
                                             netloc=parsed_uri.netloc,
                                             path=stripped_path,
                                             params='',
@@ -175,7 +187,7 @@ class LanguageStripper(object):
         return stripped_uri, True
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import argparse
     import sys
     parser = argparse.ArgumentParser()
@@ -187,7 +199,7 @@ if __name__ == "__main__":
     for line in sys.stdin:
         stripped = []
         changed = False
-        for uri in line.strip().split("\t"):
+        for uri in line.strip().split('\t'):
             stripped_uri, success = language_stripper.strip_uri(uri)
             if success:
                 stripped.append(stripped_uri)
@@ -195,4 +207,4 @@ if __name__ == "__main__":
                     changed = True
 
         if changed:
-            print line.strip(), "\t".join(stripped)
+            print line.strip(), '\t'.join(stripped)

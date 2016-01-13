@@ -75,6 +75,23 @@ def read_candidates(infile, valid_hosts=None):
     return candidates
 
 
+def main_languages(bytecounts, min_ratio=.3):
+    total_bytes = float(sum(b for l, b in bytecounts))
+    langs = []
+    for l, b in bytecounts:
+        if b / total_bytes >= min_ratio:
+            langs.append(l)
+    return langs
+
+
+def normalize_url(url):
+    """ It seems some URLs have an empty query string.
+    This function removes the trailing '?' """
+    url = url.rstrip('?')
+    if not url.startswith("http://"):
+        url = ''.join(("http://", url))
+    return url
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
@@ -84,6 +101,8 @@ if __name__ == "__main__":
                         type=argparse.FileType('r'))
     parser.add_argument('-nostrip', help='accept only exact matches',
                         action='store_true')
+    parser.add_argument('-agressive', help='remove all locale info',
+                        action='store_true')
     args = parser.parse_args(sys.argv[1:])
 
     candidates = {}
@@ -91,6 +110,8 @@ if __name__ == "__main__":
         candidates = read_candidates(args.candidates)
 
     language_stripper = LanguageStripper(languages=[args.lang])
+    if args.agressive:
+        language_stripper = LanguageStripper(strip_query_variables=True)
 
     for line in sys.stdin:
         split_line = line.split('\t')
@@ -99,15 +120,15 @@ if __name__ == "__main__":
 
         if len(split_line) == 2 and args.nostrip \
                 and candidates and uri not in candidates:
-            # We're matching candidates agains a KV list without stripping,
+            # We're matching candidates against a KV list without stripping,
             # i.e. target candidate is stripped and source candidate isn't
             # This allows for a cheap reject.
             continue
 
         languages = json.loads(v)['languages']
 
-        if args.lang not in [l for l, b in languages]:
-            # this page does not have text in the language
+        if args.lang not in main_languages(languages):
+            # this page does not have (enough) text in the language
             # we're looking for
             continue
 
@@ -123,55 +144,26 @@ if __name__ == "__main__":
             print_match(uri, uri, crawl, candidates)
             continue
 
-        parsed_uri = urlparse.urlparse(uri)
+        if not args.agressive:
+            parsed_uri = urlparse.urlparse(uri)
+            matched_languages = [language_stripper.match(parsed_uri.path),
+                                 language_stripper.match(parsed_uri.query)]
 
-        matched_languages = [language_stripper.match(parsed_uri.path),
-                             language_stripper.match(parsed_uri.query)]
+            if args.lang not in matched_languages:
+                # we removed a bit of the URL but is does not support our
+                # hope to find args.lang, e.g. removed /fr/ when we were
+                # looking for Italian pages.
+                continue
 
-        if args.lang not in matched_languages:
-            # we removed a bit of the URL but is does not support our
-            # hope to find args.lang, e.g. removed /fr/ when we were looking
-            # for Italian pages.
-            continue
-
-        stripped_path = language_stripper.strip_path(parsed_uri.path)
-        stripped_path = re.sub(r'//+', '/', stripped_path)
-        stripped_path = re.sub(r'__+', '_', stripped_path)
-        stripped_path = re.sub(r'/_+', '/', stripped_path)
-        stripped_path = re.sub(r'_/', '/', stripped_path)
-        stripped_path = re.sub(r'--+', '-', stripped_path)
-
-        # remove new trailing /
-        if stripped_path and stripped_path[-1] == '/' \
-                and parsed_uri.path and parsed_uri.path[-1] != '/':
-            stripped_path = stripped_path[:-1]
-
-        # add removed trailing /
-        if not stripped_path.endswith('/') and parsed_uri.path.endswith('/'):
-            stripped_path += '/'
-
-        stripped_query = language_stripper.strip_query(parsed_uri.query)
-
-        netloc = parsed_uri.netloc
-        if '@' in netloc:
-            netloc = netloc.split('@')[1]
-        if ':' in netloc:
-            netloc = netloc.split(':')[0]
-        if not netloc:
-            continue
-
-        stripped_uri = urlparse.ParseResult(scheme="http",
-                                            netloc=parsed_uri.netloc,
-                                            path=stripped_path,
-                                            params='',
-                                            query=stripped_query,
-                                            fragment='').geturl()
+        stripped_uri, success = language_stripper.strip_uri(uri)
 
         if candidates:
             if stripped_uri in candidates:
                 print_match(stripped_uri, uri, crawl, candidates)
                 continue
         else:
+            if not success or stripped_uri == uri:
+                continue
             try:
                 sys.stdout.write("\t".join([stripped_uri, args.lang, line]))
                 # line still has the newline
