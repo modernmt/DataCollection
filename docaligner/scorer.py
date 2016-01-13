@@ -12,10 +12,20 @@ import numpy as np
 import re
 import sys
 import codecs
+import multiprocessing
 
 from tokenizer import SpaceTokenizer
 from htmlprocessor import HTMLSequencer
 from ratio import ratio
+from itertools import izip_longest
+
+
+def ratio_parallel(seq1, seqs2, ratio_function=ratio, processes=1):
+    p = multiprocessing.Pool(processes=processes)
+    # scores = [p.apply(ratio_function, args=(a, b))
+    #           for a, b in izip(seqs1, seqs2)]
+    scores = [p.apply(ratio_function, izip([], seqs2, fillvalue=seq1))]
+    return scores
 
 
 class DistanceScorer(object):
@@ -36,39 +46,67 @@ class DistanceScorer(object):
         data """
         pass
 
-    def score(self, source_corpus, target_corpus):
+    def score(self, source_corpus, target_corpus, parallel=1):
         self._extract(source_corpus, target_corpus)
         sys.stderr.write("Done extracting...\n")
         scoring_matrix = np.zeros((len(source_corpus), len(target_corpus)))
-        for s_idx, (s_url, s_page) in enumerate(source_corpus.iteritems()):
-            for t_idx, (t_url, t_page) in enumerate(target_corpus.iteritems()):
-                scoring_matrix[s_idx, t_idx] = self._score_pair(
-                    s_idx, s_page, t_idx, t_page)
+        if parallel <= 1:
+            for s_idx, (s_url, s_page) in enumerate(source_corpus.iteritems()):
+                for t_idx, (t_url, t_page) in \
+                        enumerate(target_corpus.iteritems()):
+                    scoring_matrix[s_idx, t_idx] = self._score_pair(
+                        s_idx, s_page, t_idx, t_page)
+        else:
+            for s_idx, (s_url, s_page) in enumerate(source_corpus.iteritems()):
+                scores = [p.apply(self._score_pair,
+                                  args=(s_idx, s_page, t_idx, t_page))
+                          for t_idx, (t_url, t_page) in
+                          enumerate(target_corpus.iteritems())]
+                for t_idx, val in enumerate(scores):
+                    scoring_matrix[s_idx, t_idx] = val
+
         sys.stderr.write("Done scoring...\n")
         return scoring_matrix
 
 
-class LinkDistance(DistanceScorer):
+class SequenceDistanceScorer(DistanceScorer):
 
-    def __init__(self, xpath='//a/@href', ratio=ratio):
+    def __init__(self, ratio_function=ratio):
+        super(SequenceDistanceScorer, self).__init__()
+        self.sseqs = []
+        self.tseqs = []
+        self.ratio_function = ratio_function
+
+
+    def score(self, source_corpus, target_corpus, parallel=1):
+        self._extract(source_corpus, target_corpus)
+        sys.stderr.write("Done extracting...\n")
+        scoring_matrix = np.zeros((len(source_corpus), len(target_corpus)))
+        if parallel <= 1:
+            for s_idx in xrange(len(self.sseqs)):
+                for t_idx in xrange(len(self.tseqs)):
+                    scoring_matrix[s_idx, t_idx] = \
+                        self.ratio_function(self.sseqs[s_idx], self.tseqs[t_idx])
+        else:
+            for s_idx in xrange(len(self.sseqs)):
+                scores = ratio_parallel(self.sseqs, self.tseqs, self.ratio_function)
+                for t_idx in xrange(len(self.tseqs)):
+                    scoring_matrix[s_idx, t_idx] = scores[t_idx]
+
+class LinkDistance(SequenceDistanceScorer):
+
+    def __init__(self,ratio_function=ratio, xpath='//a/@href'):
+        super(LinkDistance, self).__init__(ratio_function=ratio_function)
         self.name = "Link Distance Scorer (xpath: %s)" % xpath
-        self.t_links = []
-        self.s_links = []
         self.xpath = xpath
-        self.ratio = ratio
 
     def _extract(self, source_corpus, target_corpus):
         for url, page in source_corpus.iteritems():
-            self.s_links.append(
+            self.sseqs.append(
                 self._extract_links(page.url, page.html.encode("utf-8")))
         for url, page in target_corpus.iteritems():
-            self.t_links.append(
+            self.tseqs.append(
                 self._extract_links(page.url, page.html.encode("utf-8")))
-
-    def _score_pair(self, s_idx, s_page, t_idx, t_page):
-        source_links = self.s_links[s_idx]
-        target_links = self.t_links[t_idx]
-        return self.ratio(source_links, target_links)
 
     def _extract_links(self, url, html):
         dom = lxml.html.fromstring(html)

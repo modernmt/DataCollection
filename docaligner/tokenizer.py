@@ -2,6 +2,9 @@ import sys
 import subprocess
 import os
 import threading
+from nltk.tokenize import wordpunct_tokenize
+import re
+
 
 class SpaceTokenizer(object):
 
@@ -12,6 +15,19 @@ class SpaceTokenizer(object):
 
     def process(self, line):
         return " ".join(line.split())
+
+
+class WordPunctTokenizer(object):
+
+    """ Fall-back is no tokenizer is available """
+
+    def __init__(self):
+        sys.stderr.write("Using WordPunctTokenizer.\n")
+
+    def process(self, line):
+        words = [w for w in wordpunct_tokenize(
+            line) if re.match("\w+|\d+", w) is not None]
+        return " ".join(words)
 
 
 class ExternalProcessor(object):

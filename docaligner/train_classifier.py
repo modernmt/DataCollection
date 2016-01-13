@@ -86,172 +86,99 @@ def cut_features(feature_list, devset, mapping):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('targets',
-                        help='target matrix',
-                        type=argparse.FileType('r'))
-    parser.add_argument('-devset', help='WMT16 devset',
-                        type=argparse.FileType('r'))
-    parser.add_argument('-idx2url', help='url to index mapping',
-                        type=argparse.FileType('r'))
-
-    parser.add_argument('feature_matrix', nargs='+',
-                        help='precomputed matrix for single feature',
-                        type=argparse.FileType('r'))
-    parser.add_argument('-write_train',
-                        help='write training instances',
-                        type=argparse.FileType('wb'))
-    parser.add_argument('-read_train', nargs='+',
+    parser.add_argument('read_train', nargs='+',
                         help='read training instances',
                         type=argparse.FileType('rb'))
     parser.add_argument('-write_model',
                         help='write fitted model',
                         type=argparse.FileType('wb'))
-    parser.add_argument('-read_model',
-                        help='read fitted model',
-                        type=argparse.FileType('rb'))
-    # parser.add_argument(
-    #     '-outfile', help='output file', type=argparse.FileType('w'),
-    #     default=sys.stdout)
-    # parser.add_argument('feature',
-    #                     choices=['LinkDistance', 'BOW', 'Simhash',
-    #                              'Structure'])
-    # parser.add_argument('-ngram_size', help="length of ngram from Simhash",
-    #                     default=2, type=int)
-    # parser.add_argument('-xpath', help="xpath for LinkDistance",
-    #                     default="//a/@href")
-    # parser.add_argument('-slang', help='source language', default='en')
-    # parser.add_argument('-tlang', help='target language', default='fr')
-    # parser.add_argument(
-    #     '-corenlp_service', help='corenlp json service location',
-    #     default='http://localhost:8080')
 
     args = parser.parse_args(sys.argv[1:])
 
     targets, m = None, None
     n_source, n_target, n_samples = None, None, None
 
-    if not args.read_train:
-        print "Loading targets from ", args.targets.name
-        targets = np.loadtxt(args.targets)
-        print "Loading features from ", [fh.name for fh in args.feature_matrix]
-        features = map(np.loadtxt, args.feature_matrix)
-        n_features = len(features)
+    for f in args.read_train:
+        npzfile = np.load(f)
+        print "Read %d instances from %s" \
+            % (npzfile['feature_matrix'].shape[0], f.name)
+        assert npzfile['targets'].size == npzfile['feature_matrix'].shape[0]
 
-        url_mapping = None
-        if args.idx2url:
-            url_mapping = read_idx2url(args.idx2url)
+        tgt = npzfile['targets']
+        print "target size: ", tgt.shape
+        print "positive examples: ", sum(sum(tgt))
+        tgt = tgt.reshape(tgt.size)
 
-        devset = None
-        if args.devset:
-            assert url_mapping is not None, 'also need idx-url mapping'
-            devset = read_devset(args.devset, url_mapping)
-            features, targets = cut_features(features, devset, url_mapping)
+        if targets is None:
+            targets = tgt
+            m = npzfile['feature_matrix']
+        else:
+            print "Before concat: ", targets.shape, tgt.shape
+            targets = np.concatenate((targets, tgt), axis=0)
+            m = np.concatenate((m, npzfile['feature_matrix']), axis=0)
+            print "After concat: ", targets.shape, tgt.shape
 
-        n_source, n_target = features[0].shape
+    assert targets.size == m.shape[0]
+    assert m.shape[0] == targets.shape[0]
 
-        print "%d source / %d target docs / %d features" \
-            % (n_source, n_target, n_features)
-
-        n_samples = n_source * n_target
-        m = np.zeros((n_samples, n_features))
-
-        for s_idx in range(n_source):
-            for t_idx in range(n_target):
-                c = 0.0  # the class to predict
-                if s_idx == t_idx:
-                    c = 1.
-
-                sample_idx = s_idx * n_target + t_idx
-
-                for f_idx in range(n_features):
-                    m[sample_idx, f_idx] = features[f_idx][s_idx, t_idx]
-
-        # np.savetxt("m", m)
-
-    else:
-        for f in args.read_train:
-            npzfile = np.load(f)
-            if targets is None:
-                targets = npzfile['targets']
-                n_source, n_target = targets.shape
-
-                m = npzfile['feature_matrix']
-            else:
-                np.concatenate(targets, npzfile['targets'], axis=0)
-                assert npzfile['targets'] == targets
-                np.concatenate(m, npzfile['feature_matrix'])
-        n_source, n_target = targets.shape
-        n_samples = m.shape[0]
-        assert m.shape[0] == targets.shape[0]
-
-    if args.write_train:
-        np.savez(args.write_train,
-                 targets=targets.reshape((n_source, n_target)),
-                 feature_matrix=m)
-
-    targets = targets.reshape(n_samples)
     print "Sum of targets: ", sum(targets)
-
-    print "instances x features: ", m.shape
+    print "Instances x features: ", m.shape
 
     ratio = float(np.count_nonzero(targets == 0)) / \
         float(np.count_nonzero(targets == 1))
     print "Ratio 0 vs. 1: ", ratio
 
-    # US = OverSampler(ratio=ratio, verbose=True)
-    # US = UnderSampler(verbose=True)
-    # m, targets = US.fit_transform(m, targets)
+    skf = cross_validation.StratifiedKFold(targets, 5)
+    print "Running stratified 5-fold CV"
 
-    fitted_model = None
+    params_space = {}
+    # clf = svm.SVC(gamma=0.001, C=100., class_weight='balanced')
+    # clf = svm.SVC(gamma=0.001, C=1000., probability=True)
+    # clf = tree.DecisionTreeClassifier()
+    # clf = clf.fit(m, targets)
+    # print clf.feature_importances_
 
-    if args.read_model:
-        fitted_model = pickle.load(args.read_model)
-    else:
-        skf = cross_validation.StratifiedKFold(targets, 5)
-        print "Running stratified 5-fold CV"
+    # params_space = {'kernel': ['linear', 'poly', 'rbf'],
+    #                 "C": [1e-1, 1e0, 1e1, 1e2, 1e3, 1e4],
+    #                 'gamma': np.logspace(-2, 2, 5)}
 
-        params_space = {}
-        # clf = svm.SVC(gamma=0.001, C=100., class_weight='balanced')
-        # clf = svm.SVC(gamma=0.001, C=100., probability=True)
-        clf = tree.DecisionTreeClassifier()
-        clf = clf.fit(m, targets)
-        print clf.feature_importances_
+    # params_space = {"C": [1e-1, 1e0, 1e1, 1e2, 1e3, 1e4]}
+    # params_space = {'gamma': np.logspace(-3, 2, 6)}
 
-        # params_space = {'kernel': ['linear', 'poly', 'rbf'],
-        #                 "C": [1e-1, 1e0, 1e1, 1e2, 1e3, 1e4]}
+    # clf = ExtraTreesClassifier(n_estimators=500,
+    #                            random_state=0)
+    clf = LogisticRegression(class_weight='balanced')
+    # params_space = {'kernel': ['linear', 'poly', 'rbf'],
+    #                 "C": [1e-1, 1e0, 1e1, 1e2, 1e3, 1e4]}
+    # clf = svm.SVR()
 
-        # clf = ExtraTreesClassifier(n_estimators=500,
-        #                            random_state=0)
-        # clf = LogisticRegression(class_weight='balanced')
-        # params_space = {'kernel': ['linear', 'poly', 'rbf'],
-        #                 "C": [1e-1, 1e0, 1e1, 1e2, 1e3, 1e4]}
-        clf = svm.SVR()
+    # clf = svm.SVC(class_weight='balanced', probability=True)
+    # params_space = {'C': np.logspace(-1, 4, 6), 'gamma': np.logspace(-2, 2, 5)}
 
-        # clf = svm.SVC(class_weight='balanced', probability=True)
-        # params_space = {'C': np.logspace(-1, 4, 6), 'gamma': np.logspace(-2, 2, 5)}
+    # clf = GridSearchCV(svm.SVR(kernel='rbf', gamma=0.1), cv=5,
+    #                    param_grid={"C": [1e-1, 1e0, 1e1, 1e2, 1e3, 1e4],
+    #                                "gamma": np.logspace(-2, 2, 5)})
+    # clf = linear_model.LinearRegression()
 
-        # clf = GridSearchCV(svm.SVR(kernel='rbf', gamma=0.1), cv=5,
-        #                    param_grid={"C": [1e-1, 1e0, 1e1, 1e2, 1e3, 1e4],
-        #                                "gamma": np.logspace(-2, 2, 5)})
-        # clf = linear_model.LinearRegression()
+    # clf = linear_model.RidgeCV(alphas=[0.01, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0])
+    # clf = linear_model.BayesianRidge()
+    # clf = linear_model.Ridge()
+    # clf = linear_model.ElasticNet()
+    # clf = neighbors.KNeighborsRegressor(n_neighbors=10, weights='distance')
+    # clf = naive_bayes.GaussianNB()
 
-        # clf = linear_model.RidgeCV(alphas=[0.01, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0])
-        # clf = linear_model.BayesianRidge()
-        # clf = linear_model.Ridge()
-        # clf = linear_model.ElasticNet()
-        # clf = neighbors.KNeighborsRegressor(n_neighbors=10, weights='distance')
-        # clf = naive_bayes.GaussianNB()
+    # scoring = 'f1'
 
-        # scoring = 'f1'
-
-        gs = GridSearchCV(clf, params_space, n_jobs=-1, cv=skf)
-        gs.fit(m, targets.reshape(n_samples))
-        print "Best parameters found in CV:", gs.best_params_
-        fitted_model = gs
+    gs = GridSearchCV(clf, params_space, n_jobs=-1, cv=skf)
+    gs.fit(m, targets.reshape(n_samples))
+    print "Best parameters found in CV:", gs.best_params_
+    fitted_model = gs
 
     if args.write_model:
-        print "Loading model"
+        print "Writing model to", args.write_model.name
         pickle.dump(fitted_model, args.write_model)
+
+    sys.exit()
 
     predicted = fitted_model.predict_proba(m)
     predicted = predicted[:, 1]  # we're interested in probs for class 1

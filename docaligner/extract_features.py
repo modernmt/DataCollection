@@ -16,7 +16,7 @@ from scorer import NERDistance
 from scorer import StructureScorer
 from scorer import GaleChurchAlignmentDistance
 from scorer import DictionaryScorer
-from tokenizer import ExternalProcessor, SpaceTokenizer
+from tokenizer import ExternalProcessor, SpaceTokenizer, WordPunctTokenizer
 from matching import get_best_match, get_best_matching
 from ratio import ratio, quick_ratio, real_quick_ratio, jaccard
 
@@ -89,22 +89,27 @@ def write_url2dim(source_corpus, target_corpus, fh, file2url):
         for line in file2url:
             filename, url = line.decode('utf-8', 'ignore').strip().split('\t')
             if filename in source_corpus or filename in target_corpus:
-                f2u[filename.encode('utf-8', 'ignore')] = url.encode('utf-8', 'ignore')
+                f2u[filename.encode(
+                    'utf-8', 'ignore')] = url.encode('utf-8', 'ignore')
 
     mapping = {'index_to_source_url': {},
                'index_to_target_url': {},
                'source_url_to_index': {},
                'target_url_to_index': {}}
+
     for s_idx, su in enumerate(source_corpus.iterkeys()):
         su = f2u.get(su, su)
+        su = su.decode('utf-8', 'ignore').encode('utf-8', 'ignore')
         mapping['index_to_source_url'][s_idx] = su
         mapping['source_url_to_index'][su] = s_idx
 
     for t_idx, tu in enumerate(target_corpus.iterkeys()):
         tu = f2u.get(tu, tu)
+        tu = tu.decode('utf-8', 'ignore').encode('utf-8', 'ignore')
         mapping['index_to_target_url'][t_idx] = tu
         mapping['target_url_to_index'][tu] = t_idx
 
+    # print repr(mapping)
     json.dump(mapping, fh)
 
 if __name__ == "__main__":
@@ -139,12 +144,15 @@ if __name__ == "__main__":
     parser.add_argument(
         '-corenlp_service', help='corenlp json service location',
         default='http://localhost:8080')
+    parser.add_argument('-threads', type=int,
+                        help='number of threads for scoring', default=1)
+
     args = parser.parse_args(sys.argv[1:])
 
     source_tokenizer = ExternalProcessor(
-        args.source_tokenizer) if args.source_tokenizer else SpaceTokenizer()
+        args.source_tokenizer) if args.source_tokenizer else WordPunctTokenizer()
     target_tokenizer = ExternalProcessor(
-        args.target_tokenizer) if args.target_tokenizer else SpaceTokenizer()
+        args.target_tokenizer) if args.target_tokenizer else WordPunctTokenizer()
 
     # read source and target corpus
     s, t = read_lett(args.lettfile, args.slang, args.tlang)
@@ -162,7 +170,7 @@ if __name__ == "__main__":
     scorer = None
     print "Using feature: ", args.feature
     if args.feature == 'LinkDistance':
-        scorer = LinkDistance(xpath=args.xpath, ratio=jaccard)
+        scorer = LinkDistance(ratio_function=jaccard, xpath=args.xpath)
     elif args.feature == 'BOW':
         scorer = BOWScorer(source_tokenizer=source_tokenizer,
                            target_tokenizer=target_tokenizer,
@@ -184,8 +192,8 @@ if __name__ == "__main__":
             source_tokenizer, target_tokenizer, args.dictfile,
             args.slang, args.tlang)
     assert scorer is not None, "Need to instantiate scorer first"
-    m = scorer.score(s, t)
-    get_best_match(s, t, m)
+    m = scorer.score(s, t, parallel=args.threads)
+    # get_best_match(s, t, m)
     # get_best_matching(s, t, m)
 
     # print "Finding best matching"
@@ -207,15 +215,27 @@ if __name__ == "__main__":
     #     % (len(correct), total, len(errors), total, 100. * len(errors) / total)
     # sys.exit()
 
-    m = (m - np.mean(m)) / np.std(m)
+    # fix nans.
+    if np.sum(np.isnan(m)) > 0:
+        sys.stderr.write(
+            "found %d nans in matrix of shape %s\n"
+            % (np.sum(np.isnan(m)), m.shape))
+        m[np.isnan(m)] = 0
+    if np.std(m) > 0:
+        m = (m - np.mean(m)) / np.std(m)
+
     np.savetxt(args.outfile, m)
+    sys.exit()
 
     # print info
-    ranks = list(get_ranks(s, t, m))
-    sys.stderr.write("Avg. Rank: %f\n" % (float(sum(ranks)) / len(ranks)))
-    n_errors = sum(1 for r in ranks if r > 0)
-    print "Err: %d / %d = %f%%" % (n_errors, len(ranks),
-                                   100. * float(n_errors) / len(ranks))
+    try:
+        ranks = list(get_ranks(s, t, m))
+        sys.stderr.write("Avg. Rank: %f\n" % (float(sum(ranks)) / len(ranks)))
+        n_errors = sum(1 for r in ranks if r > 0)
+        print "Err: %d / %d = %f%%" % (n_errors, len(ranks),
+                                       100. * float(n_errors) / len(ranks))
+    except:
+        ValueError
     # print sum(1 for r in ranks if r < 20)
     get_nbest(s, t, m, n=20)
 

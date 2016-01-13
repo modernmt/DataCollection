@@ -35,18 +35,36 @@ if __name__ == "__main__":
 
     print "Total pairs: ", len(bitextor_result)
 
-    devset = {}
+    devset = set()
+    seen = set()
     correct, wrong = [], []
     for line in args.devset:
         line = line.strip().split('\t')
-        if len(line) > 2:
-            line = line[1:4:2]  # indices 1 and 3
         f, e = line[:2]
+
+        if len(line) > 2:
+            if line[0] == 'en' and line[2] == 'fr':
+                e, f = line[1], line[3]
+            elif line[0] == 'fr' and line[2] == 'en':
+                f, e = line[1], line[3]
+
+        if f not in seen and e not in seen:
+            seen.add(f)
+            seen.add(e)
+            devset.add((f, e))
+        elif (f, e) not in devset:
+            print "already seen:"
+            print f, e
+            print devset
+            sys.exit()
+
+    for f, e in devset:
         if bitextor_result.get(e, '') == f:
             correct.append(line)
         else:
             wrong.append(line)
 
-    print "correct:", correct
-    print "wrong:", wrong
-    print len(correct), len(wrong)
+    # print "correct:", correct
+    # print "wrong:", wrong
+    print "correc, wrong, total"
+    print len(correct), len(wrong), len(correct) + len(wrong)

@@ -124,14 +124,16 @@ if __name__ == "__main__":
 
     for s_idx in range(n_source):
         for t_idx in range(n_target):
-            c = 0.0  # the class to predict
-            if s_idx == t_idx:
-                c = 1.
-
             sample_idx = s_idx * n_target + t_idx
 
             for f_idx in range(n_features):
                 m[sample_idx, f_idx] = features[f_idx][s_idx, t_idx]
+
+    if np.sum(np.isnan(m)) > 0:
+        sys.stderr.write(
+            "found %d nans in matrix of shape %s\n"
+            % (np.sum(np.isnan(m)), m.shape))
+        m[np.isnan(m)] = 0
 
     print "Writing to ", args.write_train.name
     np.savez(args.write_train,
