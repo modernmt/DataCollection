@@ -4,6 +4,7 @@ from nltk.align import gale_church
 from nltk.tokenize.punkt import PunktSentenceTokenizer
 from simhash import Simhash
 from urlparse import urljoin
+from functools import partial
 import difflib
 import json
 import jsonrpclib
@@ -14,24 +15,82 @@ import sys
 import codecs
 import multiprocessing
 
+
 from tokenizer import SpaceTokenizer
 from htmlprocessor import HTMLSequencer
 from ratio import ratio
 from itertools import izip_longest
+from pathos.pools import ParallelPool as Pool
 
 
-def ratio_parallel(seq1, seqs2, ratio_function=ratio, processes=1):
-    p = multiprocessing.Pool(processes=processes)
+def ratio_parallel(seq1, seqs2, ratio_function, pool):
     # scores = [p.apply(ratio_function, args=(a, b))
     #           for a, b in izip(seqs1, seqs2)]
-    scores = [p.apply(ratio_function, izip([], seqs2, fillvalue=seq1))]
-    return scores
+    # scores = [p.imap(ratio_function, izip_longest([], seqs2, fillvalue=seq1))]
+    # print list(izip_longest([], seqs2[:3], fillvalue=seq1))
+    # rf = partial(difflib.SequenceMatcher.ratio, None, seq1)
+    # rf = partial(ratio_function, seq1)
+
+    # def rf(seq):
+    #     return difflib.SequenceMatcher.ratio(None, seq1, seq)
+
+    # scores = pool.imap(ratio_function, izip_longest([], seqs2, fillvalue=seq1))
+    # scores = pool.imap(rf, seqs2)
+    scores = pool.map(rf, seqs2, chunksize=50)
+    return list(scores)
+
+
+def ratio_pool(seqs2, ratio_function, seq1):
+    rf = partial(ratio_function, seq1)
+    return map(rf, seqs2)
+
+
+def ngrams_from_text(n, _url, page):
+    words = page.text.split()
+    ngrams = [" ".join(words[i:i + n]) for i in
+              range(max(len(words) - n + 1, 1))]
+    return map(hash, ngrams)
+
+
+class ExtractionMapper(object):
+
+    def __init__(self, extraction_function, processes=1):
+        self.ef = extraction_function
+        self.processes = processes
+
+    def extract(self, corpus):
+        if self.processes > 1:
+            p = multiprocessing.Pool()
+            return [p.apply(self.ef, args=(url, page))
+                    for url, page in corpus.iteritems()]
+        else:
+            return [self.ef(url, page)
+                    for url, page in corpus.iteritems()]
+
+    def extract_source(self, corpus):
+        return self.extract(corpus)
+
+    def extract_target(self, corpus):
+        return self.extract(corpus)
+
+
+class WordExtractor(ExtractionMapper):
+
+    def __init__(self, n):
+        super(WordExtractor, self).__init__(
+            extraction_function=partial(ngrams_from_text, n))
+
+# class LinkExtractor(ExtractionMapper):
+#     def __init__(self, xpath):
+#         super(LinkExtractor, self).__init__()
 
 
 class DistanceScorer(object):
 
-    def __init__(self):
+    def __init__(self, extraction_mapper, ratio_function):
         self.name = "Default Distance Scorer"
+        self.extraction_mapper = extraction_mapper
+        self.ratio_function = ratio_function
         self._threadsafe = False
 
     def __str__(self):
@@ -42,60 +101,57 @@ class DistanceScorer(object):
         return 0
 
     def _extract(self, source_corpus, target_corpus):
-        """ This is called before scoring of pairs. Overwrite to extract const
-        data """
-        pass
+        """ This is called before scoring of pairs.
+            Overwrite to extract const data """
+        self.sseqs = self.extraction_mapper.extract_source(source_corpus)
+        self.tseqs = self.extraction_mapper.extract_target(target_corpus)
 
-    def score(self, source_corpus, target_corpus, parallel=1):
+    def score(self, source_corpus, target_corpus, processes=1):
         self._extract(source_corpus, target_corpus)
         sys.stderr.write("Done extracting...\n")
         scoring_matrix = np.zeros((len(source_corpus), len(target_corpus)))
-        if parallel <= 1:
-            for s_idx, (s_url, s_page) in enumerate(source_corpus.iteritems()):
-                for t_idx, (t_url, t_page) in \
-                        enumerate(target_corpus.iteritems()):
-                    scoring_matrix[s_idx, t_idx] = self._score_pair(
-                        s_idx, s_page, t_idx, t_page)
-        else:
-            for s_idx, (s_url, s_page) in enumerate(source_corpus.iteritems()):
-                scores = [p.apply(self._score_pair,
-                                  args=(s_idx, s_page, t_idx, t_page))
-                          for t_idx, (t_url, t_page) in
-                          enumerate(target_corpus.iteritems())]
-                for t_idx, val in enumerate(scores):
-                    scoring_matrix[s_idx, t_idx] = val
-
-        sys.stderr.write("Done scoring...\n")
-        return scoring_matrix
-
-
-class SequenceDistanceScorer(DistanceScorer):
-
-    def __init__(self, ratio_function=ratio):
-        super(SequenceDistanceScorer, self).__init__()
-        self.sseqs = []
-        self.tseqs = []
-        self.ratio_function = ratio_function
-
-
-    def score(self, source_corpus, target_corpus, parallel=1):
-        self._extract(source_corpus, target_corpus)
-        sys.stderr.write("Done extracting...\n")
-        scoring_matrix = np.zeros((len(source_corpus), len(target_corpus)))
-        if parallel <= 1:
+        if processes <= 1:
             for s_idx in xrange(len(self.sseqs)):
                 for t_idx in xrange(len(self.tseqs)):
                     scoring_matrix[s_idx, t_idx] = \
-                        self.ratio_function(self.sseqs[s_idx], self.tseqs[t_idx])
+                        self.ratio_function(
+                            (self.sseqs[s_idx], self.tseqs[t_idx]))
+                sys.stderr.write('.')
+                sys.stderr.flush()
+
         else:
-            for s_idx in xrange(len(self.sseqs)):
-                scores = ratio_parallel(self.sseqs, self.tseqs, self.ratio_function)
+            # p = Pool(processes=processes)
+            p = multiprocessing.Pool(processes=processes)
+            rf = partial(ratio_pool, self.tseqs, self.ratio_function)
+            for s_idx, scores in enumerate(
+                p.imap(rf, self.sseqs, chunksize=50)):
+                assert len(scores) == len(self.tseqs)
                 for t_idx in xrange(len(self.tseqs)):
                     scoring_matrix[s_idx, t_idx] = scores[t_idx]
 
-class LinkDistance(SequenceDistanceScorer):
+            # for s_idx in xrange(len(self.sseqs)):
+            #     scores = ratio_parallel(
+            #         self.sseqs[s_idx], self.tseqs,
+            #         self.ratio_function, pool=p)
+            #     assert len(scores) == len(self.tseqs)
+            # for t_idx in xrange(len(self.tseqs)):
+            # scoring_matrix[s_idx, t_idx] = scores[t_idx]
+                sys.stderr.write('.')
+                sys.stderr.flush()
 
-    def __init__(self,ratio_function=ratio, xpath='//a/@href'):
+
+# class SequenceDistanceScorer(DistanceScorer):
+
+#     def __init__(self, extraction_mapper, ratio_function=ratio):
+#         super(SequenceDistanceScorer, self).__init__(extraction_mapper)
+#         self.sseqs = []
+#         self.tseqs = []
+#         self.ratio_function = ratio_function
+
+
+class LinkDistance(DistanceScorer):
+
+    def __init__(self, ratio_function=ratio, xpath='//a/@href'):
         super(LinkDistance, self).__init__(ratio_function=ratio_function)
         self.name = "Link Distance Scorer (xpath: %s)" % xpath
         self.xpath = xpath
@@ -188,49 +244,6 @@ class NERDistance(DistanceScorer):
 
         s = difflib.SequenceMatcher(None, filtered_source, filtered_target)
         return s.ratio()
-
-
-class BOWScorer(DistanceScorer):
-
-    def __init__(self, source_tokenizer, target_tokenizer, n=3):
-        self.name = "Bag of Words Scorer"
-        self.sbow = []
-        self.tbow = []
-        self.source_tokenizer = source_tokenizer
-        self.target_tokenizer = target_tokenizer
-        self.n = n
-
-    def _words_from_text(self, text, tokenizer):
-        words = []
-        for line in text.split("\n"):
-            for w in tokenizer.process(line).lower().split():
-                words.append(w)
-        ngrams = [" ".join(words[i:i + self.n]) for i in
-                  range(max(len(words) - self.n + 1, 1))]
-        return set(ngrams)
-
-    def _extract(self, source_corpus, target_corpus):
-        for idx, (url, page) in enumerate(source_corpus.iteritems()):
-            self.sbow.append(
-                self._words_from_text(page.text, self.source_tokenizer))
-        for idx, (url, page) in enumerate(target_corpus.iteritems()):
-            self.tbow.append(
-                self._words_from_text(page.text, self.target_tokenizer))
-
-    def _jaccard(self, set1, set2):
-        """ Jaccard Similarity Coeff, high is good """
-        if len(set1) == 0 and len(set2) == 0:
-            return 1.0
-        return float(len(set1.intersection(set2))) / len(set1.union(set2))
-
-    def _dice(self, set1, set2):
-        if len(set1) == 0 and len(set2) == 0:
-            return 1.0
-        return 2.0 * len(set1.intersection(set2)) / (len(set1) + len(set2))
-
-    def _score_pair(self, s_idx, s_page, t_idx, t_page):
-        return self._jaccard(self.sbow[s_idx], self.tbow[t_idx])
-        # return self._dice(self.sbow[s_idx], self.tbow[t_idx])
 
 
 class DictionaryScorer(DistanceScorer):

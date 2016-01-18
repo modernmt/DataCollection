@@ -8,8 +8,9 @@ from scipy.stats import pearsonr, spearmanr
 
 from htmlprocessor import HTMLSequencer
 from lett import Page, read_lett
-from scorer import BOWScorer
 from scorer import DistanceScorer
+from scorer import WordExtractor
+
 from scorer import LinkDistance
 from scorer import SimhashDistance
 from scorer import NERDistance
@@ -19,6 +20,8 @@ from scorer import DictionaryScorer
 from tokenizer import ExternalProcessor, SpaceTokenizer, WordPunctTokenizer
 from matching import get_best_match, get_best_matching
 from ratio import ratio, quick_ratio, real_quick_ratio, jaccard
+from ratio import ratio_star, quick_ratio_star
+
 
 sys.path.append("/home/buck/net/build/DataCollection/baseline")
 from strip_language_from_uri import LanguageStripper
@@ -149,13 +152,14 @@ if __name__ == "__main__":
 
     args = parser.parse_args(sys.argv[1:])
 
-    source_tokenizer = ExternalProcessor(
-        args.source_tokenizer) if args.source_tokenizer else WordPunctTokenizer()
-    target_tokenizer = ExternalProcessor(
-        args.target_tokenizer) if args.target_tokenizer else WordPunctTokenizer()
+    source_tokenizer = ExternalProcessor(args.source_tokenizer) \
+        if args.source_tokenizer else WordPunctTokenizer()
+    target_tokenizer = ExternalProcessor(args.target_tokenizer) \
+        if args.target_tokenizer else WordPunctTokenizer()
 
     # read source and target corpus
-    s, t = read_lett(args.lettfile, args.slang, args.tlang)
+    s, t = read_lett(args.lettfile, args.slang, args.tlang,
+                     source_tokenizer, target_tokenizer)
 
     sys.stderr.write("Read %d %s docs and %d %s docs from %s\n" %
                      (len(s), args.slang,
@@ -169,16 +173,20 @@ if __name__ == "__main__":
 
     scorer = None
     print "Using feature: ", args.feature
+
+    word_extractor = WordExtractor(n=args.ngram_size)
+    scorer = DistanceScorer(extraction_mapper=word_extractor,
+                            ratio_function=ratio)
+    m = scorer.score(s, t, processes=args.threads)
+
+    sys.exit()
+
     if args.feature == 'LinkDistance':
         scorer = LinkDistance(ratio_function=jaccard, xpath=args.xpath)
     elif args.feature == 'BOW':
-        scorer = BOWScorer(source_tokenizer=source_tokenizer,
-                           target_tokenizer=target_tokenizer,
-                           n=args.ngram_size)
+        scorer = BOWScorer(n=args.ngram_size)
     elif args.feature == 'Simhash':
-        scorer = SimhashDistance(source_tokenizer=source_tokenizer,
-                                 target_tokenizer=target_tokenizer,
-                                 n=args.ngram_size)
+        scorer = SimhashDistance(n=args.ngram_size)
     elif args.feature == 'Structure':
         scorer = StructureScorer(
             length_function=lambda x: len(x.split()),
@@ -192,7 +200,6 @@ if __name__ == "__main__":
             source_tokenizer, target_tokenizer, args.dictfile,
             args.slang, args.tlang)
     assert scorer is not None, "Need to instantiate scorer first"
-    m = scorer.score(s, t, parallel=args.threads)
     # get_best_match(s, t, m)
     # get_best_matching(s, t, m)
 

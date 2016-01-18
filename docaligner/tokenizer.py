@@ -43,9 +43,17 @@ class ExternalProcessor(object):
                                          stderr=self.devnull)
             self._lock = threading.Lock()
 
+    def process_multiline(self, text):
+        res = []
+        for line in text.split(u'\n'):
+            if line.strip():
+                res.append(self.process(line))
+        return u'\n'.join(res)
+
     def process(self, line):
         if self.cmd is None or not line.strip():
             return line
+        assert u"\n" not in line
         u_string = u"%s\n" % line
         u_string = u_string.encode("utf-8")
         result = u_string  # fallback: return input

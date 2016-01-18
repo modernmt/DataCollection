@@ -12,6 +12,15 @@ def read_lett(f, slang, tlang, source_tokenizer=None, target_tokenizer=None):
         html = base64.b64decode(html).decode("utf-8")
         text = base64.b64decode(text).decode("utf-8")
         # assert lang in [slang, tlang]
+
+        if lang == slang and source_tokenizer is not None:
+            text = source_tokenizer.process(text)
+        elif lang == tlang and target_tokenizer is not None:
+            text = target_tokenizer.process(text)
+        else:
+            # ignore other languages
+            continue
+
         p = Page(url, html, text, mine, enc)
         if lang == slang:
             s[url] = p
