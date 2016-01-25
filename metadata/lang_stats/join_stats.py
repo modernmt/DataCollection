@@ -53,6 +53,8 @@ if __name__ == "__main__":
                         help="Ignore all other languages but these.")
     parser.add_argument('-nomono', action='store_true',
                         help='filter monolingual entries')
+    parser.add_argument('-total', action='store_true',
+                        help='ignore domains')
     args = parser.parse_args()
 
     valid_languages = None
@@ -67,8 +69,13 @@ if __name__ == "__main__":
             if len(data) % 2 == 0:  # Line contrains entropy in first column
                 _entropty = data.pop(0)
             domain = data.pop(0)
+            domain = domain.split('?')[0]
+            if args.total:
+                domain = "TOTAL"
             for l, b in izip(data[::2], data[1::2]):
                 l = l.lower()
+                if l.startswith("xx-"):
+                    l = "xx"
                 if valid_languages and l not in valid_languages:
                     continue
                 stats[domain][l] += int(b)
@@ -77,7 +84,15 @@ if __name__ == "__main__":
         if args.nomono and len(stats[domain]) == 1:
             continue
         e = entropy(stats[domain])
-        sys.stdout.write("%f %s" % (e, domain))
-        for language in stats[domain]:
-            sys.stdout.write(" %s %d" % (language, stats[domain][language]))
-        sys.stdout.write("\n")
+        if args.total:
+            crawl = args.infiles[0].name.split('.')[0]
+            sys.stdout.write("%s\t%s\n" % (crawl, crawl))
+            for language in sorted(stats[domain].keys()):
+                sys.stdout.write(
+                    "%s\t%d\n" % (language, stats[domain][language]))
+        else:
+            sys.stdout.write("%f %s" % (e, domain))
+            for language in stats[domain]:
+                sys.stdout.write(
+                    " %s %d" % (language, stats[domain][language]))
+            sys.stdout.write("\n")

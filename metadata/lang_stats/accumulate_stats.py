@@ -51,12 +51,13 @@ if __name__ == "__main__":
                         help="Ignore all other languages but these.")
     args = parser.parse_args(sys.argv[1:])
 
-
     stats = defaultdict(lambda: defaultdict(int))
 
     header = None
     full_domain = None
-    valid_languages = [l.lower() for l in args.lang]
+    valid_languages = None
+    if args.lang:
+        valid_languages = [l.lower() for l in args.lang]
 
     for linenr, line in enumerate(sys.stdin):
         if line.startswith(magic_number):
@@ -69,8 +70,8 @@ if __name__ == "__main__":
         percent = float(percent)
         if percent < args.minpercent:
             continue
-        
-        #print lang, valid_languages
+
+        # print lang, valid_languages
         if valid_languages and lang.lower() not in valid_languages:
             continue
 
