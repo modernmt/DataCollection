@@ -51,8 +51,19 @@ def original_url(html):
     for m in re.finditer(
             "<!-- Mirrored from ([^>]+) by HTTrack Website Copier", html):
         url = m.groups()[0]
+        if not url.startswith('http://'):
+            url = "http://" + url
     return url
 
+
+def read_file2realurl(fh):
+    file2realurl = {}
+    if fh:
+        for line in fh:
+            filename, real_url = line.strip().split("\t")
+            assert filename not in file2realurl
+            file2realurl[filename] = real_url
+    return file2realurl
 
 if __name__ == "__main__":
     import argparse
@@ -62,6 +73,8 @@ if __name__ == "__main__":
     parser.add_argument('tgtlang', help="target langauge e.g. fr")
     parser.add_argument('lett', type=argparse.FileType('w'),
                         help='output lett file')
+    parser.add_argument('-file2realurl', type=argparse.FileType('r'),
+                        help='given mapping between filenames and urls')
     parser.add_argument('-mapping', type=argparse.FileType('w'),
                         help='mapping between filenames and urls')
     parser.add_argument('-ignore_br', help="ignore <br> tags in HTML",
@@ -75,6 +88,8 @@ if __name__ == "__main__":
     enc = "charset=utf-8"
 
     args = parser.parse_args(sys.argv[1:])
+    file2realurl = read_file2realurl(args.file2realurl)
+
     tar = tarfile.open(args.tarfile, "r:gz")
 
     for filenr, tarinfo in enumerate(tar):
@@ -96,25 +111,35 @@ if __name__ == "__main__":
                              (filename, lang))
             continue
 
-        text = html2text(data.encode('utf-8'),  # utf-8 input expected
+        data = data.encode('utf-8')  # utf-8 input expected
+        text = html2text(data,
                          sanitize=True,
                          ignore_br=args.ignore_br)
 
-        original_uri = original_url(data)
+        original_uri = None
+        if args.file2realurl is not None:
+            if filename not in file2realurl:
+                sys.stderr.write(
+                    "Could not find %s in file2realurl\n" % filename)
+            else:
+                original_uri = file2realurl[filename]
+        if original_uri is None:
+            original_uri = original_url(data)
 
         sys.stderr.write("Processed file Nr. %d : %s = %s\n" %
-                         (filenr, filename, original_uri.encode('utf-8')))
+                         (filenr, filename, original_uri))
 
         args.lett.write("{l}\t{mime}\t{enc}\t{name}\t{html}\t{text}\n".format(
             l=lang,
             mime=mime_type,
             enc=enc,
-            name=filename,
-            html=base64.b64encode(data.encode('utf-8')),
+            name=original_uri,
+            html=base64.b64encode(data),
             text=base64.b64encode(text.encode('utf-8'))))
 
         if args.mapping:
             args.mapping.write(
-                "%s\t%s\n" % (filename, original_uri.encode('utf-8')))
+                "%s\t%s\n" % (filename, original_uri))
 
+    sys.stderr.write("Done. \n")
     tar.close()
