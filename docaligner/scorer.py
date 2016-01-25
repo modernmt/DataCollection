@@ -23,23 +23,6 @@ from itertools import izip_longest
 from pathos.pools import ParallelPool as Pool
 
 
-def ratio_parallel(seq1, seqs2, ratio_function, pool):
-    # scores = [p.apply(ratio_function, args=(a, b))
-    #           for a, b in izip(seqs1, seqs2)]
-    # scores = [p.imap(ratio_function, izip_longest([], seqs2, fillvalue=seq1))]
-    # print list(izip_longest([], seqs2[:3], fillvalue=seq1))
-    # rf = partial(difflib.SequenceMatcher.ratio, None, seq1)
-    # rf = partial(ratio_function, seq1)
-
-    # def rf(seq):
-    #     return difflib.SequenceMatcher.ratio(None, seq1, seq)
-
-    # scores = pool.imap(ratio_function, izip_longest([], seqs2, fillvalue=seq1))
-    # scores = pool.imap(rf, seqs2)
-    scores = pool.map(rf, seqs2, chunksize=50)
-    return list(scores)
-
-
 def ratio_pool(seqs2, ratio_function, seq1):
     rf = partial(ratio_function, seq1)
     return map(rf, seqs2)
@@ -54,7 +37,7 @@ def ngrams_from_text(n, _url, page):
 
 class ExtractionMapper(object):
 
-    def __init__(self, extraction_function, processes=1):
+    def __init__(self, extraction_function=None, processes=1):
         self.ef = extraction_function
         self.processes = processes
 
@@ -76,21 +59,64 @@ class ExtractionMapper(object):
 
 class WordExtractor(ExtractionMapper):
 
-    def __init__(self, n):
+    def __init__(self, n=1):
         super(WordExtractor, self).__init__(
             extraction_function=partial(ngrams_from_text, n))
 
-# class LinkExtractor(ExtractionMapper):
-#     def __init__(self, xpath):
-#         super(LinkExtractor, self).__init__()
+
+class LinkExtractor(ExtractionMapper):
+
+    def __init__(self, xpath):
+        super(LinkExtractor, self).__init__(
+            extraction_function=self._extract_links)
+        self.xpath = xpath
+
+    def _extract_links(self, url, page):
+        dom = lxml.html.fromstring(page.html)
+        links = []
+        for link in dom.xpath(self.xpath):
+            links.append(urljoin(url, link))
+        return links
+
+
+class StructureExtractor(ExtractionMapper):
+
+    def __init__(self, length_function, growth_function):
+        super(StructureExtractor, self).__init__(
+            extraction_function=self._html_to_sequence)
+        self.length_function = length_function
+        self.growth_function = growth_function
+
+    def _html_to_sequence(self, url, page):
+        parser = HTMLSequencer(self.length_function, self.growth_function)
+        parser.feed(page.html)
+        return parser.get_result()
+
+
+class GCBlockExtractor(ExtractionMapper):
+
+    def __init__(self):
+        super(GCBlockExtractor, self).__init__(
+            extraction_function=self._blocks_from_text)
+        self.tokenizer = PunktSentenceTokenizer()
+
+    def _blocks_from_text(self, url, page):
+        blocks = []
+        for sentence in self.tokenizer.sentences_from_text(
+                page.text.replace('\n', '')):
+            if sentence.strip():
+                blocks.append(len(sentence))
+            # maybe count tokens? or non-spaces?
+        return blocks
 
 
 class DistanceScorer(object):
 
-    def __init__(self, extraction_mapper, ratio_function):
+    def __init__(self, extraction_mapper, ratio_function, set_based=False):
         self.name = "Default Distance Scorer"
         self.extraction_mapper = extraction_mapper
         self.ratio_function = ratio_function
+        self._set_based = set_based
         self._threadsafe = False
 
     def __str__(self):
@@ -105,6 +131,9 @@ class DistanceScorer(object):
             Overwrite to extract const data """
         self.sseqs = self.extraction_mapper.extract_source(source_corpus)
         self.tseqs = self.extraction_mapper.extract_target(target_corpus)
+        if self._set_based:
+            self.sseqs = map(set, self.sseqs)
+            self.tseqs = map(set, self.tseqs)
 
     def score(self, source_corpus, target_corpus, processes=1):
         self._extract(source_corpus, target_corpus)
@@ -120,33 +149,107 @@ class DistanceScorer(object):
                 sys.stderr.flush()
 
         else:
-            # p = Pool(processes=processes)
             p = multiprocessing.Pool(processes=processes)
             rf = partial(ratio_pool, self.tseqs, self.ratio_function)
             for s_idx, scores in enumerate(
-                p.imap(rf, self.sseqs, chunksize=50)):
+                    p.imap(rf, self.sseqs, chunksize=20)):
                 assert len(scores) == len(self.tseqs)
                 for t_idx in xrange(len(self.tseqs)):
                     scoring_matrix[s_idx, t_idx] = scores[t_idx]
 
-            # for s_idx in xrange(len(self.sseqs)):
-            #     scores = ratio_parallel(
-            #         self.sseqs[s_idx], self.tseqs,
-            #         self.ratio_function, pool=p)
-            #     assert len(scores) == len(self.tseqs)
-            # for t_idx in xrange(len(self.tseqs)):
-            # scoring_matrix[s_idx, t_idx] = scores[t_idx]
-                sys.stderr.write('.')
-                sys.stderr.flush()
+                if (s_idx + 1) % 20 == 0:
+                    sys.stderr.write('.')
+                    sys.stderr.flush()
+                if (s_idx + 1) % 1000 == 0:
+                    sys.stderr.write("[%d]\n" % (s_idx + 1))
+            sys.stderr.write("[%d]\n" % len(self.sseqs))
+        return scoring_matrix
 
 
-# class SequenceDistanceScorer(DistanceScorer):
+class GaleChurchWrapper(object):
 
-#     def __init__(self, extraction_mapper, ratio_function=ratio):
-#         super(SequenceDistanceScorer, self).__init__(extraction_mapper)
-#         self.sseqs = []
-#         self.tseqs = []
-#         self.ratio_function = ratio_function
+    def __init__(self):
+        self.params = gale_church.LanguageIndependent
+        self.alignment_types = list(self.params.PRIORS.keys())
+
+    def align_score(self, source_sents, target_sents, max_dist=100):
+        D = [[]]
+
+        # backlinks = {}
+
+        for i in range(len(source_sents) + 1):
+            for j in range(len(target_sents) + 1):
+                min_dist = float('inf')
+                # min_align = None
+                for a in self.alignment_types:
+                    prev_i = - 1 - a[0]
+                    prev_j = j - a[1]
+                    if prev_i < -len(D) or prev_j < 0:
+                        continue
+                    p = D[prev_i][prev_j] + \
+                        gale_church.align_log_prob(i, j,
+                                                   source_sents, target_sents,
+                                                   a, self.params)
+                    if p < min_dist:
+                        min_dist = p
+                        # min_align = a
+
+                if min_dist == float('inf'):
+                    # return max_dist
+                    min_dist = 0
+                elif min_dist >= max_dist:
+                    return max_dist
+
+                # backlinks[(i, j)] = min_align
+                D[-1].append(min_dist)
+
+            if len(D) > 2:
+                D.pop(0)
+            D.append([])
+        # print D
+        # print backlinks
+        # sys.exit()
+        if D[-2][-1] == 0:
+            return -max_dist
+        return -D[-2][-1]
+
+
+def gc_alignment_score(seq1, seq2):
+    gc = GaleChurchWrapper()
+    return gc.align_score(seq1, seq2)
+
+
+class GaleChurchScorer(DistanceScorer):
+
+    def __init__(self):
+        super(GaleChurchScorer,
+              self).__init__(extraction_mapper=GCBlockExtractor(),
+                             ratio_function=gc_alignment_score)
+
+
+class GaleChurchAlignmentDistance(DistanceScorer):
+
+    def __init__(self):
+        self.name = "Gale Church Alignment Scorer"
+        self.tokenizer = PunktSentenceTokenizer()
+        self.sblocks, self.tblocks = [], []
+
+    def _blocks_from_text(self, text):
+        blocks = []
+        for sentence in self.tokenizer.sentences_from_text(
+                text.replace('\n', '')):
+            blocks.append(len(sentence))
+            # maybe count tokens? or non-spaces?
+        return blocks
+
+    def _extract(self, source_corpus, target_corpus):
+        for url, page in source_corpus.iteritems():
+            self.sblocks.append(self._blocks_from_text(page.text))
+        for url, page in target_corpus.iteritems():
+            self.tblocks.append(self._blocks_from_text(page.text))
+
+    def _score_pair(self, s_idx, s_page, t_idx, t_page):
+        return self.gc.align_score(self.sblocks[s_idx], self.tblocks[t_idx])
 
 
 class LinkDistance(DistanceScorer):
@@ -392,80 +495,6 @@ class StructureScorer(DistanceScorer):
         #     print s.real_quick_ratio()
 
         return self.ratio_function(self.sseq[s_idx], self.tseq[t_idx])
-
-
-class GaleChurchWrapper(object):
-
-    def __init__(self):
-        self.params = gale_church.LanguageIndependent
-        self.alignment_types = list(self.params.PRIORS.keys())
-
-    def align_score(self, source_sents, target_sents, max_dist=100):
-        D = [[]]
-
-        # backlinks = {}
-
-        for i in range(len(source_sents) + 1):
-            for j in range(len(target_sents) + 1):
-                min_dist = float('inf')
-                # min_align = None
-                for a in self.alignment_types:
-                    prev_i = - 1 - a[0]
-                    prev_j = j - a[1]
-                    if prev_i < -len(D) or prev_j < 0:
-                        continue
-                    p = D[prev_i][prev_j] + \
-                        gale_church.align_log_prob(i, j,
-                                                   source_sents, target_sents,
-                                                   a, self.params)
-                    if p < min_dist:
-                        min_dist = p
-                        # min_align = a
-
-                if min_dist == float('inf'):
-                    # return max_dist
-                    min_dist = 0
-                elif min_dist >= max_dist:
-                    return max_dist
-
-                # backlinks[(i, j)] = min_align
-                D[-1].append(min_dist)
-
-            if len(D) > 2:
-                D.pop(0)
-            D.append([])
-        # print D
-        # print backlinks
-        # sys.exit()
-        if D[-2][-1] == 0:
-            return -max_dist
-        return -D[-2][-1]
-
-
-class GaleChurchAlignmentDistance(DistanceScorer):
-
-    def __init__(self):
-        self.gc = GaleChurchWrapper()
-        self.name = "Gale Church Alignment Scorer"
-        self.tokenizer = PunktSentenceTokenizer()
-        self.sblocks, self.tblocks = [], []
-
-    def _blocks_from_text(self, text):
-        blocks = []
-        for sentence in self.tokenizer.sentences_from_text(
-                text.replace('\n', '')):
-            blocks.append(len(sentence))
-            # maybe count tokens? or non-spaces?
-        return blocks
-
-    def _extract(self, source_corpus, target_corpus):
-        for url, page in source_corpus.iteritems():
-            self.sblocks.append(self._blocks_from_text(page.text))
-        for url, page in target_corpus.iteritems():
-            self.tblocks.append(self._blocks_from_text(page.text))
-
-    def _score_pair(self, s_idx, s_page, t_idx, t_page):
-        return self.gc.align_score(self.sblocks[s_idx], self.tblocks[t_idx])
 
 
 class SimhashDistance(DistanceScorer):

@@ -1,15 +1,25 @@
 import base64
+import gzip
 from collections import namedtuple
 
 Page = namedtuple(
     "Page", "url, html, text, mime_type, encoding")
 
 
-def read_lett(f, slang, tlang, source_tokenizer=None, target_tokenizer=None):
+def read_lett(f, slang, tlang, source_tokenizer=None, target_tokenizer=None,
+              no_html=False):
     s, t = {}, {}
-    for line in f:
+    fh = f
+    if f.name.endswith('.gz'):
+        fh = gzip.open(fh, 'r')
+    for line in fh:
         lang, mine, enc, url, html, text = line.strip().split("\t")
-        html = base64.b64decode(html).decode("utf-8")
+
+        if no_html:
+            html = ''
+        else:
+            html = base64.b64decode(html)
+
         text = base64.b64decode(text).decode("utf-8")
         # assert lang in [slang, tlang]
 
@@ -30,5 +40,4 @@ def read_lett(f, slang, tlang, source_tokenizer=None, target_tokenizer=None):
 
 
 def write_tokenized_lett(f, pages):
-    for p in pages:
-        html = p.html.encode("utf-8")
+    pass

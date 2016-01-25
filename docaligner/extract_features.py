@@ -8,10 +8,9 @@ from scipy.stats import pearsonr, spearmanr
 
 from htmlprocessor import HTMLSequencer
 from lett import Page, read_lett
-from scorer import DistanceScorer
-from scorer import WordExtractor
+from scorer import DistanceScorer, GaleChurchScorer
+from scorer import WordExtractor, LinkExtractor, StructureExtractor
 
-from scorer import LinkDistance
 from scorer import SimhashDistance
 from scorer import NERDistance
 from scorer import StructureScorer
@@ -88,12 +87,23 @@ def get_ranks(source_corpus, target_corpus, scores):
 
 def write_url2dim(source_corpus, target_corpus, fh, file2url):
     f2u = {}
+    all_filenames = set(source_corpus.keys())
+    all_filenames.update(target_corpus.keys())
+    seen = set()
+
     if file2url is not None:
         for line in file2url:
-            filename, url = line.decode('utf-8', 'ignore').strip().split('\t')
-            if filename in source_corpus or filename in target_corpus:
-                f2u[filename.encode(
-                    'utf-8', 'ignore')] = url.encode('utf-8', 'ignore')
+            # filename, url = line.decode('utf-8', 'ignore').strip().split('\t')
+            filename, url = line.strip().split('\t')
+            if not url.startswith("http://"):
+                url = "http://" + url
+            if filename in all_filenames:
+                f2u[filename] = url
+                seen.add(filename)
+
+    assert not seen.difference(all_filenames)
+    for filename in all_filenames.difference(seen):
+        sys.stderr.write("Could not find file %s\n" % filename)
 
     mapping = {'index_to_source_url': {},
                'index_to_target_url': {},
@@ -125,6 +135,7 @@ if __name__ == "__main__":
         default=sys.stdout)
     parser.add_argument('feature',
                         choices=['LinkDistance', 'BOW', 'Simhash',
+                                 'TextSimilarity',
                                  'Structure', 'GaleChurch', 'TranslatedBOW'])
     parser.add_argument('-dictfile', help='dictionary file for TranslatedBOW')
     parser.add_argument('-targets', help='output file for target matrix',
@@ -174,24 +185,36 @@ if __name__ == "__main__":
     scorer = None
     print "Using feature: ", args.feature
 
-    word_extractor = WordExtractor(n=args.ngram_size)
-    scorer = DistanceScorer(extraction_mapper=word_extractor,
-                            ratio_function=ratio)
-    m = scorer.score(s, t, processes=args.threads)
-
-    sys.exit()
-
     if args.feature == 'LinkDistance':
-        scorer = LinkDistance(ratio_function=jaccard, xpath=args.xpath)
-    elif args.feature == 'BOW':
-        scorer = BOWScorer(n=args.ngram_size)
+        link_extractor = LinkExtractor(args.xpath)
+        scorer = DistanceScorer(extraction_mapper=link_extractor,
+                                ratio_function=ratio)
+    if args.feature == 'LinkJaccard':
+        link_extractor = LinkExtractor(args.xpath)
+        scorer = DistanceScorer(extraction_mapper=link_extractor,
+                                ratio_function=jaccard,
+                                set_based=True)
+    elif args.feature == 'TextDistance':
+        assert args.ngram_size == 1, "use NGramJaccard instead\n"
+        word_extractor = WordExtractor()
+        scorer = DistanceScorer(extraction_mapper=word_extractor,
+                                ratio_function=quick_ratio)
+    elif args.feature == 'NGramJaccard':
+        word_extractor = WordExtractor(n=args.ngram_size)
+        scorer = DistanceScorer(extraction_mapper=word_extractor,
+                                ratio_function=jaccard,
+                                set_based=True)
+    elif args.feature == 'Structure':
+        structure_extractor = StructureExtractor(
+            length_function=lambda x: len(x.split()),
+            growth_function=lambda x: 1 + math.log(x))
+        scorer = DistanceScorer(extraction_mapper=structure_extractor,
+                                ratio_function=ratio)
+    elif args.feature == 'GaleChurch':
+        scorer = GaleChurchScorer()
+
     elif args.feature == 'Simhash':
         scorer = SimhashDistance(n=args.ngram_size)
-    elif args.feature == 'Structure':
-        scorer = StructureScorer(
-            length_function=lambda x: len(x.split()),
-            growth_function=lambda x: 1 + math.log(x),
-            ratio_function=quick_ratio)
     elif args.feature == 'GaleChurch':
         scorer = GaleChurchAlignmentDistance()
     elif args.feature == 'TranslatedBOW':
@@ -200,6 +223,11 @@ if __name__ == "__main__":
             source_tokenizer, target_tokenizer, args.dictfile,
             args.slang, args.tlang)
     assert scorer is not None, "Need to instantiate scorer first"
+
+    m = scorer.score(s, t, processes=args.threads)
+
+    # sys.exit()
+
     # get_best_match(s, t, m)
     # get_best_matching(s, t, m)
 
@@ -228,8 +256,9 @@ if __name__ == "__main__":
             "found %d nans in matrix of shape %s\n"
             % (np.sum(np.isnan(m)), m.shape))
         m[np.isnan(m)] = 0
-    if np.std(m) > 0:
-        m = (m - np.mean(m)) / np.std(m)
+
+    # if np.std(m) > 0:
+    #     m = (m - np.mean(m)) / np.std(m)
 
     np.savetxt(args.outfile, m)
     sys.exit()
