@@ -89,7 +89,8 @@ class StructureExtractor(ExtractionMapper):
 
     def _html_to_sequence(self, url, page):
         parser = HTMLSequencer(self.length_function, self.growth_function)
-        parser.feed(page.html)
+        # print repr(page.html)
+        parser.feed(page.html.decode('utf-8'))
         return parser.get_result()
 
 
@@ -144,7 +145,7 @@ class DistanceScorer(object):
                 for t_idx in xrange(len(self.tseqs)):
                     scoring_matrix[s_idx, t_idx] = \
                         self.ratio_function(
-                            (self.sseqs[s_idx], self.tseqs[t_idx]))
+                            self.sseqs[s_idx], self.tseqs[t_idx])
                 sys.stderr.write('.')
                 sys.stderr.flush()
 
@@ -162,7 +163,9 @@ class DistanceScorer(object):
                     sys.stderr.flush()
                 if (s_idx + 1) % 1000 == 0:
                     sys.stderr.write("[%d]\n" % (s_idx + 1))
+                    sys.stderr.flush()
             sys.stderr.write("[%d]\n" % len(self.sseqs))
+            sys.stderr.flush()
         return scoring_matrix
 
 
