@@ -75,7 +75,10 @@ class LinkExtractor(ExtractionMapper):
         dom = lxml.html.fromstring(page.html)
         links = []
         for link in dom.xpath(self.xpath):
-            links.append(urljoin(url, link))
+            try:
+                links.append(urljoin(url, link))
+            except ValueError:
+                continue
         return links
 
 
