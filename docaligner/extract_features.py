@@ -89,11 +89,10 @@ def write_url2dim(source_corpus, target_corpus, fh, file2url):
     f2u = {}
     all_filenames = set(source_corpus.keys())
     all_filenames.update(target_corpus.keys())
-    seen = set()
 
     if file2url is not None:
+        seen = set()
         for line in file2url:
-            # filename, url = line.decode('utf-8', 'ignore').strip().split('\t')
             filename, url = line.strip().split('\t')
             if not url.startswith("http://"):
                 url = "http://" + url
@@ -101,9 +100,9 @@ def write_url2dim(source_corpus, target_corpus, fh, file2url):
                 f2u[filename] = url
                 seen.add(filename)
 
-    assert not seen.difference(all_filenames)
-    for filename in all_filenames.difference(seen):
-        sys.stderr.write("Could not find file %s\n" % filename)
+        assert not seen.difference(all_filenames)
+        for filename in all_filenames.difference(seen):
+            sys.stderr.write("Could not find file %s\n" % filename)
 
     mapping = {'index_to_source_url': {},
                'index_to_target_url': {},
@@ -134,8 +133,8 @@ if __name__ == "__main__":
         '-outfile', help='output file', type=argparse.FileType('w'),
         default=sys.stdout)
     parser.add_argument('feature',
-                        choices=['LinkDistance', 'BOW', 'Simhash',
-                                 'TextSimilarity',
+                        choices=['LinkDistance', 'LinkJaccard', 'Simhash',
+                                 'TextDistance', 'NGramJaccard',
                                  'Structure', 'GaleChurch', 'TranslatedBOW'])
     parser.add_argument('-dictfile', help='dictionary file for TranslatedBOW')
     parser.add_argument('-targets', help='output file for target matrix',
@@ -180,7 +179,7 @@ if __name__ == "__main__":
         np.savetxt(args.targets, get_ground_truth(s, t))
     if args.urlmapping:
         write_url2dim(s, t, args.urlmapping, args.file2url)
-        sys.exit()  # TODO: remove
+        # sys.exit()  # TODO: remove?
 
     scorer = None
     print "Using feature: ", args.feature
