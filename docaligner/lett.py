@@ -1,5 +1,6 @@
 import base64
 import gzip
+import sys
 from collections import namedtuple
 
 Page = namedtuple(
@@ -11,9 +12,9 @@ def read_lett(f, slang, tlang, source_tokenizer=None, target_tokenizer=None,
     s, t = {}, {}
     fh = f
     if f.name.endswith('.gz'):
-        fh = gzip.open(fh, 'r')
+        fh = gzip.GzipFile(fileobj=fh, mode='r')
     for line in fh:
-        lang, mine, enc, url, html, text = line.strip().split("\t")
+        lang, mine, enc, url, html, text = line[:-1].split("\t")
 
         if no_html:
             html = ''
@@ -27,9 +28,6 @@ def read_lett(f, slang, tlang, source_tokenizer=None, target_tokenizer=None,
             text = source_tokenizer.process(text)
         elif lang == tlang and target_tokenizer is not None:
             text = target_tokenizer.process(text)
-        else:
-            # ignore other languages
-            continue
 
         p = Page(url, html, text, mine, enc)
         if lang == slang:
@@ -41,3 +39,21 @@ def read_lett(f, slang, tlang, source_tokenizer=None, target_tokenizer=None,
 
 def write_tokenized_lett(f, pages):
     pass
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        'lettfile', help='input lett file', type=argparse.FileType('r'))
+    parser.add_argument('-slang', help='source language', default='en')
+    parser.add_argument('-tlang', help='target language', default='fr')
+    args = parser.parse_args()
+
+    # read source and target corpus
+    s, t = read_lett(args.lettfile, args.slang, args.tlang)
+
+    sys.stderr.write("Read %d %s docs and %d %s docs from %s\n" %
+                     (len(s), args.slang,
+                      len(t), args.tlang, args.lettfile.name))
+    sys.stderr.write("%d possible pairs for %s\n" %
+                     (len(s) * len(t), args.lettfile.name))
