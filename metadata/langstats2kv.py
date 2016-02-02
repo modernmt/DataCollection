@@ -14,7 +14,7 @@ def parse_line(line):
     df6fa1abb58549287111ba8d776733e9 uri:http://0d1.info/ language:en offset:451 bytes:2743
     """
     d = {}
-    for elem in line.rstrip().split()[1:]:
+    for elem in line[:-1].split()[1:]:
         k, v = elem.split(':', 1)
         d[k] = v
     return d
@@ -33,6 +33,8 @@ if __name__ == "__main__":
         if not line.startswith(magic_number):
             continue
         line = parse_line(line)
+        if line['language'] == 'un':
+            continue
         if url is not None and line['uri'] != url:
             key = None
             try:
@@ -48,9 +50,9 @@ if __name__ == "__main__":
 
     if url is not None:
         try:
-           key = make_key(url, args.crawl)
-           sys.stdout.write("%s\t%s\n" % (
-               key,
-               json.dumps({"languages": stats.items()})))
+            key = make_key(url, args.crawl)
+            sys.stdout.write("%s\t%s\n" % (
+                key,
+                json.dumps({"languages": stats.items()})))
         except:
-           pass
+            pass
