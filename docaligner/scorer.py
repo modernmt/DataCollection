@@ -156,16 +156,17 @@ class DistanceScorer(object):
             p = multiprocessing.Pool(processes=processes)
             rf = partial(ratio_pool, self.tseqs, self.ratio_function)
             for s_idx, scores in enumerate(
-                    p.imap(rf, self.sseqs, chunksize=20)):
-                assert len(scores) == len(self.tseqs)
-                for t_idx in xrange(len(self.tseqs)):
-                    scoring_matrix[s_idx, t_idx] = scores[t_idx]
+                    p.imap(rf, self.sseqs, chunksize=200)):
+                # assert len(scores) == len(self.tseqs)
+                scoring_matrix[s_idx] = scores
+
+                # for t_idx in xrange(len(self.tseqs)):
+                #     scoring_matrix[s_idx, t_idx] = scores[t_idx]
 
                 if (s_idx + 1) % 20 == 0:
                     sys.stderr.write('.')
-                    sys.stderr.flush()
-                if (s_idx + 1) % 1000 == 0:
-                    sys.stderr.write("[%d]\n" % (s_idx + 1))
+                    if (s_idx + 1) % 1000 == 0:
+                        sys.stderr.write("[%d]\n" % (s_idx + 1))
                     sys.stderr.flush()
             sys.stderr.write("[%d]\n" % len(self.sseqs))
             sys.stderr.flush()
