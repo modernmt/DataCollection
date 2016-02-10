@@ -135,7 +135,8 @@ if __name__ == "__main__":
     parser.add_argument('feature',
                         choices=['LinkDistance', 'LinkJaccard', 'Simhash',
                                  'TextDistance', 'NGramJaccard',
-                                 'Structure', 'GaleChurch', 'TranslatedBOW'])
+                                 'Structure', 'GaleChurch', 'TranslatedBOW',
+                                 'NGramCounts', 'LinkCounts'])
     parser.add_argument('-dictfile', help='dictionary file for TranslatedBOW')
     parser.add_argument('-targets', help='output file for target matrix',
                         type=argparse.FileType('w'))
@@ -145,6 +146,9 @@ if __name__ == "__main__":
                         default="//a/@href")
     parser.add_argument('-urlmapping',
                         help="outfile for url <-> index mapping",
+                        type=argparse.FileType('w'))
+    parser.add_argument('-term_counts',
+                        help="outfile for document frequency",
                         type=argparse.FileType('w'))
     parser.add_argument('-file2url', help='mapping to real url',
                         type=argparse.FileType('r'))
@@ -182,6 +186,7 @@ if __name__ == "__main__":
         # sys.exit()  # TODO: remove?
 
     scorer = None
+
     print "Using feature: ", args.feature
 
     if args.feature == 'LinkDistance':
@@ -221,6 +226,18 @@ if __name__ == "__main__":
         scorer = DictionaryScorer(
             source_tokenizer, target_tokenizer, args.dictfile,
             args.slang, args.tlang)
+    elif args.feature == 'NGramCounts':
+        assert args.term_counts is not None
+        word_extractor = WordExtractor(n=args.ngram_size, hash_values=False)
+        scorer = DistanceScorer(extraction_mapper=word_extractor,
+                                ratio_function=None,
+                                set_based=True)
+        args.term_counts.write("%d\n" %(len(s) + len(t)))
+        for ngram, count in scorer.joined_counts(s, t).iteritems():
+            args.term_counts.write("%s\t%d\n" % (ngram.encode('utf-8'), count))
+        sys.exit()
+    elif args.feature == 'LinkCounts':
+        pass
     assert scorer is not None, "Need to instantiate scorer first"
 
     m = scorer.score(s, t, processes=args.threads)

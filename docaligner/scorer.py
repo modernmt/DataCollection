@@ -1,10 +1,9 @@
-from collections import defaultdict
+from collections import defaultdict, Counter
 from functools import partial
 from nltk.align import gale_church
 from nltk.tokenize.punkt import PunktSentenceTokenizer
 from simhash import Simhash
 from urlparse import urljoin
-from functools import partial
 import difflib
 import json
 import jsonrpclib
@@ -13,14 +12,13 @@ import numpy as np
 import re
 import sys
 import codecs
+import gzip
 import multiprocessing
 
 
 from tokenizer import SpaceTokenizer
 from htmlprocessor import HTMLSequencer
 from ratio import ratio
-from itertools import izip_longest
-from pathos.pools import ParallelPool as Pool
 
 
 def ratio_pool(seqs2, ratio_function, seq1):
@@ -28,11 +26,13 @@ def ratio_pool(seqs2, ratio_function, seq1):
     return map(rf, seqs2)
 
 
-def ngrams_from_text(n, _url, page):
+def ngrams_from_text(n, hash_values, _url, page):
     words = page.text.split()
     ngrams = [" ".join(words[i:i + n]) for i in
               range(max(len(words) - n + 1, 1))]
-    return map(hash, ngrams)
+    if hash_values:
+        return map(hash, ngrams)
+    return ngrams
 
 
 class ExtractionMapper(object):
@@ -59,9 +59,45 @@ class ExtractionMapper(object):
 
 class WordExtractor(ExtractionMapper):
 
-    def __init__(self, n=1):
+    def __init__(self, n=1, hash_values=True):
         super(WordExtractor, self).__init__(
-            extraction_function=partial(ngrams_from_text, n))
+            extraction_function=partial(ngrams_from_text, n, hash_values))
+
+
+class DocumentVectorExtractor(ExtractionMapper):
+
+    def __init__(self, n, idf):
+        self._read_idf(idf)
+        self.n = n
+
+    def _read_idf(self, f):
+        self.term2idf = {}
+        self.term2idx = {}
+        fh = f
+        if f.name.endswith('.gz'):
+            fh = gzip.GzipFile(fileobj=fh, mode='r')
+        for line in fh:
+            term, idf = line.split('\t')
+            self.term2idf[term] = float(idf)
+            self.term2idx[term] = len(self.term2idx)
+
+    def extract(self, corpus):
+        document_matrix = []
+        for url, page in corpus.iteritems():
+            counts = Counter(
+                ngrams_from_text(self.n, False, url, page))
+            document_vector = []
+            for ngram, count in counts.iteritems():
+                if ngram not in self.term2idx:
+                    print "unknown ngram: ", ngram
+                    continue
+                idx = self.term2idx[ngram]
+                idf = self.term2idf[ngram]
+                tfidf = count * idf
+                document_vector.append((idx, tfidf))
+            document_vector.sort()
+            document_matrix.append(document_vector)
+        return document_matrix
 
 
 class LinkExtractor(ExtractionMapper):
@@ -171,6 +207,17 @@ class DistanceScorer(object):
             sys.stderr.write("[%d]\n" % len(self.sseqs))
             sys.stderr.flush()
         return scoring_matrix
+
+    def joined_counts(self, source_corpus, target_corpus):
+        self._extract(source_corpus, target_corpus)
+        sys.stderr.write("Done extracting...\n")
+        assert self._set_based
+        counts = Counter()
+        for s in self.sseqs:
+            counts.update(s)
+        for t in self.tseqs:
+            counts.update(t)
+        return counts
 
 
 class GaleChurchWrapper(object):
