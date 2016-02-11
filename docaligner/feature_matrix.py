@@ -90,7 +90,7 @@ if __name__ == "__main__":
                         type=argparse.FileType('wb'),
                         required=True)
     parser.add_argument('feature_matrix', nargs='+',
-                        help='precomputed matrix for single feature',
+                        help='outfile: precomputed matrix for single feature',
                         type=argparse.FileType('r'))
 
     args = parser.parse_args()
