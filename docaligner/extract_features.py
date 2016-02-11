@@ -172,6 +172,7 @@ if __name__ == "__main__":
         if args.target_tokenizer else WordPunctTokenizer()
 
     # read source and target corpus
+    sys.stderr.write("Loading %s\n" % (args.lettfile.name))
     s, t = read_lett(args.lettfile, args.slang, args.tlang,
                      source_tokenizer, target_tokenizer)
 
@@ -232,7 +233,7 @@ if __name__ == "__main__":
         scorer = DistanceScorer(extraction_mapper=word_extractor,
                                 ratio_function=None,
                                 set_based=True)
-        args.term_counts.write("%d\n" %(len(s) + len(t)))
+        args.term_counts.write("%d\n" % (len(s) + len(t)))
         for ngram, count in scorer.joined_counts(s, t).iteritems():
             args.term_counts.write("%s\t%d\n" % (ngram.encode('utf-8'), count))
         sys.exit()
