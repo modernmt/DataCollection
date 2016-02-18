@@ -167,7 +167,7 @@ class LanguageStripper(object):
         # remove index files from tail of path if query empty
         if remove_index and not stripped_query:
             if stripped_path.split('/')[-1].startswith('index'):
-                stripped_path = '/'.join(stripped_path.split('/')[:-1])
+                stripped_path = '/'.join(stripped_path.split('/')[:-1]) + '/'
 
         netloc = parsed_uri.netloc
         if '@' in netloc:
