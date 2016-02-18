@@ -28,12 +28,10 @@ def real_quick_ratio_star(seq1_seq2):
     return real_quick_ratio(*seq1_seq2)
 
 
-def jaccard(seq1, seq2):
-    s1 = set(seq1)
-    s2 = set(seq2)
-    intersect_size = len(s1.intersection(s2))
+def jaccard(set1, set2):
+    intersect_size = len(set1.intersection(set2))
     if intersect_size > 0:
-        return float(intersect_size) / len(s1.union(s2))
+        return float(intersect_size) / len(set1.union(set2))
     return 0.
 
 

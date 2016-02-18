@@ -1,10 +1,9 @@
-from collections import defaultdict
+from collections import defaultdict, Counter
 from functools import partial
 from nltk.align import gale_church
 from nltk.tokenize.punkt import PunktSentenceTokenizer
 from simhash import Simhash
 from urlparse import urljoin
-from functools import partial
 import difflib
 import json
 import jsonrpclib
@@ -13,14 +12,14 @@ import numpy as np
 import re
 import sys
 import codecs
+import gzip
 import multiprocessing
-
-
+import math
+import numpy as np
+import sklearn
 from tokenizer import SpaceTokenizer
 from htmlprocessor import HTMLSequencer
 from ratio import ratio
-from itertools import izip_longest
-from pathos.pools import ParallelPool as Pool
 
 
 def ratio_pool(seqs2, ratio_function, seq1):
@@ -28,11 +27,22 @@ def ratio_pool(seqs2, ratio_function, seq1):
     return map(rf, seqs2)
 
 
-def ngrams_from_text(n, _url, page):
+def ngrams_from_text(n, hash_values, _url, page):
     words = page.text.split()
     ngrams = [" ".join(words[i:i + n]) for i in
               range(max(len(words) - n + 1, 1))]
-    return map(hash, ngrams)
+    if hash_values:
+        return map(hash, ngrams)
+    return ngrams
+
+
+def english_ngrams_from_text(n, hash_values, _url, page):
+    words = page.english.split() + page.english_mt.split()
+    ngrams = [" ".join(words[i:i + n]) for i in
+              range(max(len(words) - n + 1, 1))]
+    if hash_values:
+        return map(hash, ngrams)
+    return ngrams
 
 
 class ExtractionMapper(object):
@@ -59,9 +69,59 @@ class ExtractionMapper(object):
 
 class WordExtractor(ExtractionMapper):
 
-    def __init__(self, n=1):
+    def __init__(self, n=1, hash_values=True):
         super(WordExtractor, self).__init__(
-            extraction_function=partial(ngrams_from_text, n))
+            extraction_function=partial(ngrams_from_text, n, hash_values))
+
+
+class EnglishWordExtractor(ExtractionMapper):
+
+    def __init__(self, n=1, hash_values=True):
+        super(EnglishWordExtractor, self).__init__(
+            extraction_function=partial(english_ngrams_from_text,
+                                        n, hash_values))
+
+
+class DocumentVectorExtractor(ExtractionMapper):
+
+    def __init__(self, n, idf, min_count=1):
+        self._read_idf(idf)
+        self.n = n
+        self.min_term_count = min_count
+
+    def _read_idf(self, f):
+        self.term2idf = {}
+        self.term2idx = {}
+        self.ignored_terms = set()
+        fh = f
+        if f.name.endswith('.gz'):
+            fh = gzip.GzipFile(fileobj=fh, mode='r')
+        self.ndocs = int(fh.readline().strip())
+        for line in fh:
+            term, docs_with_term = line.split('\t')
+            if int(docs_with_term) < self.min_term_count:
+                self.ignored_terms.add(term)
+                continue
+            self.term2idf[term] = math.log(self.ndocs / float(docs_with_term))
+            self.term2idx[term] = len(self.term2idx)
+        sys.stderr.write("%d terms, %d ignored\n"
+                         % (len(self.term2idx), len(self.ignored_terms)))
+
+    def extract(self, corpus):
+        m = np.zeros(len(corpus), len(self.term2idx))
+        for doc_idx, (url, page) in enumerate(corpus.iteritems()):
+            counts = Counter(
+                english_ngrams_from_text(self.n, False, url, page))
+            for ngram, count in counts.iteritems():
+                if ngram not in self.term2idx and \
+                        ngram not in self.ignored_terms:
+                    print "unknown ngram: ", ngram
+                    continue
+                idf = self.term2idf[ngram]
+                idx = self.term2idx[ngram]
+                tfidf = count * idf
+                m[doc_idx, idx] = tfidf
+        return m
 
 
 class LinkExtractor(ExtractionMapper):
@@ -75,7 +135,10 @@ class LinkExtractor(ExtractionMapper):
         dom = lxml.html.fromstring(page.html)
         links = []
         for link in dom.xpath(self.xpath):
-            links.append(urljoin(url, link))
+            try:
+                links.append(urljoin(url, link))
+            except ValueError:
+                continue
         return links
 
 
@@ -89,7 +152,8 @@ class StructureExtractor(ExtractionMapper):
 
     def _html_to_sequence(self, url, page):
         parser = HTMLSequencer(self.length_function, self.growth_function)
-        parser.feed(page.html)
+        # print repr(page.html)
+        parser.feed(page.html.decode('utf-8'))
         return parser.get_result()
 
 
@@ -135,35 +199,49 @@ class DistanceScorer(object):
             self.sseqs = map(set, self.sseqs)
             self.tseqs = map(set, self.tseqs)
 
-    def score(self, source_corpus, target_corpus, processes=1):
+    def score(self, source_corpus, target_corpus, pool=None):
         self._extract(source_corpus, target_corpus)
         sys.stderr.write("Done extracting...\n")
         scoring_matrix = np.zeros((len(source_corpus), len(target_corpus)))
-        if processes <= 1:
+        if pool is None:
             for s_idx in xrange(len(self.sseqs)):
                 for t_idx in xrange(len(self.tseqs)):
                     scoring_matrix[s_idx, t_idx] = \
                         self.ratio_function(
-                            (self.sseqs[s_idx], self.tseqs[t_idx]))
+                            self.sseqs[s_idx], self.tseqs[t_idx])
                 sys.stderr.write('.')
                 sys.stderr.flush()
 
         else:
-            p = multiprocessing.Pool(processes=processes)
+            # p = multiprocessing.Pool(processes=processes)
             rf = partial(ratio_pool, self.tseqs, self.ratio_function)
             for s_idx, scores in enumerate(
-                    p.imap(rf, self.sseqs, chunksize=20)):
-                assert len(scores) == len(self.tseqs)
-                for t_idx in xrange(len(self.tseqs)):
-                    scoring_matrix[s_idx, t_idx] = scores[t_idx]
+                    pool.imap(rf, self.sseqs, chunksize=200)):
+                # assert len(scores) == len(self.tseqs)
+                scoring_matrix[s_idx] = scores
+
+                # for t_idx in xrange(len(self.tseqs)):
+                #     scoring_matrix[s_idx, t_idx] = scores[t_idx]
 
                 if (s_idx + 1) % 20 == 0:
                     sys.stderr.write('.')
+                    if (s_idx + 1) % 1000 == 0:
+                        sys.stderr.write("[%d]\n" % (s_idx + 1))
                     sys.stderr.flush()
-                if (s_idx + 1) % 1000 == 0:
-                    sys.stderr.write("[%d]\n" % (s_idx + 1))
             sys.stderr.write("[%d]\n" % len(self.sseqs))
+            sys.stderr.flush()
         return scoring_matrix
+
+    def joined_counts(self, source_corpus, target_corpus):
+        self._extract(source_corpus, target_corpus)
+        sys.stderr.write("Done extracting...\n")
+        assert self._set_based
+        counts = Counter()
+        for s in self.sseqs:
+            counts.update(s)
+        for t in self.tseqs:
+            counts.update(t)
+        return counts
 
 
 class GaleChurchWrapper(object):
@@ -225,6 +303,22 @@ class GaleChurchScorer(DistanceScorer):
         super(GaleChurchScorer,
               self).__init__(extraction_mapper=GCBlockExtractor(),
                              ratio_function=gc_alignment_score)
+
+
+class CosineDistanceScorer(object):
+
+    def __init__(self, ngram_size, min_count, counts_file, metric='cosine'):
+        self.name = "Cosine Distance Scorer"
+        self.metric = metric
+        self.word_extractor = DocumentVectorExtractor(
+            n=ngram_size, min_count=min_count, idf=counts_file)
+
+    def score(self, source_corpus, target_corpus, pool=None):
+        source_matrix = self.word_extractor(source_corpus)
+        target_matrix = self.word_extractor(target_corpus)
+        return sklearn.metrics.pairwise.pairwise_distances(source_matrix,
+                                                           target_matrix,
+                                                           metric=self.metric)
 
 
 class GaleChurchAlignmentDistance(DistanceScorer):
