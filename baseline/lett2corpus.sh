@@ -129,7 +129,7 @@ if [ ! -f ${DONEFILE} ]; then
     echo "CLEAN_ALIGN .. " >> ${LOG}
     python ${BT}/bitextor-cleantextalign -q 0 -m 5 < ${SENT} > ${CLEAN} 2>>${LOG}
     echo "Cleaning up .. " >> ${LOG}
-    #rm -f ${IDX} ${LETTR} ${RIDX} ${DIST} ${DOCS}
+    rm -f ${IDX} ${LETTR} ${RIDX} ${DIST} ${DOCS}
     echo "Done! " >> ${LOG}
     echo -n "SOURCE: " >> ${LOG}
     cut -f 3 ${SENT} | wc >> ${LOG}

@@ -64,6 +64,9 @@ def read_lett(f, slang, tlang, source_tokenizer=None, target_tokenizer=None,
             text = source_tokenizer.process(text)
         elif lang == tlang and target_tokenizer is not None:
             text = target_tokenizer.process(text)
+        else:
+            # ignore other languages
+            continue
 
         p = Page(url, html, text, mine, enc, u"", u"", u"")
 

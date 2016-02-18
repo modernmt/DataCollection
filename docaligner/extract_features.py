@@ -129,8 +129,6 @@ def write_url2dim(source_corpus, target_corpus, fh, file2url):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    # parser.add_argument(
-    #     'lettfile', help='input lett file', type=argparse.FileType('r'))
     parser.add_argument(
         'corpus', help='pickled source and target corpus', type=argparse.FileType('r'))
     parser.add_argument(
@@ -195,7 +193,6 @@ if __name__ == "__main__":
         # sys.exit()  # TODO: remove?
 
     scorer = None
-
     print "Using feature: ", args.feature
 
     if args.feature == 'LinkDistance':
