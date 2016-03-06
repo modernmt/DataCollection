@@ -26,13 +26,17 @@ def ratio_pool(seqs2, ratio_function, seq1):
     return map(rf, seqs2)
 
 
-def ngrams_from_text(n, hash_values, _url, page):
-    words = page.text.split()
+def ngrams_from_text(n, hash_values, _url, text):
+    words = text.split()
     ngrams = [" ".join(words[i:i + n]) for i in
               range(max(len(words) - n + 1, 1))]
     if hash_values:
         return map(hash, ngrams)
     return ngrams
+
+
+def ngrams_from_page(n, hash_values, _url, page):
+    return ngrams_from_text(n, hash_values, _url, page.text)
 
 
 class ExtractionMapper(object):
@@ -61,7 +65,7 @@ class WordExtractor(ExtractionMapper):
 
     def __init__(self, n=1, hash_values=True):
         super(WordExtractor, self).__init__(
-            extraction_function=partial(ngrams_from_text, n, hash_values))
+            extraction_function=partial(ngrams_from_page, n, hash_values))
 
 
 class DocumentVectorExtractor(ExtractionMapper):
@@ -175,11 +179,11 @@ class DistanceScorer(object):
             self.sseqs = map(set, self.sseqs)
             self.tseqs = map(set, self.tseqs)
 
-    def score(self, source_corpus, target_corpus, processes=1):
+    def score(self, source_corpus, target_corpus, pool=None):
         self._extract(source_corpus, target_corpus)
         sys.stderr.write("Done extracting...\n")
         scoring_matrix = np.zeros((len(source_corpus), len(target_corpus)))
-        if processes <= 1:
+        if pool is None:
             for s_idx in xrange(len(self.sseqs)):
                 for t_idx in xrange(len(self.tseqs)):
                     scoring_matrix[s_idx, t_idx] = \
@@ -189,10 +193,10 @@ class DistanceScorer(object):
                 sys.stderr.flush()
 
         else:
-            p = multiprocessing.Pool(processes=processes)
+            # p = multiprocessing.Pool(processes=processes)
             rf = partial(ratio_pool, self.tseqs, self.ratio_function)
             for s_idx, scores in enumerate(
-                    p.imap(rf, self.sseqs, chunksize=200)):
+                    pool.imap(rf, self.sseqs, chunksize=200)):
                 # assert len(scores) == len(self.tseqs)
                 scoring_matrix[s_idx] = scores
 
