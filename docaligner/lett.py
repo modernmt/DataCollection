@@ -6,6 +6,7 @@ import cPickle as pickle
 sys.path.append("/home/buck/net/build/DataCollection/baseline")
 from textsanitzer import TextSanitizer
 from external_processor import ExternalTextProcessor
+from tokenizer import ExternalProcessor, SpaceTokenizer, WordPunctTokenizer
 
 
 # Page = namedtuple(
@@ -47,7 +48,6 @@ def read_lett(f, slang, tlang, source_tokenizer=None, target_tokenizer=None,
     fh = f
     if f.name.endswith('.gz'):
         fh = gzip.GzipFile(fileobj=fh, mode='r')
-
     for line in fh:
         lang, mine, enc, url, html, text = line[:-1].split("\t")
 

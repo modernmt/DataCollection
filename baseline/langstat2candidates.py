@@ -103,6 +103,9 @@ if __name__ == "__main__":
                         action='store_true')
     parser.add_argument('-agressive', help='remove all locale info',
                         action='store_true')
+    parser.add_argument('-removeindex',
+                        help='remove /index.html at end of url',
+                        action='store_true')
     args = parser.parse_args(sys.argv[1:])
 
     candidates = {}
@@ -114,7 +117,7 @@ if __name__ == "__main__":
         language_stripper = LanguageStripper(strip_query_variables=True)
 
     for line in sys.stdin:
-        split_line = line.split('\t')
+        split_line = line.rstrip().split('\t')
         k, v = split_line[-2:]
         tld, uri, crawl = k.split(' ')
 
@@ -125,12 +128,12 @@ if __name__ == "__main__":
             # This allows for a cheap reject.
             continue
 
-        languages = json.loads(v)['languages']
-
-        if args.lang not in main_languages(languages):
-            # this page does not have (enough) text in the language
-            # we're looking for
-            continue
+        if args.lang is not None:
+            languages = json.loads(v)['languages']
+            if args.lang not in main_languages(languages):
+                # this page does not have (enough) text in the language
+                # we're looking for
+                continue
 
         if len(split_line) == 4:  # Input is output of previous run
             stripped_uri, _lang = line[:2]
@@ -155,7 +158,12 @@ if __name__ == "__main__":
                 # looking for Italian pages.
                 continue
 
-        stripped_uri, success = language_stripper.strip_uri(uri)
+        stripped_uri, success = language_stripper.strip_uri(
+            uri, args.removeindex)
+
+        print stripped_uri, success
+        print k, v, tld, uri, crawl
+        sys.exit()
 
         if candidates:
             if stripped_uri in candidates:

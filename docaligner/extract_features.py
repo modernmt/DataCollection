@@ -4,17 +4,25 @@ import math
 import numpy as np
 import sys
 import json
+from scipy.stats import pearsonr, spearmanr
 
-from lett import read_lett
+from htmlprocessor import HTMLSequencer
+from lett import Page, read_lett
 from scorer import DistanceScorer, GaleChurchScorer
 from scorer import WordExtractor, LinkExtractor, StructureExtractor
-
+from scorer import EnglishWordExtractor
 from scorer import SimhashDistance
+from scorer import NERDistance
+from scorer import StructureScorer
 from scorer import GaleChurchAlignmentDistance
 from scorer import DictionaryScorer
-from tokenizer import ExternalProcessor, WordPunctTokenizer
-from ratio import ratio, quick_ratio, jaccard
+from scorer import CosineDistanceScorer
+from tokenizer import ExternalProcessor, SpaceTokenizer, WordPunctTokenizer
+from matching import get_best_match, get_best_matching
+from ratio import ratio, quick_ratio, real_quick_ratio, jaccard
+from ratio import ratio_star, quick_ratio_star
 import multiprocessing
+import cPickle as pickle
 
 sys.path.append("/home/buck/net/build/DataCollection/baseline")
 from strip_language_from_uri import LanguageStripper
@@ -122,7 +130,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        'lettfile', help='input lett file', type=argparse.FileType('r'))
+        'corpus', help='pickled source and target corpus', type=argparse.FileType('r'))
     parser.add_argument(
         '-outfile', help='output file', type=argparse.FileType('w'),
         default=sys.stdout)
@@ -146,16 +154,12 @@ if __name__ == "__main__":
                         type=argparse.FileType('w'))
     parser.add_argument('-file2url', help='mapping to real url',
                         type=argparse.FileType('r'))
-    parser.add_argument('-url2en', help='url to English text',
-                        type=argparse.FileType('r'))
-    parser.add_argument('-url2fr', help='url to French text',
-                        type=argparse.FileType('r'))
     parser.add_argument('-slang', help='source language', default='en')
     parser.add_argument('-tlang', help='target language', default='fr')
-    parser.add_argument(
-        '-source_tokenizer', help='call to tokenizer, including arguments')
-    parser.add_argument(
-        '-target_tokenizer', help='call to tokenizer, including arguments')
+    # parser.add_argument(
+    #     '-source_tokenizer', help='call to tokenizer, including arguments')
+    # parser.add_argument(
+    #     '-target_tokenizer', help='call to tokenizer, including arguments')
     parser.add_argument(
         '-corenlp_service', help='corenlp json service location',
         default='http://localhost:8080')
@@ -168,29 +172,27 @@ if __name__ == "__main__":
     if args.threads > 1:
         pool = multiprocessing.Pool(processes=args.threads)
 
-    source_tokenizer = ExternalProcessor(args.source_tokenizer) \
-        if args.source_tokenizer else WordPunctTokenizer()
-    target_tokenizer = ExternalProcessor(args.target_tokenizer) \
-        if args.target_tokenizer else WordPunctTokenizer()
+    # source_tokenizer = ExternalProcessor(args.source_tokenizer) \
+    #     if args.source_tokenizer else WordPunctTokenizer()
+    # target_tokenizer = ExternalProcessor(args.target_tokenizer) \
+    #     if args.target_tokenizer else WordPunctTokenizer()
 
     # read source and target corpus
-    sys.stderr.write("Loading %s\n" % (args.lettfile.name))
-    s, t = read_lett(args.lettfile, args.slang, args.tlang,
-                     source_tokenizer, target_tokenizer,
-                     args.url2fr, args.url2en)
+    sys.stderr.write("Loading %s\n" % (args.corpus.name))
+    s = pickle.load(args.corpus)
+    t = pickle.load(args.corpus)
 
     sys.stderr.write("Read %d %s docs and %d %s docs from %s\n" %
                      (len(s), args.slang,
-                      len(t), args.tlang, args.lettfile.name))
+                      len(t), args.tlang, args.corpus.name))
 
-    if args.targets:
-        np.savetxt(args.targets, get_ground_truth(s, t))
+    # if args.targets:
+    #     np.savetxt(args.targets, get_ground_truth(s, t))
     if args.urlmapping:
         write_url2dim(s, t, args.urlmapping, args.file2url)
         # sys.exit()  # TODO: remove?
 
     scorer = None
-
     print "Using feature: ", args.feature
 
     if args.feature == 'LinkDistance':
@@ -227,12 +229,12 @@ if __name__ == "__main__":
         scorer = GaleChurchAlignmentDistance()
     elif args.feature == 'TranslatedBOW':
         assert args.dictfile is not None, "Need dictfile for TranslatedBOW"
-        scorer = DictionaryScorer(
-            source_tokenizer, target_tokenizer, args.dictfile,
-            args.slang, args.tlang)
+        scorer = DictionaryScorer(args.dictfile,
+                                  args.slang, args.tlang)
     elif args.feature == 'NGramCounts':
         assert args.term_counts is not None
-        word_extractor = WordExtractor(n=args.ngram_size, hash_values=False)
+        word_extractor = EnglishWordExtractor(
+            n=args.ngram_size, hash_values=False)
         scorer = DistanceScorer(extraction_mapper=word_extractor,
                                 ratio_function=None,
                                 set_based=True)
@@ -240,6 +242,12 @@ if __name__ == "__main__":
         for ngram, count in scorer.joined_counts(s, t).iteritems():
             args.term_counts.write("%s\t%d\n" % (ngram.encode('utf-8'), count))
         sys.exit()
+    elif args.feature == 'Cosine':
+        scorer = CosineDistanceScorer(ngram_size=args.ngram_size,
+                                      min_count=1,
+                                      counts_file=args.read_term_counts,
+                                      metric='cosine')
+
     elif args.feature == 'LinkCounts':
         pass
     assert scorer is not None, "Need to instantiate scorer first"

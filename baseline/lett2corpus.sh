@@ -15,6 +15,7 @@ ARGS=$(getopt -o l:d:m:t:b: -l "lett:,dict:,maxocc:,targetlang:,bitextor:,lowmem
 #Bad arguments
 if [ $? -ne 0 ];
 then
+  echo "Bad arguments"
   exit 1
 fi
 

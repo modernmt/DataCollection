@@ -9,16 +9,17 @@ import pickle
 from scipy.stats import pearsonr, spearmanr
 from sklearn import svm
 from sklearn import cross_validation
-# from sklearn import tree
-# from unbalanced_dataset import UnderSampler, OverSampler
-# from sklearn.ensemble import ExtraTreesClassifier
+from sklearn import tree
+from unbalanced_dataset import UnderSampler, OverSampler
+from sklearn.cross_validation import StratifiedKFold
+from sklearn.ensemble import ExtraTreesClassifier
 from sklearn import metrics
 from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
-# from sklearn import linear_model
+from sklearn import linear_model
 from sklearn.grid_search import GridSearchCV
-# from sklearn import neighbors
-# from sklearn import naive_bayes
-from sknn.mlp import Classifier, Layer
+from sklearn import neighbors
+from sklearn import naive_bayes
+
 
 # for Hungarian Algorithm
 import munkres
@@ -141,6 +142,9 @@ if __name__ == "__main__":
         float(np.count_nonzero(targets == 1))
     print "Ratio 0 vs. 1: ", ratio
 
+    skf = cross_validation.StratifiedKFold(targets, 5)
+    print "Running stratified 5-fold CV"
+
     params_space = {}
     # clf = svm.SVC(gamma=0.001, C=100., class_weight='balanced')
     # clf = svm.SVC(gamma=0.001, C=1000., probability=True)
@@ -181,7 +185,11 @@ if __name__ == "__main__":
 
     clf = svm.SVC(
         gamma=0.001, C=100., class_weight='balanced', probability=True)
-    clf = LogisticRegression(class_weight='balanced', C=50000)
+    # clf = LogisticRegression(class_weight='balanced', C=50000)
+    scoring = 'f1'
+    scores = cross_validation.cross_val_score(
+        clf, m, targets, cv=5, scoring=scoring)
+    print scores
 
     # clf = Classifier(
     #     layers=[
@@ -200,7 +208,7 @@ if __name__ == "__main__":
     scoring = 'f1'
     predicted = fitted_model.predict(m)
 
-    # print sum(predicted), sum(predicted - targets)
+    print sum(predicted), sum(predicted - targets)
     print metrics.classification_report(targets, predicted)
     print metrics.f1_score(targets, predicted)
     print metrics.accuracy_score(targets, predicted)
