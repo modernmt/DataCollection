@@ -9,17 +9,16 @@ import pickle
 from scipy.stats import pearsonr, spearmanr
 from sklearn import svm
 from sklearn import cross_validation
-from sklearn import tree
-from unbalanced_dataset import UnderSampler, OverSampler
-from sklearn.cross_validation import StratifiedKFold
-from sklearn.ensemble import ExtraTreesClassifier
+# from sklearn import tree
+# from unbalanced_dataset import UnderSampler, OverSampler
+# from sklearn.ensemble import ExtraTreesClassifier
 from sklearn import metrics
 from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
-from sklearn import linear_model
+# from sklearn import linear_model
 from sklearn.grid_search import GridSearchCV
-from sklearn import neighbors
-from sklearn import naive_bayes
-
+# from sklearn import neighbors
+# from sklearn import naive_bayes
+from sknn.mlp import Classifier, Layer
 
 # for Hungarian Algorithm
 import munkres
@@ -35,14 +34,28 @@ def read_devset(fh, mapping):
     devset = {}
     print "Reading devset from ", fh.name
     for line in fh:
-        turl, surl = line.strip().split()
-        if turl in mapping['target_url_to_index'] and \
-                surl in mapping['source_url_to_index']:
+        surl, turl = line.strip().split()
+        if turl in mapping['target_url_to_index']:
+            assert surl in mapping['source_url_to_index']
             assert surl not in devset.values()
             assert turl not in devset
-            devset[turl] = surl
+            devset[surl] = turl
 
     return devset
+
+# def read_devset(fh, mapping):
+# format fr-url <TAB> en-url
+#     devset = {}
+#     print "Reading devset from ", fh.name
+#     for line in fh:
+#         turl, surl = line.strip().split()
+#         if turl in mapping['target_url_to_index'] and \
+#                 surl in mapping['source_url_to_index']:
+#             assert surl not in devset.values()
+#             assert turl not in devset
+#             devset[turl] = surl
+
+#     return devset
 
 
 def read_idx2url(fh):
@@ -54,7 +67,7 @@ def cut_features(feature_list, devset, mapping):
     # col = targets
     # rows = sources
     cols, rows = [], []
-    for turl, surl in devset.iteritems():
+    for surl, turl in devset.iteritems():
         cols.append(mapping['target_url_to_index'][turl])
         rows.append(mapping['source_url_to_index'][surl])
     cols.sort()
@@ -63,7 +76,7 @@ def cut_features(feature_list, devset, mapping):
     # We have 1-1 mapping which gives a square matrix
     new_target = np.zeros((len(rows), len(cols)))
 
-    for turl, surl in devset.iteritems():
+    for surl, turl in devset.iteritems():
         sidx = mapping['source_url_to_index'][surl]
         sidx = rows.index(sidx)
         tidx = mapping['target_url_to_index'][turl]
@@ -128,9 +141,6 @@ if __name__ == "__main__":
         float(np.count_nonzero(targets == 1))
     print "Ratio 0 vs. 1: ", ratio
 
-    skf = cross_validation.StratifiedKFold(targets, 5)
-    print "Running stratified 5-fold CV"
-
     params_space = {}
     # clf = svm.SVC(gamma=0.001, C=100., class_weight='balanced')
     # clf = svm.SVC(gamma=0.001, C=1000., probability=True)
@@ -147,13 +157,15 @@ if __name__ == "__main__":
 
     # clf = ExtraTreesClassifier(n_estimators=500,
     #                            random_state=0)
+    params_space = {'C': np.logspace(-1, 7, 9)}
+    print params_space
     clf = LogisticRegression(class_weight='balanced')
     # params_space = {'kernel': ['linear', 'poly', 'rbf'],
     #                 "C": [1e-1, 1e0, 1e1, 1e2, 1e3, 1e4]}
     # clf = svm.SVR()
 
     # clf = svm.SVC(class_weight='balanced', probability=True)
-    # params_space = {'C': np.logspace(-1, 4, 6), 'gamma': np.logspace(-2, 2, 5)}
+    # params_space = {'C': np.logspace(-1, 5, 7), 'gamma': np.logspace(-2, 2, 5)}
 
     # clf = GridSearchCV(svm.SVR(kernel='rbf', gamma=0.1), cv=5,
     #                    param_grid={"C": [1e-1, 1e0, 1e1, 1e2, 1e3, 1e4],
@@ -167,18 +179,52 @@ if __name__ == "__main__":
     # clf = neighbors.KNeighborsRegressor(n_neighbors=10, weights='distance')
     # clf = naive_bayes.GaussianNB()
 
-    # scoring = 'f1'
+    clf = svm.SVC(
+        gamma=0.001, C=100., class_weight='balanced', probability=True)
+    clf = LogisticRegression(class_weight='balanced', C=50000)
 
-    gs = GridSearchCV(clf, params_space, n_jobs=-1, cv=skf)
-    gs.fit(m, targets.reshape(n_samples))
-    print "Best parameters found in CV:", gs.best_params_
-    fitted_model = gs
+    # clf = Classifier(
+    #     layers=[
+    #         Layer("Sigmoid", units=100, dropout=0.25),
+    #         Layer("Softmax", dropout=0.25)],
+    #     learning_rate=0.001,
+    #     batch_size=32,
+    #     n_iter=100)
+
+    fitted_model = clf.fit(m, targets.reshape(n_samples))
 
     if args.write_model:
         print "Writing model to", args.write_model.name
         pickle.dump(fitted_model, args.write_model)
 
-    sys.exit()
+    scoring = 'f1'
+    predicted = fitted_model.predict(m)
+
+    # print sum(predicted), sum(predicted - targets)
+    print metrics.classification_report(targets, predicted)
+    print metrics.f1_score(targets, predicted)
+    print metrics.accuracy_score(targets, predicted)
+
+    scores = cross_validation.cross_val_score(
+        clf, m, targets, cv=5, scoring=scoring, n_jobs=-1)
+    print " 5-CV Scores: ", scores, np.mean(scores)
+
+    scores = cross_validation.cross_val_score(
+        clf, m, targets, cv=10, scoring=scoring, n_jobs=-1)
+    print "10-CV Scores: ", scores, np.mean(scores)
+
+    scores = cross_validation.cross_val_score(
+        clf, m, targets, cv=20, scoring=scoring, n_jobs=-1)
+    print "20-CV Scores: ", scores, np.mean(scores)
+
+    print "Running stratified 5-fold CV"
+    skf = cross_validation.StratifiedKFold(targets, 5)
+    gs = GridSearchCV(clf, params_space, n_jobs=-1, cv=skf, scoring='f1')
+    gs.fit(m, targets.reshape(n_samples))
+    print "Best parameters found in CV:", gs.best_params_
+
+    # clf = LogisticRegression(class_weight='balanced', C=50000)
+    # fitted_model = clf.fit(m, targets.reshape(n_samples))
 
     predicted = fitted_model.predict_proba(m)
     predicted = predicted[:, 1]  # we're interested in probs for class 1
@@ -186,6 +232,14 @@ if __name__ == "__main__":
     # predicted = cross_validation.cross_val_predict(
     #     clf, m, targets.reshape(n_samples), cv=skf)
     print targets[:5], predicted[:5]
+
+    predicted = gs.predict(m)
+    print sum(predicted), sum(predicted - targets)
+    print metrics.classification_report(targets, predicted)
+    print metrics.f1_score(targets, predicted)
+    print metrics.accuracy_score(targets, predicted)
+
+    sys.exit()
 
     print "Finding best match"
     targets = targets.reshape((n_source, n_target))
@@ -203,6 +257,8 @@ if __name__ == "__main__":
     print "Right: %d/%d = %f%%, Wrong: %d/%d = %f%%" \
         % (len(correct), total, 100. * len(correct) / total,
            len(errors), total, 100. * len(errors) / total)
+
+    sys.exit()
 
     print "Finding best matching"
     m = munkres.Munkres()
