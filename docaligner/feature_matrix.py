@@ -26,12 +26,12 @@ def read_devset(fh, mapping):
     devset = {}
     print "Reading devset from ", fh.name
     for line in fh:
-        turl, surl = line.strip().split()
-        if turl in mapping['target_url_to_index'] and \
-                surl in mapping['source_url_to_index']:
+        surl, turl = line.strip().split()
+        if turl in mapping['target_url_to_index']:
+            assert surl in mapping['source_url_to_index']
             assert surl not in devset.values()
             assert turl not in devset
-            devset[turl] = surl
+            devset[surl] = turl
 
     return devset
 
@@ -41,20 +41,20 @@ def read_idx2url(fh):
     return mapping
 
 
-def cut_features(feature_list, devset, mapping):
+def cut_features(feature_files, devset, mapping):
     # col = targets
     # rows = sources
     cols, rows = [], []
-    for turl, surl in devset.iteritems():
-        cols.append(mapping['target_url_to_index'][turl])
+    for surl, turl in devset.iteritems():
         rows.append(mapping['source_url_to_index'][surl])
+        cols.append(mapping['target_url_to_index'][turl])
     cols.sort()
     rows.sort()
 
     # We have 1-1 mapping which gives a square matrix
     new_target = np.zeros((len(rows), len(cols)))
 
-    for turl, surl in devset.iteritems():
+    for surl, turl in devset.iteritems():
         sidx = mapping['source_url_to_index'][surl]
         sidx = rows.index(sidx)
         tidx = mapping['target_url_to_index'][turl]
@@ -63,13 +63,15 @@ def cut_features(feature_list, devset, mapping):
         new_target[sidx, tidx] = 1
 
     new_features = []
-    for f in features:
-        print f.shape
-        print (len(mapping['source_url_to_index']),
-               len(mapping['target_url_to_index']))
-        assert f.shape == (len(mapping['source_url_to_index']),
+    for f in feature_files:
+        # print len(new_features), f.shape
+        # print (len(mapping['source_url_to_index']),
+        #        len(mapping['target_url_to_index']))
+        m = np.load(f)
+        sys.stderr.write("Loaded %s of shape %s\n" % (f.name, m.shape))
+        assert m.shape == (len(mapping['source_url_to_index']),
                            len(mapping['target_url_to_index']))
-        nf = f[rows][:, cols]
+        nf = m[rows][:, cols]
         new_features.append(nf)
 
     return new_features, new_target
@@ -77,42 +79,40 @@ def cut_features(feature_list, devset, mapping):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('-targets',
-                        help='target matrix',
-                        type=argparse.FileType('r'),
-                        required=True)
+    # parser.add_argument('-targets',
+    #                     help='target matrix',
+    #                     type=argparse.FileType('r'),
+    #                     required=True)
     parser.add_argument('-devset', help='WMT16 devset',
-                        type=argparse.FileType('r'))
+                        type=argparse.FileType('r'), required=True)
     parser.add_argument('-idx2url', help='url to index mapping',
-                        type=argparse.FileType('r'))
+                        type=argparse.FileType('r'), required=True)
     parser.add_argument('-write_train',
                         help='write training instances',
                         type=argparse.FileType('wb'),
                         required=True)
     parser.add_argument('feature_matrix', nargs='+',
-                        help='outfile: precomputed matrix for single feature',
+                        help='precomputed matrix for single feature',
                         type=argparse.FileType('r'))
 
     args = parser.parse_args()
 
-    targets, m = None, None
+    # targets, m = None, None
     n_source, n_target, n_samples = None, None, None
 
-    print "Loading targets from ", args.targets.name
-    targets = np.loadtxt(args.targets)
+    # print "Loading targets from ", args.targets.name
+    # targets = np.loadtxt(args.targets)
     print "Loading features from ", [fh.name for fh in args.feature_matrix]
-    features = map(np.loadtxt, args.feature_matrix)
-    n_features = len(features)
 
-    url_mapping = None
-    if args.idx2url:
-        url_mapping = read_idx2url(args.idx2url)
+    url_mapping = read_idx2url(args.idx2url)
 
-    devset = None
-    if args.devset:
-        assert url_mapping is not None, 'also need idx-url mapping'
-        devset = read_devset(args.devset, url_mapping)
-        features, targets = cut_features(features, devset, url_mapping)
+    assert url_mapping is not None, 'also need idx-url mapping'
+    devset = read_devset(args.devset, url_mapping)
+    sys.stderr.write("Read devset of size %d\n" % (len(devset)))
+
+    # features = map(np.loadtxt, args.feature_matrix)
+    n_features = len(args.feature_matrix)
+    features, targets = cut_features(args.feature_matrix, devset, url_mapping)
 
     n_source, n_target = features[0].shape
 
