@@ -1,7 +1,7 @@
 import difflib
 
 
-def ratio(seq1, seq2):
+def ratio(weights, seq1, seq2):
     s = difflib.SequenceMatcher(None, seq1, seq2)
     return s.ratio()
 
@@ -28,11 +28,47 @@ def real_quick_ratio_star(seq1_seq2):
     return real_quick_ratio(*seq1_seq2)
 
 
-def jaccard(set1, set2):
-    intersect_size = len(set1.intersection(set2))
+def jaccard(weights, set1, set2):
+    intersection = set1.intersection(set2)
+    intersect_size = len(intersection)
+
+    # print "Set 1", set1
+    # print "Set 2", set2
+    # print "Overlap:", intersection
+    # print "Weights:"
+
     if intersect_size > 0:
-        return float(intersect_size) / len(set1.union(set2))
+        if weights is None:
+            return float(intersect_size) / len(set1.union(set2))
+        else:
+            num = 0.
+            for term in intersection:
+                if term in weights:
+                    # print term, weights[term]
+                    num += weights[term]
+            denom = 0.
+            for term in set1.union(set2):
+                if term in weights:
+                    denom += weights[term]
+            if denom > 0:
+                return num / denom
     return 0.
+
+
+def weighted_jaccard(weights, counts1, counts2):
+    num = 0.
+    for term, count in (counts1 & counts2).iteritems():
+        num += weights[term] * count
+    if num > 0:
+        denom = 0.
+        for term, count in (counts1 | counts2).iteritems():
+            denom += weights[term] * count
+        return num / denom
+    return 0.
+
+
+def cosine(weights, set1, set2):
+    pass
 
 
 def dice(seq1, seq2):

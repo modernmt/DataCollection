@@ -19,7 +19,7 @@ from scorer import DictionaryScorer
 from scorer import CosineDistanceScorer
 from tokenizer import ExternalProcessor, SpaceTokenizer, WordPunctTokenizer
 from matching import get_best_match, get_best_matching
-from ratio import ratio, quick_ratio, real_quick_ratio, jaccard
+from ratio import ratio, quick_ratio, real_quick_ratio, jaccard, weighted_jaccard
 from ratio import ratio_star, quick_ratio_star
 import multiprocessing
 import cPickle as pickle
@@ -126,11 +126,26 @@ def write_url2dim(source_corpus, target_corpus, fh, file2url):
     # print repr(mapping)
     json.dump(mapping, fh)
 
+
+def sort_corpus(s, t, mapping_fh):
+    mapping = json.load(mapping_fh)
+    sorted_source = [None for u in s]
+    sorted_target = [None for u in t]
+    for u, page in s.iteritems():
+        idx = mapping['source_url_to_index'][u]
+        sorted_source[idx] = page
+    for u, page in t.iteritems():
+        idx = mapping['target_url_to_index'][u]
+        sorted_target[idx] = page
+    return sorted_source, sorted_target
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        'corpus', help='pickled source and target corpus', type=argparse.FileType('r'))
+    parser.add_argument('corpus',
+                        help='pickled source and target corpus',
+                        type=argparse.FileType('r'))
     parser.add_argument(
         '-outfile', help='output file', type=argparse.FileType('w'),
         default=sys.stdout)
@@ -138,17 +153,21 @@ if __name__ == "__main__":
                         choices=['LinkDistance', 'LinkJaccard', 'Simhash',
                                  'TextDistance', 'NGramJaccard',
                                  'Structure', 'GaleChurch', 'TranslatedBOW',
-                                 'NGramCounts', 'LinkCounts'])
+                                 'NGramCounts', 'LinkCounts',
+                                 'WeightedNGramJaccard'])
     parser.add_argument('-dictfile', help='dictionary file for TranslatedBOW')
     parser.add_argument('-targets', help='output file for target matrix',
                         type=argparse.FileType('w'))
     parser.add_argument('-ngram_size', help="length of ngram from Simhash",
-                        default=2, type=int)
+                        default=1, type=int)
     parser.add_argument('-xpath', help="xpath for LinkDistance",
                         default="//a/@href")
     parser.add_argument('-urlmapping',
                         help="outfile for url <-> index mapping",
                         type=argparse.FileType('w'))
+    parser.add_argument('-read_urlmapping',
+                        help="outfile for url <-> index mapping",
+                        type=argparse.FileType('r'))
     parser.add_argument('-term_counts',
                         help="outfile for document frequency",
                         type=argparse.FileType('w'))
@@ -156,6 +175,8 @@ if __name__ == "__main__":
                         type=argparse.FileType('r'))
     parser.add_argument('-slang', help='source language', default='en')
     parser.add_argument('-tlang', help='target language', default='fr')
+    parser.add_argument('-weighting', choices=['tfidf', 'idf'])
+
     # parser.add_argument(
     #     '-source_tokenizer', help='call to tokenizer, including arguments')
     # parser.add_argument(
@@ -190,6 +211,9 @@ if __name__ == "__main__":
     #     np.savetxt(args.targets, get_ground_truth(s, t))
     if args.urlmapping:
         write_url2dim(s, t, args.urlmapping, args.file2url)
+        sys.exit()
+    elif args.read_urlmapping:
+        s, t = sort_corpus(s, t, args.read_urlmapping)
         # sys.exit()  # TODO: remove?
 
     scorer = None
@@ -214,6 +238,12 @@ if __name__ == "__main__":
         scorer = DistanceScorer(extraction_mapper=word_extractor,
                                 ratio_function=jaccard,
                                 set_based=True)
+    elif args.feature == 'WeightedNGramJaccard':
+        word_extractor = WordExtractor(n=args.ngram_size)
+        scorer = DistanceScorer(extraction_mapper=word_extractor,
+                                ratio_function=weighted_jaccard,
+                                set_based=False,
+                                count_based=True)
     elif args.feature == 'Structure':
         structure_extractor = StructureExtractor(
             length_function=lambda x: len(x.split()),
@@ -252,7 +282,7 @@ if __name__ == "__main__":
         pass
     assert scorer is not None, "Need to instantiate scorer first"
 
-    m = scorer.score(s, t, pool=pool)
+    m = scorer.score(s, t, pool=pool, weighting=args.weighting)
 
     # sys.exit()
 
@@ -288,7 +318,10 @@ if __name__ == "__main__":
     # if np.std(m) > 0:
     #     m = (m - np.mean(m)) / np.std(m)
 
-    np.savetxt(args.outfile, m)
+    if args.outfile.name.endswith("npy"):
+        np.save(args.outfile, m)
+    else:
+        np.savetxt(args.outfile, m)
     sys.exit()
 
     # print info
