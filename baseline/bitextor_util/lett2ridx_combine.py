@@ -30,6 +30,8 @@ if __name__ == "__main__":
                         help='maximum number of candidates per document')
     parser.add_argument('-buffersize', type=int, default=2000,
                         help='number of source documents held im memory')
+    parser.add_argument('-valid_words',
+                        help='List of valid words, i.e. those of low count')
     args = parser.parse_args()
 
     for source_docs in read_source_chunk(args.source, args.buffersize):
@@ -60,7 +62,7 @@ if __name__ == "__main__":
                         #     print t_tokens
                         #     print len(t_tokens)
                         #
-                        #     # print s_doc_id, t_doc_id
+                        # print s_doc_id, t_doc_id
                         #     print similarity
                         #     print min_vocab, max_vocab
                         #     print num_intersect_words,  n_translated

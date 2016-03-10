@@ -74,12 +74,30 @@ def translate_tokens(tokens, d):
 def read_counts(filename, lang1, lang2):
     s_counts, t_counts = {}, {}
     for line in open(filename):
-        lang, w, count = line.strip().split('\t')
+        lang, count, w = line.strip().split('\t')
+        w = w.decode('utf-8')
         if lang == lang1:
             s_counts[w] = int(count)
         elif lang == lang2:
             t_counts[w] = int(count)
     return s_counts, t_counts
+
+
+def read_valid_words(filename, lang, max_count):
+    v = None
+    if filename:
+        v = set()
+        for line in open(filename):
+            lang, count, word = line.split("\t")
+            if lang != lang:
+                continue
+            if max_count > 0 and count > max_count:
+                continue
+            v.add(word.decode('utf-8'))
+        sys.std.write("Limiting to %d valid words in lang %s\n"
+                      % (len(v), lang))
+    return v
+
 
 if __name__ == "__main__":
     import argparse
@@ -93,7 +111,8 @@ if __name__ == "__main__":
                         help='Two letter target language code', required=True)
     parser.add_argument('-dictionary',
                         help='Dictionary to translate from lang2 to lang1')
-    # parser.add_argument(  '-m', help='Max number of occurents for a word to be in the index')
+    parser.add_argument('-m', help='Max number of occurences to keep word',
+                        type=int, default=-1)
 
     args = parser.parse_args(sys.argv[1:])
     sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
@@ -101,22 +120,34 @@ if __name__ == "__main__":
     dictionary = None
     expected_language = args.lang1
 
+    s_counts, t_counts = read_counts(args.counts, args.lang1, args.lang2)
+    sys.stderr.write("Read counts for %d %s and %d %s words.\n"
+                     % (len(s_counts), args.lang1,
+                        len(t_counts), args.lang2))
+
     if args.dictionary:
-        s_counts, t_counts = read_counts(args.counts, args.lang1, args.lang2)
-        sys.stderr.write("Read counts for %d %s and %d %s words.\n"
-                         % (len(s_counts), args.lang1,
-                            len(t_counts), args.lang2))
         dictionary = read_dictionary(args.dictionary, args.lang1, args.lang2)
         dictionary = extend_dictionary(dictionary,
                                        set(s_counts.keys()),
                                        set(t_counts.keys()))
         expected_language = args.lang2
+
     sys.stderr.write("Ignoring all languages but '%s'\n" % expected_language)
+
+    valid_words = None
+    if expected_language == args.lang1:
+        valid_words = set(s_counts.keys())
+    else:
+        assert expected_language == args.lang2
+        valid_words = set(t_counts.keys())
 
     for doc_id, lang, words in read_lett(args.lett,
                                          expected_language,
                                          as_set=True):
         assert lang == expected_language
+        # remove words with too high count
+        words.intersection_update(valid_words)
+
         if dictionary:
             n_original_tokens = len(words)
             n_translated, words = translate_tokens(words, dictionary)
@@ -124,6 +155,6 @@ if __name__ == "__main__":
                              (doc_id,
                               n_translated,
                               n_original_tokens,
-                              "\t".join(words)))
+                              u"\t".join(words)))
         else:
-            sys.stdout.write("%d\t%s\n" % (doc_id, "\t".join(words)))
+            sys.stdout.write("%d\t%s\n" % (doc_id, u"\t".join(words)))

@@ -24,6 +24,7 @@ if __name__ == "__main__":
     counts_l1, counts_l2 = defaultdict(int), defaultdict(int)
     for linenr, lang, words in read_lett(args.lett, as_set=args.once):
         for w in words:
+            # w = w.encode('utf-8')`
             if lang == args.lang1:
                 counts_l1[w] += 1
             elif lang == args.lang2:
@@ -31,7 +32,7 @@ if __name__ == "__main__":
 
     for w, count in counts_l1.iteritems():
         if args.m <= 0 or count <= args.m:
-            sys.stdout.write("%s\t%s\t%d\n" % (args.lang1, w, count))
+            sys.stdout.write("%s\t%d\t%s\n" % (args.lang1, count, w))
     for w, count in counts_l2.iteritems():
         if args.m <= 0 or count <= args.m:
-            sys.stdout.write("%s\t%s\t%d\n" % (args.lang2, w, count))
+            sys.stdout.write("%s\t%d\t%s\n" % (args.lang2, count, w))
