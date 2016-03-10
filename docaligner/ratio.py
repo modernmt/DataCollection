@@ -38,20 +38,21 @@ def jaccard(weights, set1, set2):
     # print "Weights:"
 
     if intersect_size > 0:
-        if weights is None:
-            return float(intersect_size) / len(set1.union(set2))
-        else:
-            num = 0.
-            for term in intersection:
-                if term in weights:
-                    # print term, weights[term]
-                    num += weights[term]
-            denom = 0.
-            for term in set1.union(set2):
-                if term in weights:
-                    denom += weights[term]
-            if denom > 0:
-                return num / denom
+        return float(intersect_size) / len(set1.union(set2))
+        # if weights is None:
+        #     return float(intersect_size) / len(set1.union(set2))
+        # else:
+        #     num = 0.
+        #     for term in intersection:
+        #         if term in weights:
+        # print term, weights[term]
+        #             num += weights[term]
+        #     denom = 0.
+        #     for term in set1.union(set2):
+        #         if term in weights:
+        #             denom += weights[term]
+        #     if denom > 0:
+        #         return num / denom
     return 0.
 
 
@@ -67,8 +68,18 @@ def weighted_jaccard(weights, counts1, counts2):
     return 0.
 
 
-def cosine(weights, set1, set2):
-    pass
+def cosine(weights, counts1, counts2):
+    nom = 0.
+    for term, count in (counts1 & counts2).iteritems():
+        nom += counts1[term] * counts2[term] * (weights[term]**2)
+    if nom > 0:
+        denom = 0.
+        for term in counts1:
+            denom += (counts1[term] * weights[term])**2
+        for term in counts2:
+            denom += (counts2[term] * weights[term])**2
+        return nom / denom
+    return 0.
 
 
 def dice(seq1, seq2):

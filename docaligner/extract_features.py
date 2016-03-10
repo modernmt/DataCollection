@@ -20,7 +20,7 @@ from scorer import CosineDistanceScorer
 from tokenizer import ExternalProcessor, SpaceTokenizer, WordPunctTokenizer
 from matching import get_best_match, get_best_matching
 from ratio import ratio, quick_ratio, real_quick_ratio, jaccard, weighted_jaccard
-from ratio import ratio_star, quick_ratio_star
+from ratio import ratio_star, quick_ratio_star, cosine
 import multiprocessing
 import cPickle as pickle
 
@@ -153,8 +153,10 @@ if __name__ == "__main__":
                         choices=['LinkDistance', 'LinkJaccard', 'Simhash',
                                  'TextDistance', 'NGramJaccard',
                                  'Structure', 'GaleChurch', 'TranslatedBOW',
-                                 'NGramCounts', 'LinkCounts',
-                                 'WeightedNGramJaccard'])
+                                 'NGramCounts', 'LinkCounts', 'Cosine',
+                                 'CosineEN', 'WeightedNGramJaccard'])
+    parser.add_argument('-mt', action='store_true',
+                        help='Use MT instead of French text')
     parser.add_argument('-dictfile', help='dictionary file for TranslatedBOW')
     parser.add_argument('-targets', help='output file for target matrix',
                         type=argparse.FileType('w'))
@@ -175,7 +177,7 @@ if __name__ == "__main__":
                         type=argparse.FileType('r'))
     parser.add_argument('-slang', help='source language', default='en')
     parser.add_argument('-tlang', help='target language', default='fr')
-    parser.add_argument('-weighting', choices=['tfidf', 'idf'])
+    parser.add_argument('-weighting', choices=['tfidf', 'tf'])
 
     # parser.add_argument(
     #     '-source_tokenizer', help='call to tokenizer, including arguments')
@@ -235,11 +237,15 @@ if __name__ == "__main__":
                                 ratio_function=quick_ratio)
     elif args.feature == 'NGramJaccard':
         word_extractor = WordExtractor(n=args.ngram_size)
+        if args.mt:
+            word_extractor = EnglishWordExtractor(n=args.ngram_size)
         scorer = DistanceScorer(extraction_mapper=word_extractor,
                                 ratio_function=jaccard,
                                 set_based=True)
     elif args.feature == 'WeightedNGramJaccard':
         word_extractor = WordExtractor(n=args.ngram_size)
+        if args.mt:
+            word_extractor = EnglishWordExtractor(n=args.ngram_size)
         scorer = DistanceScorer(extraction_mapper=word_extractor,
                                 ratio_function=weighted_jaccard,
                                 set_based=False,
@@ -273,10 +279,18 @@ if __name__ == "__main__":
             args.term_counts.write("%s\t%d\n" % (ngram.encode('utf-8'), count))
         sys.exit()
     elif args.feature == 'Cosine':
-        scorer = CosineDistanceScorer(ngram_size=args.ngram_size,
-                                      min_count=1,
-                                      counts_file=args.read_term_counts,
-                                      metric='cosine')
+        word_extractor = WordExtractor(n=args.ngram_size)
+        if args.mt:
+            word_extractor = EnglishWordExtractor(n=args.ngram_size)
+        scorer = DistanceScorer(extraction_mapper=word_extractor,
+                                ratio_function=cosine,
+                                set_based=False,
+                                count_based=True)
+
+        # scorer = CosineDistanceScorer(ngram_size=args.ngram_size,
+        #                               min_count=1,
+        #                               counts_file=args.read_term_counts,
+        #                               metric='cosine')
 
     elif args.feature == 'LinkCounts':
         pass
