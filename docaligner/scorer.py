@@ -221,6 +221,14 @@ class DistanceScorer(object):
             term2weight[term] = math.log(n_documents / float(counts[term]))
         return term2weight
 
+    def term_weights_flat(self, sseqs, tseqs):
+        all_terms = set()
+        for s in self.sseqs:
+            all_terms.update(set(s))
+        for t in self.tseqs:
+            all_terms.update(set(t))
+        return Counter(all_terms)  # all ones!
+
     def _extract(self, source_corpus, target_corpus, weighting):
         """ This is called before scoring of pairs.
             Overwrite to extract const data """
@@ -235,6 +243,9 @@ class DistanceScorer(object):
         if weighting == 'tfidf':
             print "Extracting tfidf"
             self.weights = self.term_weights_tfidf(self.sseqs, self.tseqs)
+        elif weighting == 'tf':
+            print "Extracting tf"
+            self.weights = self.term_weights_flat(self.sseqs, self.tseqs)
 
     def score(self, source_corpus, target_corpus, pool=None, weighting=None):
         self._extract(source_corpus, target_corpus, weighting)
@@ -255,7 +266,7 @@ class DistanceScorer(object):
             rf = partial(ratio_pool, self.tseqs, self.ratio_function,
                          self.weights)
             for s_idx, scores in enumerate(
-                    pool.imap(rf, self.sseqs, chunksize=200)):
+                    pool.imap(rf, self.sseqs, chunksize=50)):
                 # assert len(scores) == len(self.tseqs)
                 scoring_matrix[s_idx] = scores
 
