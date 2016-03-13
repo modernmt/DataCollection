@@ -19,7 +19,8 @@ import lxml.html
 import math
 import numpy as np
 import re
-import sklearn
+from sklearn.metrics.pairwise import pairwise_distances
+from scipy.sparse import csr_matrix, lil_matrix
 import sys
 
 
@@ -30,8 +31,10 @@ def ratio_pool(seqs2, ratio_function, weights, seq1):
 
 def ngrams_from_text(n, hash_values, page):
     words = page.text.split()
+    words = [w.strip() for w in words if w.strip()]
     ngrams = [" ".join(words[i:i + n]) for i in
               range(max(len(words) - n + 1, 1))]
+    ngrams = [ng for ng in ngrams if ng.strip()]
     if hash_values:
         return map(hash, ngrams)
     return ngrams
@@ -39,8 +42,10 @@ def ngrams_from_text(n, hash_values, page):
 
 def english_ngrams_from_text(n, hash_values, page):
     words = page.english.split() + page.english_mt.split()
+    words = [w.strip() for w in words if w.strip()]
     ngrams = [" ".join(words[i:i + n]) for i in
               range(max(len(words) - n + 1, 1))]
+    ngrams = [ng for ng in ngrams if ng.strip()]
     if hash_values:
         return map(hash, ngrams)
     return ngrams
@@ -80,10 +85,11 @@ class EnglishWordExtractor(ExtractionMapper):
 
 class DocumentVectorExtractor(ExtractionMapper):
 
-    def __init__(self, n, idf, min_count=1):
-        self._read_idf(idf)
-        self.n = n
+    def __init__(self, n, min_count=1, max_count=1000):
         self.min_term_count = min_count
+        self.max_term_count = max_count
+        # self._read_idf(idf)
+        self.n = n
 
     def _read_idf(self, f):
         self.term2idf = {}
@@ -95,6 +101,7 @@ class DocumentVectorExtractor(ExtractionMapper):
         self.ndocs = int(fh.readline().strip())
         for line in fh:
             term, docs_with_term = line.split('\t')
+            term = term.decode('utf-8')
             if int(docs_with_term) < self.min_term_count:
                 self.ignored_terms.add(term)
                 continue
@@ -103,21 +110,47 @@ class DocumentVectorExtractor(ExtractionMapper):
         sys.stderr.write("%d terms, %d ignored\n"
                          % (len(self.term2idx), len(self.ignored_terms)))
 
+    def estimate_idf(self, source_corpus, target_corpus):
+        counts = Counter()
+        for page in source_corpus:
+            counts.update(set(english_ngrams_from_text(self.n, False, page)))
+        for page in target_corpus:
+            counts.update(set(english_ngrams_from_text(self.n, False, page)))
+
+        self.ndocs = len(source_corpus) + len(target_corpus)
+        self.term2idf = {}
+        self.term2idx = {}
+        self.ignored_terms = set()
+        for term, docs_with_term in counts.iteritems():
+            if int(docs_with_term) < self.min_term_count:
+                self.ignored_terms.add(term)
+                continue
+            if int(docs_with_term) > self.max_term_count:
+                self.ignored_terms.add(term)
+                continue
+            self.term2idf[term] = math.log(
+                self.ndocs / float(docs_with_term + 1))
+            self.term2idx[term] = len(self.term2idx)
+        sys.stderr.write("%d terms, %d ignored\n"
+                         % (len(self.term2idx), len(self.ignored_terms)))
+
     def extract(self, corpus):
-        m = np.zeros(len(corpus), len(self.term2idx))
+        m = lil_matrix((len(corpus), len(self.term2idx)))
         for doc_idx, page in enumerate(corpus):
             counts = Counter(
                 english_ngrams_from_text(self.n, False, page))
             for ngram, count in counts.iteritems():
-                if ngram not in self.term2idx and \
-                        ngram not in self.ignored_terms:
-                    print "unknown ngram: ", ngram
+                if ngram not in self.term2idx:
+                    if ngram not in self.ignored_terms:
+                        print "unknown ngram: ", ngram
                     continue
                 idf = self.term2idf[ngram]
                 idx = self.term2idx[ngram]
+                count = 1 + math.log(count)
                 tfidf = count * idf
                 m[doc_idx, idx] = tfidf
-        return m
+
+        return csr_matrix(m)
 
 
 class LinkExtractor(ExtractionMapper):
@@ -283,10 +316,15 @@ class DistanceScorer(object):
         return scoring_matrix
 
     def joined_counts(self, source_corpus, target_corpus):
-        self._extract(source_corpus, target_corpus, weighting='counts')
+        self._extract(source_corpus, target_corpus, weighting='tfidf')
         sys.stderr.write("Done extracting...\n")
         assert self._set_based
-        return self.s_counts + self.t_counts
+        counts = Counter()  # how many documents contain a term
+        for s in self.sseqs:
+            counts.update(set(s))
+        for t in self.tseqs:
+            counts.update(set(t))
+        return counts
 
 
 class GaleChurchWrapper(object):
@@ -352,18 +390,26 @@ class GaleChurchScorer(DistanceScorer):
 
 class CosineDistanceScorer(object):
 
-    def __init__(self, ngram_size, min_count, counts_file, metric='cosine'):
+    def __init__(self, ngram_size, min_count, metric='cosine'):
         self.name = "Cosine Distance Scorer"
         self.metric = metric
         self.word_extractor = DocumentVectorExtractor(
-            n=ngram_size, min_count=min_count, idf=counts_file)
+            n=ngram_size, min_count=min_count)
 
-    def score(self, source_corpus, target_corpus, pool=None):
-        source_matrix = self.word_extractor(source_corpus)
-        target_matrix = self.word_extractor(target_corpus)
-        return sklearn.metrics.pairwise.pairwise_distances(source_matrix,
-                                                           target_matrix,
-                                                           metric=self.metric)
+    def score(self, source_corpus, target_corpus, weighting=None, pool=None):
+        self.word_extractor.estimate_idf(source_corpus, target_corpus)
+        source_matrix = self.word_extractor.extract(source_corpus)
+        target_matrix = self.word_extractor.extract(target_corpus)
+        del self.word_extractor
+        n_jobs = 1
+        if pool is not None:
+            n_jobs = len(pool._pool)
+        sys.stderr.write("Scoring using %s and %d jobs\n" %
+                         (self.metric, n_jobs))
+        return -pairwise_distances(source_matrix,
+                                   target_matrix,
+                                   metric=self.metric,
+                                   n_jobs=n_jobs)
 
 
 class GaleChurchAlignmentDistance(DistanceScorer):

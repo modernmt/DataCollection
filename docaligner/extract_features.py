@@ -4,23 +4,18 @@ import math
 import numpy as np
 import sys
 import json
-from scipy.stats import pearsonr, spearmanr
 
-from htmlprocessor import HTMLSequencer
-from lett import Page, read_lett
 from scorer import DistanceScorer, GaleChurchScorer
 from scorer import WordExtractor, LinkExtractor, StructureExtractor
 from scorer import EnglishWordExtractor
 from scorer import SimhashDistance
-from scorer import NERDistance
-from scorer import StructureScorer
 from scorer import GaleChurchAlignmentDistance
 from scorer import DictionaryScorer
 from scorer import CosineDistanceScorer
-from tokenizer import ExternalProcessor, SpaceTokenizer, WordPunctTokenizer
-from matching import get_best_match, get_best_matching
-from ratio import ratio, quick_ratio, real_quick_ratio, jaccard, weighted_jaccard
-from ratio import ratio_star, quick_ratio_star, cosine
+from ratio import ratio, jaccard, weighted_jaccard
+from page import Page
+
+from ratio import cosine
 import multiprocessing
 import cPickle as pickle
 
@@ -132,9 +127,11 @@ def sort_corpus(s, t, mapping_fh):
     sorted_source = [None for u in s]
     sorted_target = [None for u in t]
     for u, page in s.iteritems():
+        u = u.decode('utf-8', 'ignore')
         idx = mapping['source_url_to_index'][u]
         sorted_source[idx] = page
     for u, page in t.iteritems():
+        u = u.decode('utf-8', 'ignore')
         idx = mapping['target_url_to_index'][u]
         sorted_target[idx] = page
     return sorted_source, sorted_target
@@ -154,7 +151,7 @@ if __name__ == "__main__":
                                  'TextDistance', 'NGramJaccard',
                                  'Structure', 'GaleChurch', 'TranslatedBOW',
                                  'NGramCounts', 'LinkCounts', 'Cosine',
-                                 'CosineEN', 'WeightedNGramJaccard'])
+                                 'WeightedNGramJaccard', 'CosineSimilarity'])
     parser.add_argument('-mt', action='store_true',
                         help='Use MT instead of French text')
     parser.add_argument('-dictfile', help='dictionary file for TranslatedBOW')
@@ -173,11 +170,15 @@ if __name__ == "__main__":
     parser.add_argument('-term_counts',
                         help="outfile for document frequency",
                         type=argparse.FileType('w'))
+    parser.add_argument('-read_term_counts',
+                        help="infile for document frequency",
+                        type=argparse.FileType('r'))
     parser.add_argument('-file2url', help='mapping to real url',
                         type=argparse.FileType('r'))
     parser.add_argument('-slang', help='source language', default='en')
     parser.add_argument('-tlang', help='target language', default='fr')
     parser.add_argument('-weighting', choices=['tfidf', 'tf'])
+    parser.add_argument('-min_count', type=int, default=2)
 
     # parser.add_argument(
     #     '-source_tokenizer', help='call to tokenizer, including arguments')
@@ -234,7 +235,7 @@ if __name__ == "__main__":
         assert args.ngram_size == 1, "use NGramJaccard instead\n"
         word_extractor = WordExtractor()
         scorer = DistanceScorer(extraction_mapper=word_extractor,
-                                ratio_function=quick_ratio)
+                                ratio_function=ratio)
     elif args.feature == 'NGramJaccard':
         word_extractor = WordExtractor(n=args.ngram_size)
         if args.mt:
@@ -269,8 +270,11 @@ if __name__ == "__main__":
                                   args.slang, args.tlang)
     elif args.feature == 'NGramCounts':
         assert args.term_counts is not None
-        word_extractor = EnglishWordExtractor(
-            n=args.ngram_size, hash_values=False)
+        word_extractor = WordExtractor(n=args.ngram_size,
+                                       hash_values=False)
+        if args.mt:
+            word_extractor = EnglishWordExtractor(n=args.ngram_size,
+                                                  hash_values=False)
         scorer = DistanceScorer(extraction_mapper=word_extractor,
                                 ratio_function=None,
                                 set_based=True)
@@ -286,11 +290,11 @@ if __name__ == "__main__":
                                 ratio_function=cosine,
                                 set_based=False,
                                 count_based=True)
-
-        # scorer = CosineDistanceScorer(ngram_size=args.ngram_size,
-        #                               min_count=1,
-        #                               counts_file=args.read_term_counts,
-        #                               metric='cosine')
+    elif args.feature == 'CosineSimilarity':
+        assert args.mt
+        scorer = CosineDistanceScorer(ngram_size=args.ngram_size,
+                                      min_count=args.min_count,
+                                      metric='cosine')
 
     elif args.feature == 'LinkCounts':
         pass
@@ -332,6 +336,8 @@ if __name__ == "__main__":
     # if np.std(m) > 0:
     #     m = (m - np.mean(m)) / np.std(m)
 
+    if args.outfile:
+        sys.stderr.write("Writing to %s\n" % (args.outfile.name))
     if args.outfile.name.endswith("npy"):
         np.save(args.outfile, m)
     else:

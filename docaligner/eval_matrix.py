@@ -72,6 +72,7 @@ if __name__ == "__main__":
     matches = set()
     correct, errors = [], []
     score_copy = score_matrix.copy()
+    score_copy -= np.min(score_copy)
     while True:
         am = np.argmax(score_copy)
         am_row = am / score_copy.shape[1]
@@ -81,6 +82,9 @@ if __name__ == "__main__":
         matches.add((am_row, am_col))
         score_copy[am_row, :] = 0
         score_copy[:, am_col] = 0
+
+        # if len(matches) >= min(n_source, n_target):
+        #     break
 
     print "Found %d matches " % (len(matches))
     # print greedy_matches
