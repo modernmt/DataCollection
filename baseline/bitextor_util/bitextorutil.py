@@ -4,7 +4,8 @@ import base64
 from nltk import wordpunct_tokenize
 
 import sys
-sys.path.append('/home/buck/net/build/bitextor/share/bitextor/utils')
+import os
+sys.path.append(os.path.join(os.environ['BITEXTORBIN'], '../share/bitextor/utils'))
 from unicodepunct import get_unicode_punct
 punctuation_chars = get_unicode_punct()
 

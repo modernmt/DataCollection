@@ -5,7 +5,7 @@ set -e
 set -o pipefail
 
 # default values
-BT=/home/buck/net/build/bitextor_2016/bin
+BT=/home/buck/net/build/bitextor/bin
 DC=/home/buck/net/build/DataCollection
 LANG2=fr
 MAXOCC=15
@@ -104,6 +104,7 @@ DONEFILE=${LETT/.lett/.done}
 LOG=${LETT/.lett/.log}
 
 if [ ! -f ${DONEFILE} ]; then
+    export BITEXTORBIN=${BT}
     #source /home/buck/net/build/virtualenvs/crawl/bin/activate
     # Need to have the punk tokenizer from nltk
     echo -e "import nltk\nnltk.download('punkt')" | python 2> /dev/null
