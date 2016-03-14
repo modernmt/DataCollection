@@ -1,5 +1,6 @@
 from collections import defaultdict, Counter
 from functools import partial
+from itertools import imap
 from htmlprocessor import HTMLSequencer
 try:
     from nltk.align import gale_church
@@ -12,7 +13,6 @@ from tokenizer import SpaceTokenizer
 from urlparse import urljoin
 import codecs
 import difflib
-import gzip
 import json
 import jsonrpclib
 import lxml.html
@@ -61,6 +61,9 @@ class ExtractionMapper(object):
             return pool.map(self.ef, corpus)
         return map(self.ef, corpus)
 
+    def extract_single(self, page):
+        return self.ef(page)
+
     def extract_source(self, corpus):
         return self.extract(corpus)
 
@@ -83,39 +86,39 @@ class EnglishWordExtractor(ExtractionMapper):
                                         n, hash_values))
 
 
-class DocumentVectorExtractor(ExtractionMapper):
+class DocumentVectorExtractor(object):
 
-    def __init__(self, n, min_count=1, max_count=1000):
+    def __init__(self, extraction_mapper,
+                 min_count=1, max_count=1000):
         self.min_term_count = min_count
         self.max_term_count = max_count
-        # self._read_idf(idf)
-        self.n = n
+        self.ef = extraction_mapper
 
-    def _read_idf(self, f):
-        self.term2idf = {}
-        self.term2idx = {}
-        self.ignored_terms = set()
-        fh = f
-        if f.name.endswith('.gz'):
-            fh = gzip.GzipFile(fileobj=fh, mode='r')
-        self.ndocs = int(fh.readline().strip())
-        for line in fh:
-            term, docs_with_term = line.split('\t')
-            term = term.decode('utf-8')
-            if int(docs_with_term) < self.min_term_count:
-                self.ignored_terms.add(term)
-                continue
-            self.term2idf[term] = math.log(self.ndocs / float(docs_with_term))
-            self.term2idx[term] = len(self.term2idx)
-        sys.stderr.write("%d terms, %d ignored\n"
-                         % (len(self.term2idx), len(self.ignored_terms)))
+    # def _read_idf(self, f):
+    #     self.term2idf = {}
+    #     self.term2idx = {}
+    #     self.ignored_terms = set()
+    #     fh = f
+    #     if f.name.endswith('.gz'):
+    #         fh = gzip.GzipFile(fileobj=fh, mode='r')
+    #     self.ndocs = int(fh.readline().strip())
+    #     for line in fh:
+    #         term, docs_with_term = line.split('\t')
+    #         term = term.decode('utf-8')
+    #         if int(docs_with_term) < self.min_term_count:
+    #             self.ignored_terms.add(term)
+    #             continue
+    #         self.term2idf[term] = math.log(self.ndocs / float(docs_with_term))
+    #         self.term2idx[term] = len(self.term2idx)
+    #     sys.stderr.write("%d terms, %d ignored\n"
+    #                      % (len(self.term2idx), len(self.ignored_terms)))
 
     def estimate_idf(self, source_corpus, target_corpus):
         counts = Counter()
-        for page in source_corpus:
-            counts.update(set(english_ngrams_from_text(self.n, False, page)))
-        for page in target_corpus:
-            counts.update(set(english_ngrams_from_text(self.n, False, page)))
+        for items in imap(self.ef.extract_single, source_corpus):
+            counts.update(set(items))
+        for items in imap(self.ef.extract_single, target_corpus):
+            counts.update(set(items))
 
         self.ndocs = len(source_corpus) + len(target_corpus)
         self.term2idf = {}
@@ -137,8 +140,7 @@ class DocumentVectorExtractor(ExtractionMapper):
     def extract(self, corpus):
         m = lil_matrix((len(corpus), len(self.term2idx)))
         for doc_idx, page in enumerate(corpus):
-            counts = Counter(
-                english_ngrams_from_text(self.n, False, page))
+            counts = Counter(self.ef.extract_single(page))
             for ngram, count in counts.iteritems():
                 if ngram not in self.term2idx:
                     if ngram not in self.ignored_terms:
@@ -390,17 +392,17 @@ class GaleChurchScorer(DistanceScorer):
 
 class CosineDistanceScorer(object):
 
-    def __init__(self, ngram_size, min_count, metric='cosine'):
+    def __init__(self, extraction_mapper, min_count, metric='cosine'):
         self.name = "Cosine Distance Scorer"
         self.metric = metric
-        self.word_extractor = DocumentVectorExtractor(
-            n=ngram_size, min_count=min_count)
+        self.vector_extractor = DocumentVectorExtractor(
+            extraction_mapper=extraction_mapper, min_count=min_count)
 
     def score(self, source_corpus, target_corpus, weighting=None, pool=None):
-        self.word_extractor.estimate_idf(source_corpus, target_corpus)
-        source_matrix = self.word_extractor.extract(source_corpus)
-        target_matrix = self.word_extractor.extract(target_corpus)
-        del self.word_extractor
+        self.vector_extractor.estimate_idf(source_corpus, target_corpus)
+        source_matrix = self.vector_extractor.extract(source_corpus)
+        target_matrix = self.vector_extractor.extract(target_corpus)
+        del self.vector_extractor
         n_jobs = 1
         if pool is not None:
             n_jobs = len(pool._pool)
@@ -410,6 +412,49 @@ class CosineDistanceScorer(object):
                                    target_matrix,
                                    metric=self.metric,
                                    n_jobs=n_jobs)
+
+
+class LinkageScorer(object):
+
+    def __init__(self, xpath='//a/@href', metric='cosine'):
+        self.name = "Linkage Scorer (xpath: %s)" % xpath
+        self.xpath = xpath
+
+    def _extract_links(self, url, html):
+        dom = lxml.html.fromstring(html)
+        links = []
+        for link in dom.xpath(self.xpath):
+            try:
+                links.append(urljoin(url, link))
+            except:
+                pass
+        return links
+
+    def score(self, source_corpus, target_corpus, weighting=None, pool=None):
+
+
+        self.vector_extractor.estimate_idf(source_corpus, target_corpus)
+        source_matrix = self.vector_extractor.extract(source_corpus)
+        target_matrix = self.vector_extractor.extract(target_corpus)
+        del self.vector_extractor
+        n_jobs = 1
+        if pool is not None:
+            n_jobs = len(pool._pool)
+        sys.stderr.write("Scoring using %s and %d jobs\n" %
+                         (self.metric, n_jobs))
+        return -pairwise_distances(source_matrix,
+                                   target_matrix,
+                                   metric=self.metric,
+                                   n_jobs=n_jobs)
+
+    def _extract(self, source_corpus, target_corpus):
+        for url, page in source_corpus.iteritems():
+            self.sseqs.append(
+                self._extract_links(page.url, page.html.encode("utf-8")))
+        for url, page in target_corpus.iteritems():
+            self.tseqs.append(
+                self._extract_links(page.url, page.html.encode("utf-8")))
+
 
 
 class GaleChurchAlignmentDistance(DistanceScorer):

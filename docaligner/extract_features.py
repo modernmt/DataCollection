@@ -291,8 +291,11 @@ if __name__ == "__main__":
                                 set_based=False,
                                 count_based=True)
     elif args.feature == 'CosineSimilarity':
-        assert args.mt
-        scorer = CosineDistanceScorer(ngram_size=args.ngram_size,
+        word_extractor = WordExtractor(n=args.ngram_size)
+        if args.mt:
+            word_extractor = EnglishWordExtractor(n=args.ngram_size)
+
+        scorer = CosineDistanceScorer(extraction_mapper=word_extractor,
                                       min_count=args.min_count,
                                       metric='cosine')
 
