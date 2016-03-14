@@ -104,14 +104,14 @@ DONEFILE=${LETT/.lett/.done}
 LOG=${LETT/.lett/.log}
 
 if [ ! -f ${DONEFILE} ]; then
-    source /home/buck/net/build/virtualenvs/crawl/bin/activate
+    #source /home/buck/net/build/virtualenvs/crawl/bin/activate
     # Need to have the punk tokenizer from nltk
     echo -e "import nltk\nnltk.download('punkt')" | python 2> /dev/null
 
     ls -lh ${LETT}
     echo "Starting at" `date` > ${LOG}
     echo "LETT .. LETTR .. " >> ${LOG}
-    /home/buck/net/build/DataCollection/baseline/filter_emty_text_from_lett.py < ${LETT} | python ${BT}/bitextor-lett2lettr > ${LETTR}
+    ${DC}/baseline/filter_emty_text_from_lett.py < ${LETT} | python ${BT}/bitextor-lett2lettr > ${LETTR}
 
     if [ $LOWMEM -eq 0 ]; then    
         echo "IDX .. " >> ${LOG}
