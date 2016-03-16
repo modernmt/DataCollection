@@ -148,9 +148,10 @@ class DocumentVectorExtractor(object):
                     continue
                 idf = self.term2idf[ngram]
                 idx = self.term2idx[ngram]
-                count = 1 + math.log(count)
-                tfidf = count * idf
-                m[doc_idx, idx] = tfidf
+                # count = 1 + math.log(count)
+                # tfidf = count * idf
+                # m[doc_idx, idx] = tfidf
+                m[doc_idx, idx] = idf
 
         return csr_matrix(m)
 
@@ -416,7 +417,7 @@ class CosineDistanceScorer(object):
 
 class LinkageScorer(object):
 
-    def __init__(self, xpath='//a/@href', metric='cosine'):
+    def __init__(self, xpath='//a/@href'):
         self.name = "Linkage Scorer (xpath: %s)" % xpath
         self.xpath = xpath
 
@@ -427,34 +428,41 @@ class LinkageScorer(object):
             try:
                 links.append(urljoin(url, link))
             except:
-                pass
+                sys.stderr.write("Cannot join %s and %s" %
+                                 (repr(url), repr(link)))
+        # print html
+        # print links
+        links = [
+            l.encode('utf-8') if isinstance(l, unicode) else l for l in links]
         return links
 
     def score(self, source_corpus, target_corpus, weighting=None, pool=None):
+        self.url2incoming = defaultdict(list)
+        for c in source_corpus, target_corpus:
+            for page in c:
+                for link in self._extract_links(page.url,
+                                                page.html):
+                    self.url2incoming[link].append(page.url)
 
+        # print self.url2incoming
 
-        self.vector_extractor.estimate_idf(source_corpus, target_corpus)
-        source_matrix = self.vector_extractor.extract(source_corpus)
-        target_matrix = self.vector_extractor.extract(target_corpus)
-        del self.vector_extractor
-        n_jobs = 1
-        if pool is not None:
-            n_jobs = len(pool._pool)
-        sys.stderr.write("Scoring using %s and %d jobs\n" %
-                         (self.metric, n_jobs))
-        return -pairwise_distances(source_matrix,
-                                   target_matrix,
-                                   metric=self.metric,
-                                   n_jobs=n_jobs)
+        scoring_matrix = np.zeros((len(source_corpus), len(target_corpus)))
 
-    def _extract(self, source_corpus, target_corpus):
-        for url, page in source_corpus.iteritems():
-            self.sseqs.append(
-                self._extract_links(page.url, page.html.encode("utf-8")))
-        for url, page in target_corpus.iteritems():
-            self.tseqs.append(
-                self._extract_links(page.url, page.html.encode("utf-8")))
+        for s_idx, s_page in enumerate(source_corpus):
+            assert not isinstance(s_page.url, unicode)
+            for t_idx, t_page in enumerate(target_corpus):
+                assert not isinstance(t_page.url, unicode)
+                linkage = 0
+                if s_page.url in self.url2incoming:
+                    if t_page.url in self.url2incoming[s_page.url]:
+                        linkage += 1. / len(self.url2incoming[s_page.url])
+                if t_page.url in self.url2incoming:
+                    if s_page.url in self.url2incoming[t_page.url]:
+                        linkage += 1. / len(self.url2incoming[t_page.url])
+                if linkage > 0:
+                    scoring_matrix[s_idx, t_idx] = linkage / 2
 
+        return scoring_matrix
 
 
 class GaleChurchAlignmentDistance(DistanceScorer):

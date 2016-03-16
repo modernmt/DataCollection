@@ -12,6 +12,7 @@ from scorer import SimhashDistance
 from scorer import GaleChurchAlignmentDistance
 from scorer import DictionaryScorer
 from scorer import CosineDistanceScorer
+from scorer import LinkageScorer
 from ratio import ratio, jaccard, weighted_jaccard
 from page import Page
 
@@ -150,7 +151,7 @@ if __name__ == "__main__":
                         choices=['LinkDistance', 'LinkJaccard', 'Simhash',
                                  'TextDistance', 'NGramJaccard',
                                  'Structure', 'GaleChurch', 'TranslatedBOW',
-                                 'NGramCounts', 'LinkCounts', 'Cosine',
+                                 'NGramCounts', 'Linkage', 'Cosine',
                                  'WeightedNGramJaccard', 'CosineSimilarity'])
     parser.add_argument('-mt', action='store_true',
                         help='Use MT instead of French text')
@@ -299,8 +300,8 @@ if __name__ == "__main__":
                                       min_count=args.min_count,
                                       metric='cosine')
 
-    elif args.feature == 'LinkCounts':
-        pass
+    elif args.feature == 'Linkage':
+        scorer = LinkageScorer()
     assert scorer is not None, "Need to instantiate scorer first"
 
     m = scorer.score(s, t, pool=pool, weighting=args.weighting)
