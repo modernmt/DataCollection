@@ -4,6 +4,7 @@ import math
 import numpy as np
 import sys
 import json
+import gzip
 import pickle
 
 from scipy.stats import pearsonr, spearmanr
@@ -67,7 +68,10 @@ def cut_features(feature_files, devset, mapping):
         # print len(new_features), f.shape
         # print (len(mapping['source_url_to_index']),
         #        len(mapping['target_url_to_index']))
-        m = np.load(f)
+        fh = f
+        if f.name.endswith('.gz'):
+            fh = gzip.GzipFile(fileobj=fh, mode='r')
+        m = np.load(fh)
         sys.stderr.write("Loaded %s of shape %s\n" % (f.name, m.shape))
         assert m.shape == (len(mapping['source_url_to_index']),
                            len(mapping['target_url_to_index']))
