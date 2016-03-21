@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from datetime import datetime
+import dlib
+import gzip
+import json
 import numpy as np
 import sys
-import json
-import dlib
 
 
 def read_devset(fh, mapping):
     # format fr-url <TAB> en-url
     devset = set()
-    print "Reading devset from ", fh.name
+    # print "Reading devset from ", fh.name
     for line in fh:
         surl, turl = line.strip().split()
         if surl in mapping['source_url_to_index']:
@@ -38,6 +40,12 @@ if __name__ == "__main__":
     parser.add_argument('-matrix',
                         help='read prediction/feature matrix',
                         type=argparse.FileType('r'), required=True)
+    parser.add_argument('-matching',
+                        help='compute max-cost matching',
+                        action='store_true')
+    parser.add_argument('-prefix',
+                        help='output prefix (domain name)',
+                        default="PREFIX")
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -45,12 +53,68 @@ if __name__ == "__main__":
     devset = read_devset(args.devset, url_mapping)
     print "Loaded %d expected pairs from %s" % (len(devset), args.devset.name)
 
-    score_matrix = np.load(args.matrix)
+    fh = args.matrix
+    if fh.name.endswith('.gz'):
+        fh = gzip.GzipFile(fileobj=fh, mode='r')
+    score_matrix = np.load(fh).astype(np.float32, copy=False)
+
     n_source, n_target = score_matrix.shape
     n_samples = n_source * n_target
 
     print "%d source / %d target docs" \
         % (n_source, n_target)
+
+    print datetime.now()
+    if args.matching:
+        print "Finding best matching"
+        matching_pairs = set()
+
+        full_matrix = np.pad(
+            score_matrix,
+            ((0, max(score_matrix.shape) - score_matrix.shape[0]),
+             (0, max(score_matrix.shape) - score_matrix.shape[1])),
+            mode='constant')
+
+        cost = dlib.matrix(full_matrix)
+        print "Searching with dlib"
+        assignment = dlib.max_cost_assignment(cost)
+
+        for sidx, tidx in enumerate(assignment):
+            if sidx >= score_matrix.shape[0] or tidx >= score_matrix.shape[1]:
+                continue
+            matching_pairs.add((sidx, tidx))
+
+        print "Found %d matches " % (len(matching_pairs))
+        found = devset.intersection(matching_pairs)
+        print "Found %d out of %d pairs = %f%%" \
+            % (len(found), len(devset), 100. * len(found) / len(devset))
+        print "RES:\t%s\t%s\t%d\t%d" % (args.prefix, args.matrix.name,
+                                        len(found), len(devset))
+    else:
+        print "Finding best match (greedy / restricted + argsort)"
+        matches = set()
+        seen_cols = set()
+        seen_rows = set()
+        sorted_indices = np.argsort(score_matrix, axis=None)
+        for idx in sorted_indices[::-1]:
+            am_row, am_col = np.unravel_index(idx, score_matrix.shape)
+            if am_row in seen_rows or am_col in seen_cols:
+                continue
+            matches.add((am_row, am_col))
+            seen_cols.add(am_col)
+            seen_rows.add(am_row)
+
+        print "Found %d matches " % (len(matches))
+        found = devset.intersection(matches)
+        print "Found %d out of %d pairs = %f%%" \
+            % (len(found), len(devset), 100. * len(found) / len(devset))
+
+        print "RES:\t%s\t%s\t%d\t%d" % (args.prefix, args.matrix.name,
+                                        len(found), len(devset))
+
+    print datetime.now()
+
+    sys.exit()
 
     print "Finding best match (greedy)"
     greedy_matches = set()
