@@ -1,25 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import math
 import numpy as np
 import sys
 import json
 import gzip
-import pickle
-
-from scipy.stats import pearsonr, spearmanr
-from sklearn import svm
-from sklearn import cross_validation
-from sklearn import tree
-from unbalanced_dataset import UnderSampler, OverSampler
-from sklearn.cross_validation import StratifiedKFold
-from sklearn.ensemble import ExtraTreesClassifier
-from sklearn import metrics
-from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
-from sklearn import linear_model
-from sklearn.grid_search import GridSearchCV
-from sklearn import neighbors
-from sklearn import naive_bayes
+from sklearn import preprocessing
 
 
 def read_devset(fh, mapping):
@@ -42,15 +27,19 @@ def read_idx2url(fh):
     return mapping
 
 
-def cut_features(feature_files, devset, mapping):
+def cut_features(feature_files, devset, mapping, scale=False):
     # col = targets
     # rows = sources
     cols, rows = [], []
     for surl, turl in devset.iteritems():
         rows.append(mapping['source_url_to_index'][surl])
         cols.append(mapping['target_url_to_index'][turl])
-    cols.sort()
+    print "Dev: ", zip(rows,cols)
     rows.sort()
+    cols.sort()
+
+    print "Rows: ", list(enumerate(rows))
+    print "Cols: ", list(enumerate(cols))
 
     # We have 1-1 mapping which gives a square matrix
     new_target = np.zeros((len(rows), len(cols)))
@@ -63,6 +52,8 @@ def cut_features(feature_files, devset, mapping):
 
         new_target[sidx, tidx] = 1
 
+    # print "New Target: ", new_target
+
     new_features = []
     for f in feature_files:
         # print len(new_features), f.shape
@@ -72,10 +63,14 @@ def cut_features(feature_files, devset, mapping):
         if f.name.endswith('.gz'):
             fh = gzip.GzipFile(fileobj=fh, mode='r')
         m = np.load(fh)
+        if scale:
+            print "Scaling ..."
+            m = preprocessing.scale(m)
         sys.stderr.write("Loaded %s of shape %s\n" % (f.name, m.shape))
         assert m.shape == (len(mapping['source_url_to_index']),
                            len(mapping['target_url_to_index']))
         nf = m[rows][:, cols]
+        # print "New feature: ", nf
         new_features.append(nf)
 
     return new_features, new_target
@@ -98,6 +93,9 @@ if __name__ == "__main__":
     parser.add_argument('feature_matrix', nargs='+',
                         help='precomputed matrix for single feature',
                         type=argparse.FileType('r'))
+    parser.add_argument('-scale',
+                        help='scale input matrices',
+                        action='store_true')
 
     args = parser.parse_args()
 
@@ -116,7 +114,8 @@ if __name__ == "__main__":
 
     # features = map(np.loadtxt, args.feature_matrix)
     n_features = len(args.feature_matrix)
-    features, targets = cut_features(args.feature_matrix, devset, url_mapping)
+    features, targets = cut_features(
+        args.feature_matrix, devset, url_mapping, args.scale)
 
     n_source, n_target = features[0].shape
 

@@ -4,6 +4,7 @@ import math
 import numpy as np
 import sys
 import json
+import time
 
 from scorer import DistanceScorer, GaleChurchScorer
 from scorer import WordExtractor, LinkExtractor, StructureExtractor
@@ -203,13 +204,15 @@ if __name__ == "__main__":
     #     if args.target_tokenizer else WordPunctTokenizer()
 
     # read source and target corpus
+    start = time.time()
     sys.stderr.write("Loading %s\n" % (args.corpus.name))
     s = pickle.load(args.corpus)
     t = pickle.load(args.corpus)
 
-    sys.stderr.write("Read %d %s docs and %d %s docs from %s\n" %
+    sys.stderr.write("Read %d %s docs and %d %s docs from %s in %.0fs\n" %
                      (len(s), args.slang,
-                      len(t), args.tlang, args.corpus.name))
+                      len(t), args.tlang, args.corpus.name,
+                      time.time()-start))
 
     # if args.targets:
     #     np.savetxt(args.targets, get_ground_truth(s, t))
@@ -304,7 +307,9 @@ if __name__ == "__main__":
         scorer = LinkageScorer()
     assert scorer is not None, "Need to instantiate scorer first"
 
+    start = time.time()
     m = scorer.score(s, t, pool=pool, weighting=args.weighting)
+    print "Scoring took %.0f seconds" %(time.time()-start)
 
     # sys.exit()
 

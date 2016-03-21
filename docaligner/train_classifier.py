@@ -10,7 +10,7 @@ from scipy.stats import pearsonr, spearmanr
 from sklearn import svm
 from sklearn import cross_validation
 from sklearn import tree
-from unbalanced_dataset import UnderSampler, OverSampler
+from unbalanced_dataset import UnderSampler, OverSampler, SMOTE, SMOTEENN, SMOTETomek
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn import metrics
@@ -44,58 +44,11 @@ def read_devset(fh, mapping):
 
     return devset
 
-# def read_devset(fh, mapping):
-# format fr-url <TAB> en-url
-#     devset = {}
-#     print "Reading devset from ", fh.name
-#     for line in fh:
-#         turl, surl = line.strip().split()
-#         if turl in mapping['target_url_to_index'] and \
-#                 surl in mapping['source_url_to_index']:
-#             assert surl not in devset.values()
-#             assert turl not in devset
-#             devset[turl] = surl
-
-#     return devset
-
 
 def read_idx2url(fh):
     mapping = json.load(fh)
     return mapping
 
-
-def cut_features(feature_list, devset, mapping):
-    # col = targets
-    # rows = sources
-    cols, rows = [], []
-    for surl, turl in devset.iteritems():
-        cols.append(mapping['target_url_to_index'][turl])
-        rows.append(mapping['source_url_to_index'][surl])
-    cols.sort()
-    rows.sort()
-
-    # We have 1-1 mapping which gives a square matrix
-    new_target = np.zeros((len(rows), len(cols)))
-
-    for surl, turl in devset.iteritems():
-        sidx = mapping['source_url_to_index'][surl]
-        sidx = rows.index(sidx)
-        tidx = mapping['target_url_to_index'][turl]
-        tidx = cols.index(tidx)
-
-        new_target[sidx, tidx] = 1
-
-    new_features = []
-    for f in features:
-        print f.shape
-        print (len(mapping['source_url_to_index']),
-               len(mapping['target_url_to_index']))
-        assert f.shape == (len(mapping['source_url_to_index']),
-                           len(mapping['target_url_to_index']))
-        nf = f[rows][:, cols]
-        new_features.append(nf)
-
-    return new_features, new_target
 
 if __name__ == "__main__":
     import argparse
@@ -106,6 +59,9 @@ if __name__ == "__main__":
     parser.add_argument('-write_model',
                         help='write fitted model',
                         type=argparse.FileType('wb'))
+    parser.add_argument('-smote',
+                        help='scale input matrices',
+                        action='store_true')
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -118,18 +74,23 @@ if __name__ == "__main__":
             % (npzfile['feature_matrix'].shape[0], f.name)
         assert npzfile['targets'].size == npzfile['feature_matrix'].shape[0]
 
-        tgt = npzfile['targets']
+        tgt, fm = npzfile['targets'], npzfile['feature_matrix']
         print "target size: ", tgt.shape
         print "positive examples: ", sum(sum(tgt))
         tgt = tgt.reshape(tgt.size)
+        if args.smote:
+            ratio = float(np.count_nonzero(tgt == 0)) / \
+                float(np.count_nonzero(tgt == 1))
+            OS = SMOTE(ratio=ratio, kind='regular')
+            fm, tgt = OS.fit_transform(fm, tgt)
 
         if targets is None:
             targets = tgt
-            m = npzfile['feature_matrix']
+            m = fm
         else:
             print "Before concat: ", targets.shape, tgt.shape
             targets = np.concatenate((targets, tgt), axis=0)
-            m = np.concatenate((m, npzfile['feature_matrix']), axis=0)
+            m = np.concatenate((m, fm), axis=0)
             print "After concat: ", targets.shape, tgt.shape
 
     assert targets.size == m.shape[0]
@@ -142,12 +103,19 @@ if __name__ == "__main__":
         float(np.count_nonzero(targets == 1))
     print "Ratio 0 vs. 1: ", ratio
 
+    # 'Random over-sampling'
+    #OS = OverSampler(ratio=ratio)
+    # OS = SMOTE(ratio=ratio, kind='regular')
+    # m, targets = OS.fit_transform(m, targets)
+    print "Sum of targets: ", sum(targets)
+    print "Instances x features: ", m.shape
+
     skf = cross_validation.StratifiedKFold(targets, 5)
-    print "Running stratified 5-fold CV"
+    # print "Running stratified 5-fold CV"
 
     params_space = {}
     # clf = svm.SVC(gamma=0.001, C=100., class_weight='balanced')
-    # clf = svm.SVC(gamma=0.001, C=1000., probability=True)
+    clf = svm.SVC(gamma=0.001, C=1000., probability=True)
     # clf = tree.DecisionTreeClassifier()
     # clf = clf.fit(m, targets)
     # print clf.feature_importances_
@@ -160,10 +128,11 @@ if __name__ == "__main__":
     # params_space = {'gamma': np.logspace(-3, 2, 6)}
 
     # clf = ExtraTreesClassifier(n_estimators=500,
-    #                            random_state=0)
-    params_space = {'C': np.logspace(-1, 7, 9)}
-    print params_space
-    clf = LogisticRegression(class_weight='balanced')
+    #                           random_state=0,
+    #                           class_weight='balanced')
+    #params_space = {'C': np.logspace(-1, 7, 9)}
+    # print params_space
+    #clf = LogisticRegression(class_weight='balanced')
     # params_space = {'kernel': ['linear', 'poly', 'rbf'],
     #                 "C": [1e-1, 1e0, 1e1, 1e2, 1e3, 1e4]}
     # clf = svm.SVR()
@@ -174,21 +143,41 @@ if __name__ == "__main__":
     # clf = GridSearchCV(svm.SVR(kernel='rbf', gamma=0.1), cv=5,
     #                    param_grid={"C": [1e-1, 1e0, 1e1, 1e2, 1e3, 1e4],
     #                                "gamma": np.logspace(-2, 2, 5)})
-    # clf = linear_model.LinearRegression()
+    #clf = linear_model.LinearRegression()
 
-    # clf = linear_model.RidgeCV(alphas=[0.01, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0])
+    #clf = linear_model.RidgeCV(alphas=[0.01, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0])
+    #from sklearn import gaussian_process
+    #clf = gaussian_process.GaussianProcess(theta0=1e-2, thetaL=1e-4, thetaU=1e-1)
     # clf = linear_model.BayesianRidge()
-    # clf = linear_model.Ridge()
-    # clf = linear_model.ElasticNet()
-    # clf = neighbors.KNeighborsRegressor(n_neighbors=10, weights='distance')
-    # clf = naive_bayes.GaussianNB()
+    #clf = linear_model.Ridge()
+    #clf = linear_model.ElasticNet()
+    #clf = neighbors.KNeighborsRegressor(n_neighbors=10, weights='distance')
+    #clf = naive_bayes.GaussianNB()
+    #from sklearn.svm import LinearSVC
+    # clf=LinearSVC(C=1000.0)
 
-    clf = svm.SVC(
-        gamma=0.001, C=100., class_weight='balanced', probability=True)
-    # clf = LogisticRegression(class_weight='balanced', C=50000)
+    #clf = svm.SVC(gamma=0.01, C=1000., class_weight='balanced', probability=True)
+    # clf = svm.SVC(gamma=0.001, C=10000., probability=True, class_weight='balanced')
+    clf = LogisticRegression(class_weight='balanced', C=10000)
+    # clf = LogisticRegression(class_weight='balanced')
+
+    if args.write_model:
+        fitted_model = clf.fit(m, targets.reshape(n_samples))
+        print "Writing model to", args.write_model.name
+        pickle.dump(fitted_model, args.write_model)
+
+        scoring = 'f1'
+        predicted = fitted_model.predict(m)
+
+        print sum(predicted), sum(predicted - targets)
+        # print metrics.classification_report(targets, predicted)
+        # print metrics.f1_score(targets, predicted)
+        # print metrics.accuracy_score(targets, predicted)
+        sys.exit()
+
     scoring = 'f1'
     scores = cross_validation.cross_val_score(
-        clf, m, targets, cv=5, scoring=scoring)
+        clf, m, targets, cv=5, scoring=scoring, n_jobs=-1)
     print scores
 
     # clf = Classifier(
@@ -198,20 +187,6 @@ if __name__ == "__main__":
     #     learning_rate=0.001,
     #     batch_size=32,
     #     n_iter=100)
-
-    fitted_model = clf.fit(m, targets.reshape(n_samples))
-
-    if args.write_model:
-        print "Writing model to", args.write_model.name
-        pickle.dump(fitted_model, args.write_model)
-
-    scoring = 'f1'
-    predicted = fitted_model.predict(m)
-
-    print sum(predicted), sum(predicted - targets)
-    print metrics.classification_report(targets, predicted)
-    print metrics.f1_score(targets, predicted)
-    print metrics.accuracy_score(targets, predicted)
 
     scores = cross_validation.cross_val_score(
         clf, m, targets, cv=5, scoring=scoring, n_jobs=-1)

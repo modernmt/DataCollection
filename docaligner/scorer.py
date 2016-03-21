@@ -22,6 +22,7 @@ import re
 from sklearn.metrics.pairwise import pairwise_distances
 from scipy.sparse import csr_matrix, lil_matrix
 import sys
+import time
 
 
 def ratio_pool(seqs2, ratio_function, weights, seq1):
@@ -131,8 +132,10 @@ class DocumentVectorExtractor(object):
             if int(docs_with_term) > self.max_term_count:
                 self.ignored_terms.add(term)
                 continue
-            self.term2idf[term] = math.log(
-                self.ndocs / float(docs_with_term + 1))
+            # Paper had this:
+            # self.term2idf[term] = math.log(
+            #     self.ndocs / float(docs_with_term + 1))
+            self.term2idf[term] = math.log(1 + self.ndocs / docs_with_term)
             self.term2idx[term] = len(self.term2idx)
         sys.stderr.write("%d terms, %d ignored\n"
                          % (len(self.term2idx), len(self.ignored_terms)))
@@ -148,10 +151,10 @@ class DocumentVectorExtractor(object):
                     continue
                 idf = self.term2idf[ngram]
                 idx = self.term2idx[ngram]
-                # count = 1 + math.log(count)
-                # tfidf = count * idf
+                count = 1 + math.log(count)
+                tfidf = count * idf
                 # m[doc_idx, idx] = tfidf
-                m[doc_idx, idx] = idf
+                m[doc_idx, idx] = tfidf
 
         return csr_matrix(m)
 
@@ -400,19 +403,30 @@ class CosineDistanceScorer(object):
             extraction_mapper=extraction_mapper, min_count=min_count)
 
     def score(self, source_corpus, target_corpus, weighting=None, pool=None):
+        start = time.time()
         self.vector_extractor.estimate_idf(source_corpus, target_corpus)
+        print "IDF extimation took %s seconds" % (time.time() - start)
+        start = time.time()
         source_matrix = self.vector_extractor.extract(source_corpus)
         target_matrix = self.vector_extractor.extract(target_corpus)
+        print "Extraction took %s seconds" % (time.time() - start)
+        print "Nonzero source: ", len(source_matrix.nonzero()[0])
+        print "Nonzero target: ", len(target_matrix.nonzero()[0])
+
+
+        start = time.time()
         del self.vector_extractor
         n_jobs = 1
         if pool is not None:
             n_jobs = len(pool._pool)
         sys.stderr.write("Scoring using %s and %d jobs\n" %
                          (self.metric, n_jobs))
-        return -pairwise_distances(source_matrix,
-                                   target_matrix,
-                                   metric=self.metric,
-                                   n_jobs=n_jobs)
+        d = -pairwise_distances(source_matrix,
+                                target_matrix,
+                                metric=self.metric,
+                                n_jobs=n_jobs)
+        print "Scoring took %s seconds" % (time.time() - start)
+        return d
 
 
 class LinkageScorer(object):
