@@ -6,10 +6,11 @@ Reads downloaded website from tar file and writes lett format to be
 processed by bitextor pipeline
 """
 
+import base64
+import magic
+import re
 import sys
 import tarfile
-import base64
-import re
 
 from html2text import html2text
 from textsanitzer import TextSanitizer
@@ -18,31 +19,6 @@ magic_number = "df6fa1abb58549287111ba8d776733e9"
 
 
 name2code = {"ENGLISH": "en", "FRENCH": "fr"}
-
-
-def read_statsfile(f):
-    stats = {}
-    url, length = None, None
-    for line in f:
-        if line.startswith(magic_number):
-            n, url, length = line.split(' ', 2)
-            url = url.split(":")[1]
-            length = int(length.split(':')[1])
-        else:
-            assert url is not None
-            assert length is not None
-            if url in stats:
-                # ignore all but first entry
-                continue
-            else:
-                lang = line.split()[0]
-                if lang == "Unknown":
-                    continue
-                if lang not in name2code:
-                    sys.stderr.write("Unexpected language: %s\n" % lang)
-                    continue
-                stats[url] = name2code[lang]
-    return stats
 
 
 def original_url_from_httrack_comment(html):
@@ -93,6 +69,11 @@ if __name__ == "__main__":
         filename = tarinfo.name
 
         raw_data = tar.extractfile(tarinfo).read()
+        mime_type = magic.from_buffer(raw_data, mime=True)
+        if mime_type not in ['text/html', 'text/plain', 'application/xml']:
+            sys.stderr.write("Skipping file %s (%d bytes, mime: %s)\n"
+                             % (filename, len(raw_data), mime_type))
+            continue
         data = TextSanitizer.to_unicode(raw_data, is_html=True, lang='auto')
         data = data.encode('utf-8')  # utf-8 input expected
 
@@ -111,5 +92,5 @@ if __name__ == "__main__":
             url=original_uri,
             links=str(list(set(links)))))
 
-    sys.stderr.write("Done. \n")
+    sys.stderr.write("%d files in %s done. \n" % (filenr + 1, args.tarfile))
     tar.close()
