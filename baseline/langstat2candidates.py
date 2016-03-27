@@ -75,7 +75,7 @@ def read_candidates(infile, valid_hosts=None):
     return candidates
 
 
-def main_languages(bytecounts, min_ratio=.3):
+def main_languages(bytecounts, min_ratio=.1):
     total_bytes = float(sum(b for l, b in bytecounts))
     langs = []
     for l, b in bytecounts:
@@ -151,7 +151,6 @@ if __name__ == "__main__":
             parsed_uri = urlparse.urlparse(uri)
             matched_languages = [language_stripper.match(parsed_uri.path),
                                  language_stripper.match(parsed_uri.query)]
-
             if args.lang not in matched_languages:
                 # we removed a bit of the URL but is does not support our
                 # hope to find args.lang, e.g. removed /fr/ when we were
@@ -159,11 +158,7 @@ if __name__ == "__main__":
                 continue
 
         stripped_uri, success = language_stripper.strip_uri(
-            uri, args.removeindex)
-
-        print stripped_uri, success
-        print k, v, tld, uri, crawl
-        sys.exit()
+            uri, remove_index=args.removeindex)
 
         if candidates:
             if stripped_uri in candidates:
