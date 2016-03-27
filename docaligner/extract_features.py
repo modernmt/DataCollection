@@ -181,6 +181,7 @@ if __name__ == "__main__":
     parser.add_argument('-tlang', help='target language', default='fr')
     parser.add_argument('-weighting', choices=['tfidf', 'tf'])
     parser.add_argument('-min_count', type=int, default=2)
+    parser.add_argument('-tfidfsmooth', type=int, default=0)
 
     # parser.add_argument(
     #     '-source_tokenizer', help='call to tokenizer, including arguments')
@@ -212,7 +213,7 @@ if __name__ == "__main__":
     sys.stderr.write("Read %d %s docs and %d %s docs from %s in %.0fs\n" %
                      (len(s), args.slang,
                       len(t), args.tlang, args.corpus.name,
-                      time.time()-start))
+                      time.time() - start))
 
     # if args.targets:
     #     np.savetxt(args.targets, get_ground_truth(s, t))
@@ -301,7 +302,8 @@ if __name__ == "__main__":
 
         scorer = CosineDistanceScorer(extraction_mapper=word_extractor,
                                       min_count=args.min_count,
-                                      metric='cosine')
+                                      metric='cosine',
+                                      smooth=args.tfidfsmooth)
 
     elif args.feature == 'Linkage':
         scorer = LinkageScorer()
@@ -309,7 +311,7 @@ if __name__ == "__main__":
 
     start = time.time()
     m = scorer.score(s, t, pool=pool, weighting=args.weighting)
-    print "Scoring took %.0f seconds" %(time.time()-start)
+    print "Scoring took %.0f seconds" % (time.time() - start)
 
     # sys.exit()
 

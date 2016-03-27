@@ -90,29 +90,15 @@ class EnglishWordExtractor(ExtractionMapper):
 class DocumentVectorExtractor(object):
 
     def __init__(self, extraction_mapper,
-                 min_count=1, max_count=1000):
+                 min_count=1, max_count=1000,
+                 smooth=0):
         self.min_term_count = min_count
         self.max_term_count = max_count
         self.ef = extraction_mapper
-
-    # def _read_idf(self, f):
-    #     self.term2idf = {}
-    #     self.term2idx = {}
-    #     self.ignored_terms = set()
-    #     fh = f
-    #     if f.name.endswith('.gz'):
-    #         fh = gzip.GzipFile(fileobj=fh, mode='r')
-    #     self.ndocs = int(fh.readline().strip())
-    #     for line in fh:
-    #         term, docs_with_term = line.split('\t')
-    #         term = term.decode('utf-8')
-    #         if int(docs_with_term) < self.min_term_count:
-    #             self.ignored_terms.add(term)
-    #             continue
-    #         self.term2idf[term] = math.log(self.ndocs / float(docs_with_term))
-    #         self.term2idx[term] = len(self.term2idx)
-    #     sys.stderr.write("%d terms, %d ignored\n"
-    #                      % (len(self.term2idx), len(self.ignored_terms)))
+        self.tf_smooth = smooth / 6
+        self.idf_smooth = smooth % 6
+        assert self.tf_smooth in range(4)
+        assert self.idf_smooth in range(6)
 
     def estimate_idf(self, source_corpus, target_corpus):
         counts = Counter()
@@ -125,17 +111,32 @@ class DocumentVectorExtractor(object):
         self.term2idf = {}
         self.term2idx = {}
         self.ignored_terms = set()
+        self.max_count = max(counts.itervalues())
         for term, docs_with_term in counts.iteritems():
+            docs_with_term = float(docs_with_term)
             if int(docs_with_term) < self.min_term_count:
                 self.ignored_terms.add(term)
                 continue
             if int(docs_with_term) > self.max_term_count:
                 self.ignored_terms.add(term)
                 continue
+            idf = 1
+            if self.idf_smooth == 0:
+                idf = 1
+            elif self.idf_smooth == 1:
+                idf = math.log(self.ndocs / docs_with_term)
+            elif self.idf_smooth == 2:
+                idf = math.log(1 + self.ndocs / docs_with_term)
+            elif self.idf_smooth == 3:
+                idf = math.log(1 + self.max_count / docs_with_term)
+            elif self.idf_smooth == 4:
+                idf = math.log((self.ndocs - docs_with_term) / docs_with_term)
+            elif self.idf_smooth == 5:
+                idf = math.log(self.ndocs / (docs_with_term + 1))
             # Paper had this:
             # self.term2idf[term] = math.log(
             #     self.ndocs / float(docs_with_term + 1))
-            self.term2idf[term] = math.log(1 + self.ndocs / docs_with_term)
+            self.term2idf[term] = idf
             self.term2idx[term] = len(self.term2idx)
         sys.stderr.write("%d terms, %d ignored\n"
                          % (len(self.term2idx), len(self.ignored_terms)))
@@ -152,8 +153,17 @@ class DocumentVectorExtractor(object):
                 idf = self.term2idf[ngram]
                 idx = self.term2idx[ngram]
                 count = 1 + math.log(count)
-                tfidf = count * idf
-                # m[doc_idx, idx] = tfidf
+
+                tf = 1
+                if self.tf_smooth == 0:
+                    tf = 1
+                elif self.tf_smooth == 1:
+                    tf = count
+                elif self.tf_smooth == 2:
+                    tf = 1 + log(count)
+                elif self.tf_smooth == 3:
+                    tf = 0.5 + 0.5 * count / max_count
+                tfidf = tf * idf
                 m[doc_idx, idx] = tfidf
 
         return csr_matrix(m)
@@ -396,11 +406,13 @@ class GaleChurchScorer(DistanceScorer):
 
 class CosineDistanceScorer(object):
 
-    def __init__(self, extraction_mapper, min_count, metric='cosine'):
+    def __init__(self, extraction_mapper, min_count, metric='cosine',
+                 smooth=0):
         self.name = "Cosine Distance Scorer"
         self.metric = metric
         self.vector_extractor = DocumentVectorExtractor(
-            extraction_mapper=extraction_mapper, min_count=min_count)
+            extraction_mapper=extraction_mapper, min_count=min_count,
+            smooth=smooth)
 
     def score(self, source_corpus, target_corpus, weighting=None, pool=None):
         start = time.time()
@@ -412,7 +424,6 @@ class CosineDistanceScorer(object):
         print "Extraction took %s seconds" % (time.time() - start)
         print "Nonzero source: ", len(source_matrix.nonzero()[0])
         print "Nonzero target: ", len(target_matrix.nonzero()[0])
-
 
         start = time.time()
         del self.vector_extractor
