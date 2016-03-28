@@ -99,6 +99,8 @@ class DocumentVectorExtractor(object):
         self.idf_smooth = smooth % 6
         assert self.tf_smooth in range(4)
         assert self.idf_smooth in range(6)
+        sys.stderr.write("TF/IDF smooting: %d/%d\n" %(self.tf_smooth, 
+                                                      self.idf_smooth))
 
     def estimate_idf(self, source_corpus, target_corpus):
         counts = Counter()
@@ -160,9 +162,9 @@ class DocumentVectorExtractor(object):
                 elif self.tf_smooth == 1:
                     tf = count
                 elif self.tf_smooth == 2:
-                    tf = 1 + log(count)
+                    tf = 1 + math.log(count)
                 elif self.tf_smooth == 3:
-                    tf = 0.5 + 0.5 * count / max_count
+                    tf = 0.5 + 0.5 * count / self.max_count
                 tfidf = tf * idf
                 m[doc_idx, idx] = tfidf
 
