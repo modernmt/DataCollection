@@ -23,6 +23,7 @@ def original_url(html):
 
 
 def langsplit(uri, langsplit_exec, text):
+    uri = TextSanitizer.to_unicode(uri)
     cmd = [langsplit_exec, "--printchunks"]
     proc = ExternalTextProcessor(cmd)
     tld = uri.split("/")[0].split(".")[-1]
@@ -118,7 +119,7 @@ if __name__ == "__main__":
 
     for line in sys.stdin:
         lang, mime_type, enc, uri, html, text = line.split("\t")
-        uri = TextSanitizer.to_unicode(uri)
+        #uri = TextSanitizer.to_unicode(uri)
 
         if args.fromhtml:
             text = html2text(base64.b64decode(html), sanitize=True,
@@ -160,5 +161,5 @@ if __name__ == "__main__":
             if not foreign_line.strip():
                 continue
             args.outfile.write("%s\t%s\n"
-                               % (uri.encode("utf-8"),
+                               % (uri,
                                   foreign_line.strip().encode("utf-8")))
