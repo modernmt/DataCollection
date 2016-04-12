@@ -105,7 +105,7 @@ LOG=${LETT/.lett/.log}
 
 if [ ! -f ${DONEFILE} ]; then
     export BITEXTORBIN=${BT}
-    #source /home/buck/net/build/virtualenvs/crawl/bin/activate
+    source /home/buck/net/build/virtualenvs/crawl/bin/activate
     # Need to have the punk tokenizer from nltk
     echo -e "import nltk\nnltk.download('punkt')" | python 2> /dev/null
 
@@ -139,7 +139,7 @@ if [ ! -f ${DONEFILE} ]; then
     echo "CLEAN_ALIGN .. " >> ${LOG}
     python ${BT}/bitextor-cleantextalign -q 0 -m 5 < ${SENT} > ${CLEAN} 2>>${LOG}
     echo "Cleaning up .. " >> ${LOG}
-    rm -f ${IDX} ${LETTR} ${RIDX} ${DIST} ${DOCS} ${RIDXS} ${RIDXT} ${WCOUNTS} ${SENT} ${IDX} translate.txt 
+    rm -f ${IDX} ${LETTR} ${RIDX} ${DIST} ${DOCS} ${RIDXS} ${RIDXT} ${WCOUNTS} ${IDX} translate.txt 
     echo "Done! " >> ${LOG}
     echo -n "SOURCE: " >> ${LOG}
     cut -f 3 ${CLEAN} | wc >> ${LOG}
