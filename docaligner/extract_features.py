@@ -5,16 +5,18 @@ import numpy as np
 import sys
 import json
 import time
+import gzip
 
 from scorer import DistanceScorer, GaleChurchScorer
 from scorer import WordExtractor, LinkExtractor, StructureExtractor
-from scorer import EnglishWordExtractor
+from scorer import EnglishWordExtractor, RawTokenExtractor
 from scorer import SimhashDistance
 from scorer import GaleChurchAlignmentDistance
 from scorer import DictionaryScorer
 from scorer import CosineDistanceScorer
 from scorer import LinkageScorer
 from ratio import ratio, jaccard, weighted_jaccard
+from ratio import levenshtein_min, levenshtein_max, levenshtein_avg
 from page import Page
 
 from ratio import cosine
@@ -156,6 +158,10 @@ if __name__ == "__main__":
                                  'WeightedNGramJaccard', 'CosineSimilarity'])
     parser.add_argument('-mt', action='store_true',
                         help='Use MT instead of French text')
+    parser.add_argument('-mtonly', action='store_true',
+                        help='Ignore English text on French pages')
+    parser.add_argument('-raw', action='store_true',
+                        help='Use raw HTML to make ngrams')
     parser.add_argument('-dictfile', help='dictionary file for TranslatedBOW')
     parser.add_argument('-targets', help='output file for target matrix',
                         type=argparse.FileType('w'))
@@ -168,7 +174,8 @@ if __name__ == "__main__":
                         type=argparse.FileType('w'))
     parser.add_argument('-read_urlmapping',
                         help="outfile for url <-> index mapping",
-                        type=argparse.FileType('r'))
+                        type=argparse.FileType('r'),
+                        required=True)
     parser.add_argument('-term_counts',
                         help="outfile for document frequency",
                         type=argparse.FileType('w'))
@@ -182,6 +189,9 @@ if __name__ == "__main__":
     parser.add_argument('-weighting', choices=['tfidf', 'tf'])
     parser.add_argument('-min_count', type=int, default=2)
     parser.add_argument('-tfidfsmooth', type=int, default=0)
+    parser.add_argument('-lda_dim', type=int, default=0)
+    parser.add_argument('-ratio',
+                        choices=['default', 'levmin', 'levmax', 'levavg'])
 
     # parser.add_argument(
     #     '-source_tokenizer', help='call to tokenizer, including arguments')
@@ -193,7 +203,9 @@ if __name__ == "__main__":
     parser.add_argument('-threads', type=int,
                         help='number of threads for scoring', default=1)
 
-    args = parser.parse_args(sys.argv[1:])
+    args = parser.parse_args()
+
+    assert not (args.mt and args.raw), "can't have both!"
 
     pool = None
     if args.threads > 1:
@@ -207,8 +219,17 @@ if __name__ == "__main__":
     # read source and target corpus
     start = time.time()
     sys.stderr.write("Loading %s\n" % (args.corpus.name))
-    s = pickle.load(args.corpus)
-    t = pickle.load(args.corpus)
+    corpus_fh = args.corpus
+    if corpus_fh.name.endswith('.gz'):
+        corpus_fh = gzip.GzipFile(fileobj=corpus_fh, mode='r')
+    s = pickle.load(corpus_fh)
+    t = pickle.load(corpus_fh)
+    if args.mtonly:
+        for turl in t:
+            t[turl].english = u""
+            t[turl].text = u""
+            t[turl].french = u""
+            assert len(t[turl].english) == 0
 
     sys.stderr.write("Read %d %s docs and %d %s docs from %s in %.0fs\n" %
                      (len(s), args.slang,
@@ -227,10 +248,28 @@ if __name__ == "__main__":
     scorer = None
     print "Using feature: ", args.feature
 
+    word_extractor = WordExtractor(n=args.ngram_size)
+    if args.mt:
+        sys.stdout.write("Using EnglishWordExtractor\n")
+        word_extractor = EnglishWordExtractor(n=args.ngram_size)
+    elif args.raw:
+        sys.stdout.write("Using RawTokenExtractor\n")
+        word_extractor = RawTokenExtractor(n=args.ngram_size)
+    else:
+        sys.stdout.write("Using WordExtractor\n")
+
+    ratio_function = ratio
+    if args.ratio == 'levmin':
+        ratio_function = levenshtein_min
+    elif args.ratio == 'levmax':
+        ratio_function = levenshtein_max
+    elif ratio_function == 'levavg':
+        ratio_function = levenshtein_avg
+
     if args.feature == 'LinkDistance':
         link_extractor = LinkExtractor(args.xpath)
         scorer = DistanceScorer(extraction_mapper=link_extractor,
-                                ratio_function=ratio)
+                                ratio_function=ratio_function)
     if args.feature == 'LinkJaccard':
         link_extractor = LinkExtractor(args.xpath)
         scorer = DistanceScorer(extraction_mapper=link_extractor,
@@ -238,20 +277,13 @@ if __name__ == "__main__":
                                 set_based=True)
     elif args.feature == 'TextDistance':
         assert args.ngram_size == 1, "use NGramJaccard instead\n"
-        word_extractor = WordExtractor()
         scorer = DistanceScorer(extraction_mapper=word_extractor,
-                                ratio_function=ratio)
+                                ratio_function=ratio_function)
     elif args.feature == 'NGramJaccard':
-        word_extractor = WordExtractor(n=args.ngram_size)
-        if args.mt:
-            word_extractor = EnglishWordExtractor(n=args.ngram_size)
         scorer = DistanceScorer(extraction_mapper=word_extractor,
                                 ratio_function=jaccard,
                                 set_based=True)
     elif args.feature == 'WeightedNGramJaccard':
-        word_extractor = WordExtractor(n=args.ngram_size)
-        if args.mt:
-            word_extractor = EnglishWordExtractor(n=args.ngram_size)
         scorer = DistanceScorer(extraction_mapper=word_extractor,
                                 ratio_function=weighted_jaccard,
                                 set_based=False,
@@ -261,7 +293,7 @@ if __name__ == "__main__":
             length_function=lambda x: len(x.split()),
             growth_function=lambda x: 1 + math.log(x))
         scorer = DistanceScorer(extraction_mapper=structure_extractor,
-                                ratio_function=ratio)
+                                ratio_function=ratio_function)
     elif args.feature == 'GaleChurch':
         scorer = GaleChurchScorer()
 
@@ -275,11 +307,6 @@ if __name__ == "__main__":
                                   args.slang, args.tlang)
     elif args.feature == 'NGramCounts':
         assert args.term_counts is not None
-        word_extractor = WordExtractor(n=args.ngram_size,
-                                       hash_values=False)
-        if args.mt:
-            word_extractor = EnglishWordExtractor(n=args.ngram_size,
-                                                  hash_values=False)
         scorer = DistanceScorer(extraction_mapper=word_extractor,
                                 ratio_function=None,
                                 set_based=True)
@@ -288,22 +315,16 @@ if __name__ == "__main__":
             args.term_counts.write("%s\t%d\n" % (ngram.encode('utf-8'), count))
         sys.exit()
     elif args.feature == 'Cosine':
-        word_extractor = WordExtractor(n=args.ngram_size)
-        if args.mt:
-            word_extractor = EnglishWordExtractor(n=args.ngram_size)
         scorer = DistanceScorer(extraction_mapper=word_extractor,
                                 ratio_function=cosine,
                                 set_based=False,
                                 count_based=True)
     elif args.feature == 'CosineSimilarity':
-        word_extractor = WordExtractor(n=args.ngram_size)
-        if args.mt:
-            word_extractor = EnglishWordExtractor(n=args.ngram_size)
-
         scorer = CosineDistanceScorer(extraction_mapper=word_extractor,
                                       min_count=args.min_count,
                                       metric='cosine',
-                                      smooth=args.tfidfsmooth)
+                                      smooth=args.tfidfsmooth,
+                                      lda_dim=args.lda_dim)
 
     elif args.feature == 'Linkage':
         scorer = LinkageScorer()
