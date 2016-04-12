@@ -1,14 +1,17 @@
 from collections import defaultdict, Counter
 from functools import partial
-from itertools import imap
 from htmlprocessor import HTMLSequencer
+from itertools import imap
 try:
     from nltk.align import gale_church
 except ImportError:
     from nltk.translate import gale_church
+from nltk.tokenize import wordpunct_tokenize
 from nltk.tokenize.punkt import PunktSentenceTokenizer
 from ratio import ratio
+from scipy.sparse import csr_matrix, lil_matrix, vstack
 from simhash import Simhash
+from sklearn.metrics.pairwise import pairwise_distances
 from tokenizer import SpaceTokenizer
 from urlparse import urljoin
 import codecs
@@ -19,8 +22,6 @@ import lxml.html
 import math
 import numpy as np
 import re
-from sklearn.metrics.pairwise import pairwise_distances
-from scipy.sparse import csr_matrix, lil_matrix
 import sys
 import time
 
@@ -30,26 +31,29 @@ def ratio_pool(seqs2, ratio_function, weights, seq1):
     return map(rf, seqs2)
 
 
-def ngrams_from_text(n, hash_values, page):
-    words = page.text.split()
+def _ngram_helper(words, n, hash_values):
     words = [w.strip() for w in words if w.strip()]
-    ngrams = [" ".join(words[i:i + n]) for i in
-              range(max(len(words) - n + 1, 1))]
+    ngrams = (" ".join(words[i:i + n]) for i in
+              xrange(max(len(words) - n + 1, 1)))
     ngrams = [ng for ng in ngrams if ng.strip()]
     if hash_values:
         return map(hash, ngrams)
     return ngrams
+
+
+def ngrams_from_text(n, hash_values, page):
+    words = page.text.split()
+    return _ngram_helper(words, n, hash_values)
+
+
+def raw_tokens_from_text(n, hash_values, page):
+    words = wordpunct_tokenize(page.html)
+    return _ngram_helper(words, n, hash_values)
 
 
 def english_ngrams_from_text(n, hash_values, page):
     words = page.english.split() + page.english_mt.split()
-    words = [w.strip() for w in words if w.strip()]
-    ngrams = [" ".join(words[i:i + n]) for i in
-              range(max(len(words) - n + 1, 1))]
-    ngrams = [ng for ng in ngrams if ng.strip()]
-    if hash_values:
-        return map(hash, ngrams)
-    return ngrams
+    return _ngram_helper(words, n, hash_values)
 
 
 class ExtractionMapper(object):
@@ -79,6 +83,13 @@ class WordExtractor(ExtractionMapper):
             extraction_function=partial(ngrams_from_text, n, hash_values))
 
 
+class RawTokenExtractor(ExtractionMapper):
+
+    def __init__(self, n=1, hash_values=False):
+        super(RawTokenExtractor, self).__init__(
+            extraction_function=partial(raw_tokens_from_text, n, hash_values))
+
+
 class EnglishWordExtractor(ExtractionMapper):
 
     def __init__(self, n=1, hash_values=False):
@@ -91,16 +102,17 @@ class DocumentVectorExtractor(object):
 
     def __init__(self, extraction_mapper,
                  min_count=1, max_count=1000,
-                 smooth=0):
+                 smooth=0, lda_dim=0):
         self.min_term_count = min_count
         self.max_term_count = max_count
         self.ef = extraction_mapper
         self.tf_smooth = smooth / 6
         self.idf_smooth = smooth % 6
-        assert self.tf_smooth in range(4)
+        sys.stderr.write("TF: %d, IDF: %d\n" %
+                         (self.tf_smooth, self.idf_smooth))
+        assert self.tf_smooth in range(7)
         assert self.idf_smooth in range(6)
-        sys.stderr.write("TF/IDF smooting: %d/%d\n" %(self.tf_smooth, 
-                                                      self.idf_smooth))
+        self.lda_dim = lda_dim
 
     def estimate_idf(self, source_corpus, target_corpus):
         counts = Counter()
@@ -132,9 +144,13 @@ class DocumentVectorExtractor(object):
             elif self.idf_smooth == 3:
                 idf = math.log(1 + self.max_count / docs_with_term)
             elif self.idf_smooth == 4:
-                idf = math.log((self.ndocs - docs_with_term) / docs_with_term)
+                if self.ndocs > docs_with_term:
+                    idf = math.log(
+                        (self.ndocs - docs_with_term) / docs_with_term)
+                else:
+                    idf = 0
             elif self.idf_smooth == 5:
-                idf = math.log(self.ndocs / (docs_with_term + 1))
+                idf = 1 + math.log(self.ndocs / (docs_with_term + 1))
             # Paper had this:
             # self.term2idf[term] = math.log(
             #     self.ndocs / float(docs_with_term + 1))
@@ -147,14 +163,18 @@ class DocumentVectorExtractor(object):
         m = lil_matrix((len(corpus), len(self.term2idx)))
         for doc_idx, page in enumerate(corpus):
             counts = Counter(self.ef.extract_single(page))
+            if not counts:
+                continue
+            local_max_count = float(max(counts.values()))
+            local_sum = float(sum(counts.values()))
             for ngram, count in counts.iteritems():
                 if ngram not in self.term2idx:
                     if ngram not in self.ignored_terms:
                         print "unknown ngram: ", ngram
                     continue
+
                 idf = self.term2idf[ngram]
                 idx = self.term2idx[ngram]
-                count = 1 + math.log(count)
 
                 tf = 1
                 if self.tf_smooth == 0:
@@ -164,11 +184,22 @@ class DocumentVectorExtractor(object):
                 elif self.tf_smooth == 2:
                     tf = 1 + math.log(count)
                 elif self.tf_smooth == 3:
-                    tf = 0.5 + 0.5 * count / self.max_count
+                    tf = 0.4 + 0.6 * count / local_max_count
+                elif self.tf_smooth == 4:
+                    tf = count / local_max_count
+                elif self.tf_smooth == 5:
+                    tf = count / local_sum
+                elif self.tf_smooth == 6:
+                    tf = math.sqrt(count)
                 tfidf = tf * idf
                 m[doc_idx, idx] = tfidf
 
-        return csr_matrix(m)
+        m = csr_matrix(m)
+
+        if self.lda_dim > 0:
+            assert self.idf_smooth == 0
+            assert self.tf_smooth == 1
+        return m
 
 
 class LinkExtractor(ExtractionMapper):
@@ -309,8 +340,11 @@ class DistanceScorer(object):
                         self.ratio_function(self.weights,
                                             self.sseqs[s_idx],
                                             self.tseqs[t_idx])
-                sys.stderr.write('.')
-                sys.stderr.flush()
+                if (s_idx + 1) % 20 == 0:
+                    sys.stderr.write('.')
+                    if (s_idx + 1) % 1000 == 0:
+                        sys.stderr.write("[%d]\n" % (s_idx + 1))
+                    sys.stderr.flush()
 
         else:
             # p = multiprocessing.Pool(processes=processes)
@@ -409,23 +443,42 @@ class GaleChurchScorer(DistanceScorer):
 class CosineDistanceScorer(object):
 
     def __init__(self, extraction_mapper, min_count, metric='cosine',
-                 smooth=0):
+                 smooth=0, lda_dim=0):
         self.name = "Cosine Distance Scorer"
         self.metric = metric
         self.vector_extractor = DocumentVectorExtractor(
             extraction_mapper=extraction_mapper, min_count=min_count,
-            smooth=smooth)
+            smooth=smooth, lda_dim=lda_dim)
+        self.lda_dim = lda_dim
 
     def score(self, source_corpus, target_corpus, weighting=None, pool=None):
         start = time.time()
         self.vector_extractor.estimate_idf(source_corpus, target_corpus)
         print "IDF extimation took %s seconds" % (time.time() - start)
         start = time.time()
+        if self.lda_dim > 0:
+            import lda
+            doc_matrix = self.vector_extractor.extract(
+                source_corpus + target_corpus)
+            lda_model = lda.LDA(n_topics=self.lda_dim,
+                                n_iter=1500, random_state=1, refresh=200)
+            lda_model.fit(doc_matrix.astype(int))
+            del doc_matrix
+
         source_matrix = self.vector_extractor.extract(source_corpus)
         target_matrix = self.vector_extractor.extract(target_corpus)
+
+        if self.lda_dim > 0:
+            source_matrix = source_matrix.astype(int)
+            target_matrix = target_matrix.astype(int)
+            source_matrix = lda_model.transform(source_matrix)
+            target_matrix = lda_model.transform(target_matrix)
+
         print "Extraction took %s seconds" % (time.time() - start)
         print "Nonzero source: ", len(source_matrix.nonzero()[0])
         print "Nonzero target: ", len(target_matrix.nonzero()[0])
+        print "< 0 source: ", type(source_matrix).sum(source_matrix < 0)
+        print "< 0 target: ", type(target_matrix).sum(target_matrix < 0)
 
         start = time.time()
         del self.vector_extractor
@@ -434,10 +487,12 @@ class CosineDistanceScorer(object):
             n_jobs = len(pool._pool)
         sys.stderr.write("Scoring using %s and %d jobs\n" %
                          (self.metric, n_jobs))
-        d = -pairwise_distances(source_matrix,
-                                target_matrix,
-                                metric=self.metric,
-                                n_jobs=n_jobs)
+        d = 1 - pairwise_distances(source_matrix,
+                                   target_matrix,
+                                   metric=self.metric,
+                                   n_jobs=n_jobs)
+        # should not happen tfidf entries are negative
+        print "< 0 d: ", np.sum(d < 0)
         print "Scoring took %s seconds" % (time.time() - start)
         return d
 

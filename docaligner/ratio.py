@@ -1,4 +1,5 @@
 import difflib
+import editdistance
 
 
 def ratio(weights, seq1, seq2):
@@ -26,6 +27,21 @@ def real_quick_ratio(seq1, seq2):
 
 def real_quick_ratio_star(seq1_seq2):
     return real_quick_ratio(*seq1_seq2)
+
+
+def levenshtein_min(weights, seq1, seq2):
+    norm = 1.0 * max(1, (min(len(seq1), len(seq2))))
+    return 1 - (editdistance.eval(seq1, seq2) / norm)
+
+
+def levenshtein_max(weights, seq1, seq2):
+    norm = 1.0 * max(len(seq1), len(seq2))
+    return 1 - (editdistance.eval(seq1, seq2) / norm)
+
+
+def levenshtein_avg(weights, seq1, seq2):
+    norm = .5 * (len(seq1) + len(seq2))
+    return 1 - (editdistance.eval(seq1, seq2) / norm)
 
 
 def jaccard(weights, set1, set2):
