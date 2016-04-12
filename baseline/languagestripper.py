@@ -81,6 +81,9 @@ class LanguageStripper(object):
     def strip_path(self, path):
         components = []
         for c in path.split('/'):
+            if not c:
+                components.append(c)
+                continue
             stripped = self.re_strip.sub('', c)
             stripped = self.re_code.sub('', stripped)
             if stripped:
@@ -132,7 +135,8 @@ class LanguageStripper(object):
     def strip_uri(self, uri, expected_language=None,
                   remove_index=False):
         ''' Returns (stripped_uri, success) '''
-        parsed_uri = urlparse.urlparse(uri)
+        normalized_uri = urlparse.urlunsplit(urlparse.urlsplit(uri))
+        parsed_uri = urlparse.urlparse(normalized_uri)
 
         matched_languages = [self.match(parsed_uri.path),
                              self.match(parsed_uri.query)]
@@ -145,22 +149,24 @@ class LanguageStripper(object):
             return '', False
 
         stripped_path = self.strip_path(parsed_uri.path)
+        if len(stripped_path) < len(parsed_uri.path):
 
-        # repair some stripping artifacts
-        stripped_path = re.sub(r'//+', '/', stripped_path)
-        stripped_path = re.sub(r'__+', '_', stripped_path)
-        stripped_path = re.sub(r'/_+', '/', stripped_path)
-        stripped_path = re.sub(r'_/', '/', stripped_path)
-        stripped_path = re.sub(r'--+', '-', stripped_path)
+            # repair some stripping artifacts
+            stripped_path = re.sub(r'//+', '/', stripped_path)
+            stripped_path = re.sub(r'__+', '_', stripped_path)
+            stripped_path = re.sub(r'/_+', '/', stripped_path)
+            stripped_path = re.sub(r'_/', '/', stripped_path)
+            stripped_path = re.sub(r'--+', '-', stripped_path)
 
-        # remove new trailing /
-        if stripped_path and stripped_path[-1] == '/' \
-                and parsed_uri.path and parsed_uri.path[-1] != '/':
-            stripped_path = stripped_path[:-1]
+            # remove new trailing /
+            if stripped_path and stripped_path[-1] == '/' \
+                    and parsed_uri.path and parsed_uri.path[-1] != '/':
+                stripped_path = stripped_path[:-1]
 
-        # add removed trailing /
-        if not stripped_path.endswith('/') and parsed_uri.path.endswith('/'):
-            stripped_path += '/'
+            # add removed trailing /
+            if not stripped_path.endswith('/') and \
+                    parsed_uri.path.endswith('/'):
+                stripped_path += '/'
 
         stripped_query = self.strip_query(parsed_uri.query)
 
@@ -191,16 +197,17 @@ if __name__ == '__main__':
     import argparse
     import sys
     parser = argparse.ArgumentParser()
-    parser.add_argument('-languages', help='language codes', nargs='+')
+    parser.add_argument('-language', help='language code')
     args = parser.parse_args()
 
-    language_stripper = LanguageStripper(languages=args.languages)
+    language_stripper = LanguageStripper(languages=[args.language])
 
     for line in sys.stdin:
         stripped = []
         changed = False
         for uri in line.strip().split('\t'):
-            stripped_uri, success = language_stripper.strip_uri(uri)
+            stripped_uri, success = language_stripper.strip_uri(
+                uri, expected_language=args.language)
             if success:
                 stripped.append(stripped_uri)
                 if stripped_uri != uri:
