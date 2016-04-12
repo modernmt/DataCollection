@@ -37,11 +37,20 @@ class ExternalProcessor(object):
     def __init__(self, cmd):
         self.cmd = cmd
         self.devnull = open(os.devnull, 'wb')
-        if self.cmd is not None:
-            self.proc = subprocess.Popen(cmd.split(), stdin=subprocess.PIPE,
+        self._lock = threading.Lock()
+        self.proc = None
+        self.reset()
+
+    def reset(self):
+        with self._lock:
+            if self.proc is not None:
+                res = self.proc.communicate()
+                if res[0].strip():
+                    sys.stderr.write("Remaining output: %s" % res[0])
+            self.proc = subprocess.Popen(self.cmd.split(),
+                                         stdin=subprocess.PIPE,
                                          stdout=subprocess.PIPE,
                                          stderr=self.devnull)
-            self._lock = threading.Lock()
 
     def process_multiline(self, text):
         res = []
@@ -61,4 +70,5 @@ class ExternalProcessor(object):
             self.proc.stdin.write(u_string)
             self.proc.stdin.flush()
             result = self.proc.stdout.readline()
+        self.reset()
         return result.decode("utf-8").strip()
