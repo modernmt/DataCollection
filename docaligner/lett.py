@@ -7,38 +7,9 @@ sys.path.append("/home/buck/net/build/DataCollection/baseline")
 from textsanitzer import TextSanitizer
 from external_processor import ExternalTextProcessor
 from tokenizer import ExternalProcessor, SpaceTokenizer, WordPunctTokenizer
-
-
-# Page = namedtuple(
-#     "Page", "url, html, text, mime_type, encoding, french, english, english_mt")
+from page import Page
 
 magic_number = "df6fa1abb58549287111ba8d776733e9"
-
-
-class Page(object):
-
-    def __init__(self, url, html, text, mime_type, encoding, french, english, english_mt):
-        self.url = url
-        self.html = html
-        self.text = text
-        self.mime_type = mime_type
-        self.encoding = encoding
-        self.french = french
-        self.english = english
-        self.english_mt = english_mt
-
-    def __str__(self):
-        res = []
-        res.append("--Page--")
-        res.append("url : %s" % self.url)
-        res.append("html : %s" % self.html)
-        res.append("text : %s" % self.text.encode('utf-8'))
-        res.append("mime_type : %s" % self.mime_type)
-        res.append("encoding : %s" % self.encoding)
-        res.append("french : %s" % self.french.encode('utf-8'))
-        res.append("english : %s" % self.english.encode('utf-8'))
-        res.append("english_mt : %s" % self.english_mt.encode('utf-8'))
-        return "\n".join(res)
 
 
 def read_lett(f, slang, tlang, source_tokenizer=None, target_tokenizer=None,
@@ -201,7 +172,17 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     source_tokenizer = None
+    if args.source_tokenizer:
+        if args.source_tokenizer == 'WordPunctTokenizer':
+            source_tokenizer = WordPunctTokenizer()
+        else:
+            source_tokenizer = ExternalTextProcessor(args.source_tokenizer)
     target_tokenizer = None
+    if args.target_tokenizer:
+        if args.target_tokenizer == 'WordPunctTokenizer':
+            target_tokenizer = WordPunctTokenizer()
+        else:
+            target_tokenizer = ExternalTextProcessor(args.target_tokenizer)
 
     # read source and target corpus
     s, t = read_lett(args.lettfile, args.slang, args.tlang,
@@ -213,11 +194,11 @@ if __name__ == "__main__":
                       len(t), args.tlang, args.lettfile.name))
     sys.stderr.write("Source stats: ")
     has_text, has_english, has_french, has_mt = corpus_stats(s)
-    sys.stderr.write("Text: %d\tEnglish:%d\tFrench%d\MT:%d\n"
+    sys.stderr.write("Text: %d\tEnglish:%d\tFrench%d\tMT:%d\n"
                      % (has_text, has_english, has_french, has_mt))
     sys.stderr.write("Target stats: ")
     has_text, has_english, has_french, has_mt = corpus_stats(t)
-    sys.stderr.write("Text: %d\tEnglish:%d\tFrench%d\MT:%d\n"
+    sys.stderr.write("Text: %d\tEnglish:%d\tFrench%d\tMT:%d\n"
                      % (has_text, has_english, has_french, has_mt))
     sys.stderr.write("%d possible pairs for %s\n" %
                      (len(s) * len(t), args.lettfile.name))
