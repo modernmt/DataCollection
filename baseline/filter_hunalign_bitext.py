@@ -80,7 +80,7 @@ if __name__ == "__main__":
 	if len(split_line) <= 1:
 	    deletions["line_short"].append(line)
 	    continue
-	if len(split_line) >= 5:
+	if len(split_line) > 5:
 	    deletions["line_long"].append(line)
 	    continue
         if len(split_line) == 5:
@@ -133,4 +133,4 @@ if __name__ == "__main__":
                                % (len(deleted), reason))
             for line in deleted:
                 if line.strip():
-                    args.deleted.write("\t%s\n" % line.encode('utf-8'))
+                    args.deleted.write("\t%s\n" % line)

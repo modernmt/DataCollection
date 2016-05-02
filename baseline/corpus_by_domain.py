@@ -19,6 +19,7 @@ args = parser.parse_args()
 
 srcdomain = ""
 tgtdomain = ""
+nwrites = 0
 for line in args.infile:
     split_line = line.rstrip("\n\r").split("\t")
     if len(split_line) != 4 and len(split_line) !=5:
@@ -35,10 +36,12 @@ for line in args.infile:
 	    tgtout.close()
 	srcdomain = srcurl.netloc
 	tgtdomain = tgturl.netloc
-	srcout = open(srcdomain+"."+args.source_lang, "w")
-	tgtout = open(tgtdomain+"."+args.target_lang, "w")
+	srcout = open(srcdomain+"."+args.source_lang, "a")
+	tgtout = open(tgtdomain+"."+args.target_lang, "a")
     srcout.write(source+"\n")
     tgtout.write(target+"\n")
+    nwrites += 1
 
+print "Number of lines written: {}".format(nwrites)
 srcout.close()
 tgtout.close()
