@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from urlparse import urlparse
+import tldextract
 import argparse
 import sys
 
@@ -15,6 +16,7 @@ parser.add_argument('-slang', '--lang1', help='source language',
 		    dest='source_lang', default='en')
 parser.add_argument('-tlang', '--lang2', help='target language',
 		    dest='target_lang', default='fr')
+parser.add_argument('--regdomain', help='use registered domain without subdomain', action='store_true', default=False)
 args = parser.parse_args()
 
 srcdomain = ""
@@ -27,15 +29,23 @@ for line in args.infile:
     source_url, target_url, source, target = split_line[:4]
     srcurl = urlparse(source_url)
     tgturl = urlparse(target_url)
-    if srcurl.netloc != tgturl.netloc:
+    if args.regdomain:
+	srcext = tldextract.extract("http://"+srcurl.netloc)
+	tgtext = tldextract.extract("http://"+tgturl.netloc)
+	new_srcdomain = srcext.registered_domain
+	new_tgtdomain = tgtext.registered_domain
+    else:
+	new_srcdomain = srcurl.netloc
+	new_tgtdomain = tgturl.netloc
+    if new_srcdomain != new_tgtdomain:
 	sys.stderr.write("Domain mismatch {} {}\n".format(source_url,target_url))
 	continue
-    if srcdomain != srcurl.netloc:
+    if srcdomain != new_srcdomain:
 	if srcdomain != "":
 	    srcout.close()
 	    tgtout.close()
-	srcdomain = srcurl.netloc
-	tgtdomain = tgturl.netloc
+	srcdomain = new_srcdomain
+	tgtdomain = new_tgtdomain
 	srcout = open(srcdomain+"."+args.source_lang, "a")
 	tgtout = open(tgtdomain+"."+args.target_lang, "a")
     srcout.write(source+"\n")
