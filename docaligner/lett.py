@@ -74,9 +74,13 @@ def read_lett(f, slang, tlang, source_tokenizer=None, target_tokenizer=None,
 
     if detect_english:
         for url in s:
-            s[url].english = get_lang(url, s[url].text, lang='en')
+            if not s[url].french:
+                s[url].english = s[url].text
+            # s[url].english = get_lang(url, s[url].text, lang='en')
         for url in t:
-            t[url].english = get_lang(url, t[url].text, lang='en')
+            if not t[url].french:
+                t[url].english = t[url].text
+            # t[url].english = get_lang(url, t[url].text, lang='en')
 
     return s, t
 

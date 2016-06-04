@@ -66,6 +66,41 @@ def read_devset_multi(fh, mapping, deduped):
     return devset, n_pairs
 
 
+def load_seeds(fh, mapping):
+    seeds = []
+    seen = set()
+    known_urls = set(mapping['target_url_to_index'].keys())
+    known_urls.update(mapping['source_url_to_index'].keys())
+    for line in fh:
+        su, tu = line.strip().split('\t')
+        if tu not in known_urls:
+            continue
+        if su not in known_urls:
+            continue
+
+        if tu not in mapping['target_url_to_index'] \
+                or su not in mapping['source_url_to_index']:
+            # print 'swapping', su, tu
+            su, tu = tu, su
+
+        # if su not in mapping['source_url_to_index']:
+        # wrong domain
+        #     assert tu not in mapping['target_url_to_index']
+        #     assert tu not in mapping['source_url_to_index']
+        #     assert su not in mapping['target_url_to_index']
+        #     continue
+        # assert tu in mapping['target_url_to_index']
+        # assert su in mapping['source_url_to_index']
+        if su in seen:
+            continue
+        if tu in seen:
+            continue
+        sidx = mapping['source_url_to_index'][su]
+        tidx = mapping['target_url_to_index'][tu]
+        seeds.append((sidx, tidx))
+    return seeds
+
+
 def find_pairs_in_devset(matches, devset):
     # If we get one from a group we score a win
     # but also invalidate all other entries from that
@@ -78,9 +113,11 @@ def find_pairs_in_devset(matches, devset):
 
     seen_s, seen_t = set(), set()
     found = []
+    fails = []
 
     for rank, (si, ti) in enumerate(matches):
         if si in seen_s or ti in seen_t:
+            fails.append()
             continue
         if si in s2t and ti in s2t[si]:
             found.append((si, ti, rank))
@@ -88,6 +125,14 @@ def find_pairs_in_devset(matches, devset):
             seen_t.update(s2t[si])
     return found
 
+
+# def find_missing(devset, found_matches):
+#     sis = set([si for si, ti in found_matches])
+#     tis = set([ti for si, ti in found_matches])
+#     for si, ti in devset:
+#         if (si, ti) in devset:
+#             continue
+#         if
 
 def translate_matches(matches, mapping):
     res = []
@@ -147,7 +192,15 @@ if __name__ == "__main__":
     parser.add_argument('-write_found',
                         help='write found matches to this file',
                         type=argparse.FileType('w'))
+    parser.add_argument('-write_fails',
+                        help='write missing pairs to this file',
+                        type=argparse.FileType('w'))
+    parser.add_argument('-seed',
+                        help='initial pairs',
+                        type=argparse.FileType('r'))
+
     args = parser.parse_args(sys.argv[1:])
+    print "CMD: ", " ".join(sys.argv)
 
     url_mapping = read_idx2url(args.idx2url)
     devset = None
@@ -253,12 +306,24 @@ if __name__ == "__main__":
         for sidx, tidx in enumerate(assignment):
             if sidx >= score_matrix.shape[0] or tidx >= score_matrix.shape[1]:
                 continue
-            matches.append((sidx, tidx))
+            matches.append((score_matrix[sidx, tidx], sidx, tidx))
+
+        matches.sort(reverse=True)
+        matches = [(sidx, tidx) for score, sidx, tidx in matches]
 
     else:
         print "Finding best match (greedy / restricted + argsort)"
         seen_cols = set()
         seen_rows = set()
+
+        if args.seed:
+            seeds = load_seeds(args.seed, url_mapping)
+            print "Loaded %d seeds from %s" % (len(seeds), args.seed.name)
+            for sidx, tidx in seeds:
+                matches.append((sidx, tidx))
+                seen_cols.add(tidx)
+                seen_rows.add(sidx)
+
         n_cols = score_matrix.shape[1]
         max_matches = min(score_matrix.shape)
         sorted_indices = np.argsort(score_matrix, axis=None, kind='mergesort')
@@ -281,6 +346,8 @@ if __name__ == "__main__":
     print "Found %d matches, total cost %.5f" % (
         len(matches), sum(match_costs) / len(matches))
     found = find_pairs_in_devset(matches, devset)
+    if devset_size == 0:
+        devset_size = 1
     print "Found %d out of %d pairs = %f%%" \
         % (len(found), len(devset), 100. * len(found) / devset_size)
     found_costs = [score_matrix[r, c] for r, c, rank in found]
@@ -293,40 +360,38 @@ if __name__ == "__main__":
         name = args.load_predictions.name
     print "RES:\t%s\t%s\t%d\t%d" % (args.prefix, name,
                                     len(found), devset_size)
-    print "SCORES:\t%s\t%f\t%f\t%f\t%f" % (args.prefix,
-                                           sum(found_costs),
-                                           min(found_costs),
-                                           sum(match_costs),
-                                           sum(match_costs) / len(matches))
-    print "RANKS:\t%s\t%d\t%d" % (args.prefix,
-                                  max(found_ranks),
-                                  min(found_ranks))
+#    print "SCORES:\t%s\t%f\t%f\t%f\t%f" % (args.prefix,
+#                                           sum(found_costs),
+#                                           min(found_costs),
+#                                           sum(match_costs),
+#                                           sum(match_costs) / len(matches))
+#    print "RANKS:\t%s\t%d\t%d" % (args.prefix,
+#                                  max(found_ranks),
+#                                  min(found_ranks))
     print datetime.now()
 
     if args.write_found:
         matching_urls = translate_matches(found, url_mapping)
         for (surl, turl, rank), cost in zip(matching_urls, found_costs):
             args.write_found.write(
-                "%f %d %s %s\n" % (cost, rank, surl, turl))
+                "%.30f %d %s %s\n" % (cost, rank, surl, turl))
 
     if args.write_matches:
+        buf = []
         matching_urls = translate_matches(matches, url_mapping)
-        rank = 0
         for (surl, turl), cost in zip(matching_urls, match_costs):
+            buf.append((cost, surl, turl))
+        buf.sort(reverse=True)
+        rank = 0
+        for cost, surl, turl in buf:
             args.write_matches.write(
-                "%f %d %s %s\n" % (cost, rank, surl, turl))
+                "%.30f %d %s %s\n" % (cost, rank,
+                                      surl.encode('utf-8'),
+                                      turl.encode('utf-8')))
             rank += 1
 
+    # if args.write_fails:
+    #     missing =
+    #     for sidx, tidx in devset:
+
     sys.exit()
-
-    matching_pairs = set()
-    m = munkres.Munkres()
-    cost_matrix = munkres.make_cost_matrix(
-        score_matrix, lambda cost: 1000 - cost)
-    indexes = m.compute(cost_matrix)
-    for row, column in indexes:
-        matching_pairs.add((row, column))
-
-    found = devset.intersection(matching_pairs)
-    print "Found %d out of %d pairs = %f%%" \
-        % (len(found), len(devset), 100. * len(found) / len(devset))
