@@ -74,13 +74,22 @@ if __name__ == "__main__":
     for line in args.infile:
         n_total += 1
         score = 1.0
+	srcurl = ""
+	tgturl = ""
         split_line = line.rstrip('\n').split("\t")
+	if len(split_line) <= 1:
+	    deletions["line_short"].append(line)
+	    continue
+	if len(split_line) > 5:
+	    deletions["line_long"].append(line)
+	    continue
         if len(split_line) == 5:
-            split_line = split_line[-3:]
+            srcurl, tgturl, source, target, score = split_line
+        if len(split_line) == 4:
+            srcurl, tgturl, source, target = split_line
         if len(split_line) == 3:
             source, target, score = split_line
-        else:
-            assert len(split_line) == 2
+        if len(split_line) == 2:
             source, target = split_line
         source = source.decode('utf-8', 'ignore')
         target = target.decode('utf-8', 'ignore')
@@ -124,4 +133,4 @@ if __name__ == "__main__":
                                % (len(deleted), reason))
             for line in deleted:
                 if line.strip():
-                    args.deleted.write("\t%s\n" % line.encode('utf-8'))
+                    args.deleted.write("\t%s\n" % line)
