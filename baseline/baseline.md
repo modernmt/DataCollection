@@ -1,11 +1,29 @@
 # Running a baseline
+This document describes how to generate a parallel corpus from a [CommonCrawl](http://commoncrawl.org/) crawl. It requires that language meta-data has been extracted from the crawl via the process described in `metadata\metadata.md` and is accessible through a meta-data server. Another requirement is that the software described in `install.md` has been installed. *Baseline* in this context means that a simple URL matching mechanism is applied along with standard sentence alignment provided by the Bitextor/hunalign tools.
+
+## Step 1: Preparations
+
+### Creating a folder for the baseline results
 ```
 cd
-mkdir -p experiments/baseline/en-de
-cd experiments/baseline/en-de
+mkdir -p experiments/baseline/en_de_2015_32
+cd experiments/baseline/en_de_2015_32
 ```
+In this case a parallel English-German corpus should be extracted from the 2015_32 (July 2015) CommonCrawl. The crawl identifiers can be found here http://commoncrawl.org/the-data/get-started/.
 
-## Step 1: Produce candidate urls
+## Step 2: Produce candidate urls
+One result of the meta-data processing is a *_kv* file that contains the CommonCrawl URLs tagged with languages identified for the page content with a language identifier. KV files for some of the CommonCrawls can be found at http://www.statmt.org/~buck/mmt/langstat_kv/
+
+### Extracting candidate URLs for the target language
+```
+nohup gzip -cd /mnt/langsplit/2015_32_kv.gz | /usr/bin/parallel -j 4 --block=100M --pipe ~/DataCollection/baseline/langstat2candidates.py -lang de > candidates_de 2> candidates_target.log &
+```
+The use of [GNU Parallel](http://www.gnu.org/software/parallel/) is optional, but speeds things up - here with the use of four processor cores in parallel. It doesn't make sense to run `parallel` with more jobs than processor cores (`-j 4`), you can also set `-j 0` that uses as many as possible (see GNU Parallel documentation http://www.gnu.org/software/parallel/man.html).
+
+### Sorting the target language URL candidates
+
+### Matching the target language URLs with source language URLs
+
 ```
 curl http://www.statmt.org/~buck/mmt/langstat_kv/2015_27_kv.gz | gzip -cd | head -n 10000000 | nice python /home/buck/net/build/DataCollection/baseline/langstat2candidates.py -lang=de | sort -u -k 1,1 --compress-program=pigz > candidates.de
 curl http://www.statmt.org/~buck/mmt/langstat_kv/2015_27_kv.gz | gzip -cd | head -n 10000000 | nice python /home/buck/net/build/DataCollection/baseline/langstat2candidates.py -lang=en -candidates candidates.de | sort -u -k 1,1 --compress-program=pigz > candidates.en-de
