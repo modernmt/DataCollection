@@ -21,21 +21,13 @@ nohup gzip -cd /mnt/langsplit/2015_32_kv.gz | /usr/bin/parallel -j 4 --block=100
 The use of [GNU Parallel](http://www.gnu.org/software/parallel/) is optional, but speeds things up - here with the use of four processor cores in parallel. It doesn't make sense to run `parallel` with more jobs than processor cores (`-j 4`), you can also set `-j 0` that uses as many as possible (see GNU Parallel documentation http://www.gnu.org/software/parallel/man.html).
 
 ### Sorting the target language URL candidates
-
+```
+nohup sort -u -k 1,1 --compress-program=pigz candidates_de > candidates.de 2> candidates_target_sort.log &
+```
 ### Matching the target language URLs with source language URLs
-
 ```
-curl http://www.statmt.org/~buck/mmt/langstat_kv/2015_27_kv.gz | gzip -cd | head -n 10000000 | nice python /home/buck/net/build/DataCollection/baseline/langstat2candidates.py -lang=de | sort -u -k 1,1 --compress-program=pigz > candidates.de
-curl http://www.statmt.org/~buck/mmt/langstat_kv/2015_27_kv.gz | gzip -cd | head -n 10000000 | nice python /home/buck/net/build/DataCollection/baseline/langstat2candidates.py -lang=en -candidates candidates.de | sort -u -k 1,1 --compress-program=pigz > candidates.en-de
+nohup gzip -cd /mnt/langsplit/2015_32_kv.gz | /usr/bin/parallel -j 4 --block=100M --pipe ~/DataCollection/baseline/langstat2candidates.py -lang=en -candidates candidates.de | sort -u -k 1,1 --compress-program=pigz > candidates.en-de 2> match.log &
 ```
-The `head` command should be removed when wanting to produce all candidate URLs from a crawl.
-
-### Alternative: Run with gnu parallel to speed things up. Replace 'python' with 'parallel --block=200M --pipe -j 4 python'
-```
-curl http://www.statmt.org/~buck/mmt/langstat_kv/2015_27_kv.gz | gzip -cd | head -n 10000000 | nice parallel --block=200M --pipe -j 4 python /home/buck/net/build/DataCollection/baseline/langstat2candidates.py -lang=de | sort -u -k 1,1 --compress-program=pigz > candidates.de
-curl http://www.statmt.org/~buck/mmt/langstat_kv/2015_27_kv.gz | gzip -cd | head -n 10000000 | nice parallel --block=200M --pipe -j 4 python /home/buck/net/build/DataCollection/baseline/langstat2candidates.py -lang=en -candidates candidates.de | sort -u -k 1,1 --compress-program=pigz > candidates.en-de
-```
-It probably doesn't make sense to run `parallel` with more jobs than processor cores (`-j 4`), you can also set `-j 0` that uses as many as possible (see GNU Parallel documentation http://www.gnu.org/software/parallel/man.html).
 
 ## Step 2: Look up where these URLs appear in S3
 ```
