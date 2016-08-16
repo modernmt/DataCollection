@@ -31,31 +31,49 @@ nohup gzip -cd /mnt/langsplit/2015_32_kv.gz | /usr/bin/parallel -j 4 --block=100
 
 If you are collecting data for a language direction for which you already earlier collected data from the reverse direction, please see an optimized process in the appendix.
 
-## Step 2: Look up where these URLs appear in S3
+## Step 3: Look up where these URLs appear in CommonCrawl S3
 ```
-cat candidates.en-de | nice /home/buck/net/build/DataCollection/baseline/locate_candidates.py - - -server='http://statmt.org:8084/query_prefix' > candidates.en-de.locations
-```
-
-## Step 3: Download pages from S3 and extract text
-```
-cat candidates.en-de.locations | /home/buck/net/build/DataCollection/baseline/candidates2corpus.py -source_splitter='/home/buck/net/build/mosesdecoder/scripts/ems/support/split-sentences.perl -l en -b -q' -target_splitter='/home/buck/net/build/mosesdecoder/scripts/ems/support/split-sentences.perl -l de -b -q'  > en-de.down
+nohup cat candidates.en-de | nice ~/DataCollection/baseline/locate_candidates.py - - -server='http://statmt.org:8084/query_prefix' > candidates.en-de.locations 2> locate.log &
 ```
 
-## Step 4: Run Hunalign to extract parallel sentences
+## Step 4: Download pages from CommonCrawl S3 and extract text
+```
+nohup cat candidates.en-de.locations | ~/DataCollection/baseline/candidates2corpus.py -source_splitter='/moses_install_location/scripts/ems/support/split-sentences.perl -l en -b -q' -target_splitter='/moses_install_location/scripts/ems/support/split-sentences.perl -l de -b -q' > en-de.down 2> candidates2corpus.log &
+```
+This step uses the language-specific sentence splitter contained in the Moses MT system. See the installation instructions in `INSTALL.md` for details.
+
+## Step 5: Run Bitextor/Hunalign to extract parallel sentences
 
 ```
-pv en-de.down | parallel --pipe /usr/local/bin/bitextor-align-segments --lang1 en --lang2 de -d de-en.dic > en-de.sent
+nohup pv en-de.down | parallel --pipe /usr/local/bin/bitextor-align-segments --lang1 en --lang2 de -d ~/DataCollection/dicts/en-de.dic > en-de.sent 2> align.log &
 ```
 When using `cat` instead of `pv` the machine might run out of memory.
 
+Running the sentence alignment requires a word-based bilingual dictionary in the format required by Bitextor:
+* First line: `<source language identifier><tab><target language identifier>`
+* Remaining lines: `<source word><tab><target word>`
+
+Some dictionaries are available in Bitextor and some in the `dicts` folder in this repository.
+
 The resulting `en-de.sent` file has 5 columns: source URL, target URL, source text, target text, and hunalign score. The columns can be extracted into individual files using the `cut` command, e.g. `cut -f 3 en-de.sent` to extract the source text.
 
-## Step 5: Clean parallel sentences
+## Step 6: Clean parallel sentences
+This step is optional, but applies some common-sense cleaning filters to the extracted bitext.
 
 ```
-cut -f 3- en-de.sent | /home/buck/net/build/DataCollection/baseline/filter_hunalign_bitext.py - en-de.filtered --lang1 en --lang2 de -cld2 -deleted del
+nohup cat en-de.sent | ~/DataCollection/baseline/filter_hunalign_bitext.py - en-de.filtered --lang1 en --lang2 de -cld2 -deleted en-de.deleted 2> filter.log &
 ```
 This needs cld2-cffi and langid so run `pip install langid cld2-cffi` first. The resulting file has 3 columns: source text, target text, and hunalign score. As above use `cut` to get source/target.
+
+## Step 7: Extracting the text by web domain
+If the extraction by pairs of corpus files by web domain is desired rather than large parallel corpus files, the following commands can be used:
+
+```
+mkdir webdomain_registered
+cd webdomain_registered
+nohup python ~/DataCollection/baseline/corpus_by_domain.py -slang en -tlang de --regdomain ../en-de.filtered 2> ../webdomain_registered_err.log &
+```
+The option `--regdomain` extracts the files by registered domain (i.e. without subdomains). The parameter can be omitted to extract by subdomain.
 
 
 ## Appendix
