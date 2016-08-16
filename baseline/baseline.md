@@ -29,6 +29,8 @@ nohup sort -u -k 1,1 --compress-program=pigz candidates_de > candidates.de 2> ca
 nohup gzip -cd /mnt/langsplit/2015_32_kv.gz | /usr/bin/parallel -j 4 --block=100M --pipe ~/DataCollection/baseline/langstat2candidates.py -lang=en -candidates candidates.de | sort -u -k 1,1 --compress-program=pigz > candidates.en-de 2> match.log &
 ```
 
+If you are collecting data for a language direction for which you already earlier collected data from the reverse direction, please see an optimized process in the appendix.
+
 ## Step 2: Look up where these URLs appear in S3
 ```
 cat candidates.en-de | nice /home/buck/net/build/DataCollection/baseline/locate_candidates.py - - -server='http://statmt.org:8084/query_prefix' > candidates.en-de.locations
@@ -54,3 +56,16 @@ The resulting `en-de.sent` file has 5 columns: source URL, target URL, source te
 cut -f 3- en-de.sent | /home/buck/net/build/DataCollection/baseline/filter_hunalign_bitext.py - en-de.filtered --lang1 en --lang2 de -cld2 -deleted del
 ```
 This needs cld2-cffi and langid so run `pip install langid cld2-cffi` first. The resulting file has 3 columns: source text, target text, and hunalign score. As above use `cut` to get source/target.
+
+
+## Appendix
+
+### Generating candidate URL pairs for reverse language directions (optional optimization)
+Because of the way that URL candidate extraction works, the extraction for a reverse language direction - in our example German-Italian - would generate a lot of duplicate candidates (in some of our experiments around 90%). Because we do not have a way to detect the translation direction (i.e. what was the original text and what the translation), this generates a lot of duplicate work. Thus the corpus from the original language direction (in our case English-German) can just be reversed. In order to collect data only for pages that were not contained in the original language direction, this process can be used:
+
+```
+awk '{print $1 " " $4 " " $3 " " $2 " " $5}' /location_original_language_direction/candidates.en-de > candidates.de-en.exclude
+sort candidates.de-en candidates.de-en.exclude candidates.de-en.exclude | uniq -u > candidates.de-en.unique
+```
+
+Then use the file `candidates.de-en.unique` as input for Step 3.
