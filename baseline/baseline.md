@@ -28,7 +28,10 @@ nohup sort -u -k 1,1 --compress-program=pigz candidates_de > candidates.de 2> ca
 ```
 nohup gzip -cd /mnt/langsplit/2015_32_kv.gz | /usr/bin/parallel -j 4 --block=100M --pipe ~/DataCollection/baseline/langstat2candidates.py -lang=en -candidates candidates.de | sort -u -k 1,1 --compress-program=pigz > candidates.en-de 2> match.log &
 ```
-
+Particularly if the target language is English, this command might run out of memory. For the typical CommonCrawl size this can be fixed by increasing RAM to 32 GB and omit parallelization:
+```
+nohup gzip -cd /mnt/langsplit/2015_32_kv.gz | ~/DataCollection/baseline/langstat2candidates.py -lang=en -candidates candidates.de | sort -u -k 1,1 --compress-program=pigz > candidates.en-de 2> match.log &
+```
 If you are collecting data for a language direction for which you already earlier collected data from the reverse direction, please see an optimized process in the appendix.
 
 ## Step 3: Look up where these URLs appear in CommonCrawl S3
