@@ -1,6 +1,8 @@
 # Running a baseline
 This document describes how to generate a parallel corpus from a [CommonCrawl](http://commoncrawl.org/) crawl. It requires that language meta-data has been extracted from the crawl via the process described in `metadata\metadata.md` and is accessible through a meta-data server. Another requirement is that the software described in `install.md` has been installed. *Baseline* in this context means that a simple URL matching mechanism is applied along with standard sentence alignment provided by the Bitextor/hunalign tools.
 
+For the easiest start we also provide already matched URL files annotated with CommonCrawl locations for a selection of language pairs that can be used to start in Step 4. of this baseline process. The files are contained in compressed form in our releases on https://github.com/ModernMT/DataCollection/releases
+
 ## Step 1: Preparations
 
 ### Creating a folder for the baseline results
@@ -40,6 +42,7 @@ nohup cat candidates.en-de | nice ~/DataCollection/baseline/locate_candidates.py
 ```
 
 ## Step 4: Download pages from CommonCrawl S3 and extract text
+For certain language pairs we provide the `.locations` files in compressed form in our releases on https://github.com/ModernMT/DataCollection/releases. You can use these files to start the process in this step.
 ```
 nohup cat candidates.en-de.locations | ~/DataCollection/baseline/candidates2corpus.py -source_splitter='/moses_install_location/scripts/ems/support/split-sentences.perl -l en -b -q' -target_splitter='/moses_install_location/scripts/ems/support/split-sentences.perl -l de -b -q' > en-de.down 2> candidates2corpus.log &
 ```
