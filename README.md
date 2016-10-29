@@ -21,4 +21,4 @@ For more details on the monolingual data see [ModernMT Deliverable 2.1](http://w
  
 In the second phase the meta-data collected in phase 1 is used to extract parallel data from CommonCrawl data based on URL pattern matching. Phase 2 is documented step-by-step in the [baseline documentation](/baseline/baseline.md)
 
-For the language pairs en↔it, en↔fr and en↔it matched URL data is available for quick data extraction in release 0.1.0 https://github.com/ModernMT/DataCollection/releases/tag/0.1.0
+For the language pairs en↔it, en↔fr and en↔it matched URL data is available for quick data extraction in [release 0.1.0](https://github.com/ModernMT/DataCollection/releases/tag/0.1.0)
