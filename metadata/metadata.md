@@ -14,7 +14,7 @@ For recent crawls we use the data files from the common crawl index. These are j
 ```
 mkdir 2015_40
 cd 2015_40
-for i in `seq -w 0 299`; do wget -c https://aws-publicdatasets.s3.amazonaws.com/common-crawl/cc-index/collections/CC-MAIN-2015-40/indexes/cdx-00${i}.gz; done
+for i in `seq -w 0 299`; do wget -c https://commoncrawl.s3.amazonaws.com/cc-index/collections/CC-MAIN-2015-40/indexes/cdx-00${i}.gz; done
 ```
 Restart the above until all files are completed.
 
@@ -65,10 +65,10 @@ Example for May 2015 crawl:
 # Get filelist
 mkdir 2015_22
 cd 2015_22
-wget https://aws-publicdatasets.s3.amazonaws.com/common-crawl/crawl-data/CC-MAIN-2015-22/wet.paths.gz
+wget https://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2015-22/wet.paths.gz
 
 # Convert to HTTPS URLs
-zcat wet.paths.gz | sed 's/^/https:\/\/aws-publicdatasets.s3.amazonaws.com\//' > $wet.paths.http
+zcat wet.paths.gz | sed 's/^/https:\/\/commoncrawl.s3.amazonaws.com\//' > $wet.paths.http
 
 # Make subdirectories
 for f in `zcat wet.paths.gz |  cut -d '/' -f 5 | sort | uniq`; do mkdir -p $f; done;
@@ -103,7 +103,7 @@ The metadata API allows querying with a partial URL prefix and (optionally) a cr
       "locations": {
         "http://hettahuskies.com/": [
           {
-            "filename": "https://aws-publicdatasets.s3.amazonaws.com/common-crawl/crawl-data/CC-MAIN-2013-20/segments/1368699684236/warc/CC-MAIN-20130516102124-00033-ip-10-60-113-184.ec2.internal.warc.gz",
+            "filename": "https://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2013-20/segments/1368699684236/warc/CC-MAIN-20130516102124-00033-ip-10-60-113-184.ec2.internal.warc.gz",
             "length": "4194",
             "mime": "UNKNOWN",
             "offset": "127252350",
@@ -112,7 +112,7 @@ The metadata API allows querying with a partial URL prefix and (optionally) a cr
         ],
         "http://hettahuskies.com/Location/Areaattractions/aaintro.php": [
           {
-            "filename": "https://aws-publicdatasets.s3.amazonaws.com/common-crawl/crawl-data/CC-MAIN-2013-20/segments/1368700212265/warc/CC-MAIN-20130516103012-00009-ip-10-60-113-184.ec2.internal.warc.gz",
+            "filename": "https://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2013-20/segments/1368700212265/warc/CC-MAIN-20130516103012-00009-ip-10-60-113-184.ec2.internal.warc.gz",
             "length": "4140",
             "mime": "UNKNOWN",
             "offset": "123806691",
@@ -151,7 +151,7 @@ If 'crawl' is not specified, we get results from all crawls at once. Get a list 
 
 The 'locations' field hold url-location pairs the point into Amazon S3 where the full pages are stored. This includes the full location of the source file, and the length and offset at which the data is located. For example to get the last entry (http://hettahuskies.com/Location/Areaattractions/aaintro.php) compute the data range as (offset, offset + length -1) and download using e.g. curl:
 
-    $ curl -r 123806691-123810830 https://aws-publicdatasets.s3.amazonaws.com/common-crawl/crawl-data/CC-MAIN-2013-20/segments/1368700212265/warc/CC-MAIN-20130516103012-00009-ip-10-60-113-184.ec2.internal.warc.gz | \
+    $ curl -r 123806691-123810830 https://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2013-20/segments/1368700212265/warc/CC-MAIN-20130516103012-00009-ip-10-60-113-184.ec2.internal.warc.gz | \
     zcat | head -n 25
 
     WARC/1.0
