@@ -58,6 +58,8 @@ class CCDownloader(object):
             sys.stderr.write("Error downloading: %s from %s\n" %
                              (str(headers), location))
             return False, None
+	except:
+            return False, None
 
         # Handle bad status, i.e. everything but code 2XX
         if resp.status_code < 200 or resp.status_code > 299:
