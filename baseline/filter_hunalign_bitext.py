@@ -6,6 +6,7 @@ import argparse
 import cld2
 import langid
 import sys
+import codecs
 
 
 """ Removes some wrongly aligned pairs from hunalign output """
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     parser.add_argument('outfile', nargs='?', type=argparse.FileType('w'),
                         default=sys.stdout)
     parser.add_argument('-deleted', help='file to keep deleted lines',
-                        type=argparse.FileType('w'))
+                        dest='deleted_filename')
     parser.add_argument('-minscore', type=float, default=0,
                         help='minimum score from hunalign')
     parser.add_argument('-slang', '--lang1', help='source language',
@@ -124,13 +125,14 @@ if __name__ == "__main__":
         args.outfile.write(line)
         n_written += 1
 
-    if args.deleted:
-        args.deleted.write("Written: %d of %d = %f percent\n" %
+    if args.deleted_filename:
+	deleted_file = codecs.open(args.deleted_filename,'w',encoding='utf-8')
+        deleted_file.write("Written: %d of %d = %f percent\n" %
                            (n_written, n_total,
                             100. * n_written / max((1, n_total))))
         for reason, deleted in deletions.iteritems():
-            args.deleted.write("Deleted %d items due to %s\n"
+            deleted_file.write("Deleted %d items due to %s\n"
                                % (len(deleted), reason))
             for line in deleted:
                 if line.strip():
-                    args.deleted.write("\t%s\n" % line)
+                    deleted_file.write("\t%s\n" % line)
