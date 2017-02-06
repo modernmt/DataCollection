@@ -3,7 +3,9 @@
 lng=$1; shift
 
 if [ ! -d monolingual/${lng}  ] ; then mkdir -p monolingual/${lng} ; fi
+
 pushd monolingual/${lng}
+
 case $lng in
   en)
     version_UEDIN=deduped_en

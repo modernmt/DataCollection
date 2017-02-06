@@ -3,7 +3,9 @@
 lng=$1; shift
 
 if [ ! -d monolingual/${lng}  ] ; then mkdir -p monolingual/${lng} ; fi
+
 pushd monolingual/${lng}
+
 case $lng in
   de|es|fr)
     wget http://data.statmt.org/ngrams/deduped/meta/${lng}.wc
@@ -20,7 +22,7 @@ case $lng in
     fi
     ;;
   en)
-    echo "for ${lng} (English) please use the script scripts/get_monolingual_corpus_Englsih.sh" ; exit 1
+    echo "for ${lng} (English) please use the script scripts/get_monolingual_corpus_Englsh.sh" ; exit 1
     ;;
   *)
     echo unknown lng $lng ; exit 1

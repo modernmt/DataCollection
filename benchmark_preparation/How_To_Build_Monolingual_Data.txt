@@ -7,8 +7,9 @@ X) Script for downloading moonolingual data from data.statmt.org (UEdin), for En
   bash scripts/get_monolingual_corpus.sh en
 
 X) Script for reducing the size of the moonolingual data, for all languages but English
-  bash reduce_monolingual_corpora.sh [de|es|fr|it] 
+  bash reduce_monolingual_corpus.sh [de|es|fr|it] 
 
 X) Script for reducing the size of the moonolingual data, for English only
-  bash reduce_monolingual_corpora_English.sh en
+  bash reduce_monolingual_corpus_English.sh en
+
 
