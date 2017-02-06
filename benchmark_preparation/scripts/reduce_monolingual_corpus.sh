@@ -27,10 +27,10 @@ function get_seeded_random()
 }
 
 function reduce_by_size (){
-local lng=$2
-local lines=$3
-local words=$4
-local maxWords=$5
+local lng=$1
+local lines=$2
+local words=$3
+local maxWords=$4
 
 name=tmp$$_${lng}
 
