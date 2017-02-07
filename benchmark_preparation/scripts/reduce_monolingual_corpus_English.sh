@@ -2,7 +2,7 @@
 lng=$1; shift
 
 dir=monolingual
-maxWords=2000000000
+maxWords=400000000 # 400000000 = 2000000000 / 5 (i.e. the origial xz portions considered 00, 10, 20, 30, 40)
 
 scriptDir=$(cd $(dirname $0) ; pwd)
 
@@ -43,7 +43,7 @@ rep=0
 for part in ${name}_part* ; do 
 seed=$(( 1234 + $rep ))
 date
-echo "shuffling rep=$rep seed=$seed index=$index tailLines=$tailLines headLines=$headLines reducedLines=$reducedLines"
+echo "shuffling rep=$rep seed=$seed index=$index reducedLines=$reducedLines"
 cat $part | shuf --head-count $reducedLines --random-source=<(get_seeded_random $seed)  >> selected.${index}.${lng}
 rep=$(( $rep + 1 ))
 rm $part 

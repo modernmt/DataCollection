@@ -11,7 +11,7 @@ case $lng in
   en)
     echo "for ${lng} (English) please use the script scripts/reduce_monolingual_corpora_English.sh" ; exit 1
     ;;
-  de|es|fr|it)
+  de|es|fr|it|ru|pt)
     ;;
   *)
     echo unknown lng $lng ; exit 1
@@ -46,7 +46,7 @@ rep=0
 for part in ${name}_part* ; do 
 seed=$(( 1234 + $rep ))
 date
-echo "shuffling rep=$rep seed=$seed tailLines=$tailLines headLines=$headLines reducedLines=$reducedLines"
+echo "shuffling rep=$rep seed=$seed reducedLines=$reducedLines"
 cat $part | shuf --head-count $reducedLines --random-source=<(get_seeded_random $seed)  >> selected.${lng}
 rep=$(( $rep + 1 ))
 rm $part 
@@ -80,7 +80,7 @@ words=`cat ${lng}.wc | awk '{print $2}'`
 reduce_by_size ${lng} ${lines} ${words} ${maxWords}
 date
 
-cat selected.${lng} | scripts/prepro_en/scripts/split-sentences.perl -l ${lng} -splitlinebreak > selected_split.${lng} 
+cat selected.${lng} | ${scriptDir}/prepro_en/scripts/split-sentences.perl -l ${lng} -splitlinebreak > selected_split.${lng} 
 date
 
 wc selected.${lng} > selected.${lng}.wc 
