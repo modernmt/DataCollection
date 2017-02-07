@@ -11,7 +11,7 @@ case $lng in
   en)
     echo "for ${lng} (English) please use the script scripts/reduce_monolingual_corpora_English.sh" ; exit 1
     ;;
-  de|es|fr|it|ru|pt)
+  de|es|fr|it|ru)
     ;;
   *)
     echo unknown lng $lng ; exit 1

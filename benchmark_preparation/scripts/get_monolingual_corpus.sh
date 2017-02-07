@@ -7,7 +7,7 @@ if [ ! -d monolingual/${lng}  ] ; then mkdir -p monolingual/${lng} ; fi
 pushd monolingual/${lng}
 
 case $lng in
-  de|es|fr|ru|pt)
+  de|es|fr|ru)
     wget http://data.statmt.org/ngrams/deduped/meta/${lng}.wc
     if [ ! -e ${lng}.xz ] ; then
         wget http://data.statmt.org/ngrams/deduped/${lng}.xz
