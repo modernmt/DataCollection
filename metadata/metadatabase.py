@@ -7,11 +7,12 @@ from urlparse import urlparse
 import re
 
 magic_number = "df6fa1abb58549287111ba8d776733e9"
+commoncrawl_s3_url = "https://commoncrawl.s3.amazonaws.com/"
 
 
 def make_full_path(crawl, folder, filename):
-    return "https://aws-publicdatasets.s3.amazonaws.com/" +\
-           "common-crawl/crawl-data/" + \
+    return commoncrawl_s3_url +\
+           "crawl-data/" + \
            "CC-MAIN-%s" % crawl.replace("_", "-") +\
            "/segments/%s" % folder +\
            "/warc/%s" % filename.replace("warc.wat.gz", "warc.gz")
@@ -66,8 +67,7 @@ def process_old_json(line, uri, args):
     offset = archive_info['arcFileOffset']
     length = archive_info['compressedSize']
 
-    filename = "https://" + \
-        "aws-publicdatasets.s3.amazonaws.com/" + \
+    filename = commoncrawl_s3_url + \
         "common-crawl/parse-output/segment/" + \
         "%s" % archive_info['arcSourceSegmentId'] + \
         "/%s_%s.arc.gz" % (archive_info['arcFileDate'],
@@ -104,12 +104,11 @@ def process_cdx(line, args):
     loc, timestamp, data = line.split(' ', 2)
     data = json.loads(data)
     uri = data["url"]
-    # crawl from path, e.g. common-crawl/crawl-data/CC-MAIN-2015-14/
-    crawl = data["filename"].split("/")[2][-7:].replace("-", "_")
+    # crawl from path, e.g. /crawl-data/CC-MAIN-2015-14/
+    crawl = data["filename"].split("/")[1][-7:].replace("-", "_")
     key = make_key(uri, crawl)
 
-    filename = "https://aws-publicdatasets.s3.amazonaws.com/%s" % data[
-        "filename"]
+    filename = commoncrawl_s3_url + data["filename"]
     mime_type = data.get("mime", "UNKNOWN")
     offset = data["offset"]
     length = data["length"]
@@ -128,7 +127,7 @@ def read_cdx(args):
             else:  # sometimes several entries are on a single line
                 for entry in re.findall(r"\S+\s\S+\s\{[^}]+\"\}", line):
                     yield process_cdx(entry, args)
-        except ValueError:
+        except (ValueError, KeyError):
             sys.stderr.write("Malformed line: %s\n" % line)
             continue
         except Exception as e:

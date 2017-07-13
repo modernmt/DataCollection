@@ -14,7 +14,7 @@ For recent crawls we use the data files from the common crawl index. These are j
 ```
 mkdir 2015_40
 cd 2015_40
-for i in `seq -w 0 299`; do wget -c https://aws-publicdatasets.s3.amazonaws.com/common-crawl/cc-index/collections/CC-MAIN-2015-40/indexes/cdx-00${i}.gz; done
+for i in `seq -w 0 299`; do wget -c https://commoncrawl.s3.amazonaws.com/cc-index/collections/CC-MAIN-2015-40/indexes/cdx-00${i}.gz; done
 ```
 Restart the above until all files are completed.
 
@@ -65,13 +65,13 @@ Example for May 2015 crawl:
 # Get filelist
 mkdir 2015_22
 cd 2015_22
-wget https://aws-publicdatasets.s3.amazonaws.com/common-crawl/crawl-data/CC-MAIN-2015-22/wet.paths.gz
+wget https://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2015-22/wet.paths.gz
 
 # Convert to HTTPS URLs
-zcat wet.paths.gz | sed 's/^/https:\/\/aws-publicdatasets.s3.amazonaws.com\//' > $wet.paths.http
+zcat wet.paths.gz | sed 's/^/https:\/\/commoncrawl.s3.amazonaws.com\//' > wet.paths.http
 
 # Make subdirectories
-for f in `zcat wet.paths.gz |  cut -d '/' -f 5 | sort | uniq`; do mkdir -p $f; done;
+for f in $(cat wet.paths.http | cut -d '/' -f 7 | sort | uniq); do mkdir -p $f; done
 
 # Collect monolingual data
 # Set number of jobs to roughly half the number of cores, e.g. -j8 on a 16-core machine.
