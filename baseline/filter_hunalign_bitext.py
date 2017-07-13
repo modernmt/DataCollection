@@ -133,4 +133,4 @@ if __name__ == "__main__":
                                % (len(deleted), reason))
             for line in deleted:
                 if line.strip():
-                    args.deleted.write("\t%s\n" % line)
+                    args.deleted.write("\t%s\n" % line.encode('utf-8'))
