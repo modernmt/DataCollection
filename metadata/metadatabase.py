@@ -111,6 +111,8 @@ def process_cdx(line, args):
     filename = "https://commoncrawl.s3.amazonaws.com/%s" % data[
         "filename"]
     mime_type = data.get("mime", "UNKNOWN")
+    if mime_type is None:
+	mime_type = "UNKNOWN"
     offset = data["offset"]
     length = data["length"]
     valuedict = {"filename": filename, "offset": offset,
