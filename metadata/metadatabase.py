@@ -104,8 +104,8 @@ def process_cdx(line, args):
     loc, timestamp, data = line.split(' ', 2)
     data = json.loads(data)
     uri = data["url"]
-    # crawl from path, e.g. common-crawl/crawl-data/CC-MAIN-2015-14/
-    crawl = data["filename"].split("/")[2][-7:].replace("-", "_")
+    # crawl from path, e.g. /crawl-data/CC-MAIN-2015-14/
+    crawl = data["filename"].split("/")[1][-7:].replace("-", "_")
     key = make_key(uri, crawl)
 
     filename = commoncrawl_s3_url + data["filename"]
@@ -127,7 +127,7 @@ def read_cdx(args):
             else:  # sometimes several entries are on a single line
                 for entry in re.findall(r"\S+\s\S+\s\{[^}]+\"\}", line):
                     yield process_cdx(entry, args)
-        except ValueError:
+        except (ValueError, KeyError):
             sys.stderr.write("Malformed line: %s\n" % line)
             continue
         except Exception as e:
