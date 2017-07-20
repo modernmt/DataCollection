@@ -10,4 +10,8 @@ Alternatively the `<tab>` can be replaced with a `<space>`.
 
 Some dictionaries are available in Bitextor and some in the `dicts` folder in this repository.
 
-## Dictionary creation from a parallel corpus
+## Dictionary building from a parallel corpus
+The word-based bilingual dictionary for Bitextor does not need to be especially clean, so an automated process by word aligning a parallel corpus can be used. It is still important that the dictionary contains most generic vocabulary for a language, so choosing a generic parallel corpus to build the dictionary from is preferable.
+### Tokenizing and lowercasing the parallel corpus
+After obtaining a suitable parallel corpus it will have to be tokenized and lowercased in preparation for the word alignment:
+
