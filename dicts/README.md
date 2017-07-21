@@ -47,9 +47,11 @@ nohup ~/mgiza/mgizapp/bin/mgiza -S Corpus.lower.<source language id>.vcb -T Corp
 ```
 
 ### Combining the word alignment information into a single dictionary
-As a last step the word alignment information is combined into a single dictionary using the script `filter_giza.py` contained in this repository and sorted:
+The word alignment information is combined into a single dictionary using the script `filter_giza.py` contained in this repository and sorted:
 ```
 python ~/DataCollection/dicts/filter_giza.py Corpus.lower.<source language id>.vcb Corpus.lower.<target language id>.vcb ./Corpus/DC.t3.final ./Corpus2/DC.t3.final > <source language id>-<target language id>.dict.unsorted
 
 cat <source language id>-<target language id>.dict.unsorted | sort > <source language id>-<target language id>.dic
 ```
+### Adding language identifier information in header line
+To the resulting `<source language id>-<target language id>.dic` file add a header line `<source language id><tab><target language id>`.
