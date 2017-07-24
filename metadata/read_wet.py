@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Reads downloaded website from tar file and writes lett format to be
+processed by bitextor pipeline
+"""
+
 import sys
 import chardet
 from chardet.universaldetector import UniversalDetector
@@ -66,11 +71,15 @@ for line in sys.stdin:
 
     if line.startswith("WARC-Type: conversion"):
         in_header = True
+        in_content = False
+        uri, buf = None, []
         continue
 
     if in_header:
         if line.startswith("WARC-Target-URI:"):
-            uri = line.split(" ", 1)[1].strip()
+            uri = line.split(" ", 1)
+            if len(uri) > 1:
+                uri = uri[1].strip()
         if not line.strip():
             in_content = True
             in_header = False
@@ -78,7 +87,8 @@ for line in sys.stdin:
 
     if in_content:
         if not line.strip():
-            process_buffer(uri, buf)
+            if uri:
+              process_buffer(uri, buf)
             uri, buf = None, []
             in_content = False
         else:
