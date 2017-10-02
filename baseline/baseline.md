@@ -59,7 +59,7 @@ Running the sentence alignment requires a word-based bilingual dictionary in the
 * First line: `<source language identifier><tab><target language identifier>`
 * Remaining lines: `<source word><tab><target word>`
 
-Some dictionaries are available in Bitextor and some in the `dicts` folder in this repository. See instructions in the appendix how to create a dictionary for a reverse language direction.
+Some dictionaries are available in Bitextor and some in the `dicts` folder in this repository. Additional instructions are available how to create a dictionaries for [new translation directions](/baseline/dictionary.md) and [reverse translation directions](/baseline/dictionary.md#creating-dictionaries-for-reverse-language-directions) from existing dictionaries.
 
 The resulting `en-de.sent` file has 5 columns: source URL, target URL, source text, target text, and hunalign score. The columns can be extracted into individual files using the `cut` command, e.g. `cut -f 3 en-de.sent` to extract the source text.
 
@@ -93,10 +93,3 @@ sort candidates.de-en candidates.de-en.exclude candidates.de-en.exclude | uniq -
 ```
 
 Then use the file `candidates.de-en.unique` as input for Step 3.
-
-### Creating dictionaries for reverse language directions
-
-To create a dictionary for a reverse language from a dictionary in Bitextor format (described in Step 5):
-* Remove first line with language identifiers and save the result as `en-de.nohead.dic`
-* Reverse the order of the dictionary entries and sort the results with the command `awk '{print $2 " " $1}' en-de.nohead.dic | sort > de-en.dic`
-* Add a header line `de<tab>en` to the reversed `de-en.dic`
