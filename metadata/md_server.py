@@ -124,7 +124,8 @@ class DBInterface(object):
                     break
 
                 tld, uri, crawl = key.split(" ", 2)
-                assert crawl == db_crawl
+		if crawl != db_crawl:
+		    continue
 
                 if exact and uri != query_url:
                     continue
