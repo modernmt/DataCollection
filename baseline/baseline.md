@@ -37,8 +37,15 @@ nohup gzip -cd /mnt/langsplit/2015_32_kv.gz | ~/DataCollection/baseline/langstat
 If you are collecting data for a language direction for which you already earlier collected data from the reverse direction, please see an optimized process in the appendix.
 
 ## Step 3: Look up where these URLs appear in CommonCrawl S3
+
+### Option 1 (if you have build your own location database)
 ```
 nohup cat candidates.en-de | nice ~/DataCollection/baseline/locate_candidates.py - - -server='http://statmt.org:8084/query_prefix' > candidates.en-de.locations 2> locate.log &
+```
+
+### Option 2 (use the [CommonCrawl Index API](http://commoncrawl.org/2015/04/announcing-the-common-crawl-index/))
+```
+nohup cat candidates.en-de | nice ~/DataCollection/baseline/locate_candidates_cc_index_api.py - - > candidates.en-de.locations 2> locate.log &
 ```
 
 ## Step 4: Download pages from CommonCrawl S3 and extract text
