@@ -34,7 +34,8 @@ Particularly if the target language is English, this command might run out of me
 ```
 nohup gzip -cd /mnt/langsplit/2015_32_kv.gz | ~/DataCollection/baseline/langstat2candidates.py -lang=en -candidates candidates.de | sort -u -k 1,1 --compress-program=pigz > candidates.en-de 2> match.log &
 ```
-If you are collecting data for a language direction for which you already earlier collected data from the reverse direction, please see an optimized process in the appendix.
+
+In case candidates were already crawled earlier for a reverse language direction or an earlier CommonCrawl you might want to remove any duplicates to avoid duplication in the resulting corpus. See the [appendix](/baseline/baseline.md#appendix) for instructions how to generate a deduplicated candidate list. 
 
 ## Step 3: Look up where these URLs appear in CommonCrawl S3
 
@@ -91,12 +92,25 @@ The option `--regdomain` extracts the files by registered domain (i.e. without s
 
 ## Appendix
 
-### Generating candidate URL pairs for reverse language directions (optional optimization)
+### Generating candidate URL pairs for reverse language directions
 Because of the way that URL candidate extraction works, the extraction for a reverse language direction - in our example German-Italian - would generate a lot of duplicate candidates (in some of our experiments around 90%). Because we do not have a way to detect the translation direction (i.e. what was the original text and what the translation), this generates a lot of duplicate work. Thus the corpus from the original language direction (in our case English-German) can just be reversed. In order to collect data only for pages that were not contained in the original language direction, this process can be used:
 
 ```
 awk '{print $1 " " $4 " " $3 " " $2 " " $5}' /location_original_language_direction/candidates.en-de > candidates.de-en.exclude
 sort candidates.de-en candidates.de-en.exclude candidates.de-en.exclude | uniq -u > candidates.de-en.unique
+```
+
+Then use the file `candidates.de-en.unique` as input for Step 3.
+
+### Deduplicating URL pairs across different CommonCrawls
+
+Because CommonCrawl crawls have a varying [degree of overlap between crawls](https://commoncrawl.github.io/cc-crawl-statistics/plots/crawloverlap) it is a good idea to deduplicate candidates generated in step 2. for the same language pair with candidates from earlier crawls to avoid duplicate data from the same pages. Keep in mind that pages change over time and new bilingual content could have been added. 
+
+To exclude pages that were already crawled for the English-German direction from CommonCrawl 2015_27 (assuming that we did this earlier), follow this process:
+
+```
+sed 's/2015_27/2015_32/g' candidates.en-de.2015_27 > candidates.en-de.exclude_from_2015_32
+sort candidates.en-de candidates.en-de.exclude_from_2015_32 candidates.en-de.exclude_from_2015_32 | uniq -u > candidates.en-de.unique
 ```
 
 Then use the file `candidates.de-en.unique` as input for Step 3.
