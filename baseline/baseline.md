@@ -93,7 +93,7 @@ The option `--regdomain` extracts the files by registered domain (i.e. without s
 ## Appendix
 
 ### Generating candidate URL pairs for reverse language directions
-Because of the way that URL candidate extraction works, the extraction for a reverse language direction - in our example German-Italian - would generate a lot of duplicate candidates (in some of our experiments around 90%). Because we do not have a way to detect the translation direction (i.e. what was the original text and what the translation), this generates a lot of duplicate work. Thus the corpus from the original language direction (in our case English-German) can just be reversed. In order to collect data only for pages that were not contained in the original language direction, this process can be used:
+Because of the way that URL candidate extraction works, the extraction for a reverse language direction - in our example German-English - would generate a lot of duplicate candidates (in some of our experiments around 90%). Because we do not have a way to detect the translation direction (i.e. what was the original text and what the translation), this generates a lot of duplicate work. Thus the corpus from the original language direction (in our case English-German) can just be reversed. In order to collect data only for pages that were not contained in the original language direction, this process can be used:
 
 ```
 awk '{print $1 " " $4 " " $3 " " $2 " " $5}' /location_original_language_direction/candidates.en-de > candidates.de-en.exclude
