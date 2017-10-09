@@ -39,15 +39,20 @@ In case candidates were already crawled earlier for a reverse language direction
 
 ## Step 3: Look up where these URLs appear in CommonCrawl S3
 
-### Option 1 (if you have build your own location database)
+### Option 1 (use the [CommonCrawl Index API](http://commoncrawl.org/2015/04/announcing-the-common-crawl-index/))
+```
+nohup cat candidates.en-de | nice ~/DataCollection/baseline/locate_candidates_cc_index_api.py - - > candidates.en-de.locations 2> locate.log &
+```
+The script uses the index server provided by CommonCrawl, which is often overloaded/slow to respond. To speed up the process, you can run your own index server (recommended in the AWS us-east region to be close to the data the server accesses). When running your own index server edit the variable `COMMONCRAWL_INDEX_URL` in `locate_candidates_cc_index_api.py` to point to your index server.
+
+### Option 2 (if you have built your own location database - *deprecated*)
+*This option is deprecated - see more details in the [meta-data generation documentation](/metadata/metadata.md).*
+
 ```
 nohup cat candidates.en-de | nice ~/DataCollection/baseline/locate_candidates.py - - -server='http://statmt.org:8084/query_prefix' > candidates.en-de.locations 2> locate.log &
 ```
 
-### Option 2 (use the [CommonCrawl Index API](http://commoncrawl.org/2015/04/announcing-the-common-crawl-index/))
-```
-nohup cat candidates.en-de | nice ~/DataCollection/baseline/locate_candidates_cc_index_api.py - - > candidates.en-de.locations 2> locate.log &
-```
+
 
 ## Step 4: Download pages from CommonCrawl S3 and extract text
 For certain language pairs we provide the `.locations` files in compressed form in our releases on https://github.com/ModernMT/DataCollection/releases. You can use these files to start the process in this step.
