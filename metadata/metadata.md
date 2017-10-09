@@ -1,3 +1,38 @@
+# Getting the language distribution data
+
+Language distribution computed by feeding raw text dumps (the .wet files) into CLD2.
+
+Example for December 2016 crawl:
+
+```
+# Get filelist
+mkdir 2016_50
+cd 2016_50
+wget https://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2016-50/wet.paths.gz
+
+# Convert to HTTPS URLs
+zcat wet.paths.gz | sed 's/^/https:\/\/commoncrawl.s3.amazonaws.com\//' > wet.paths.http
+
+# Make subdirectories
+for f in `zcat wet.paths.gz |  cut -d '/' -f 4 | sort | uniq`; do mkdir -p $f; done;
+
+# Language-detect monolingual data
+# Set number of jobs to roughly half the number of cores, e.g. -j8 on a 16-core machine.
+nohup cat wet.paths.http | parallel --nice 19 --progress -j18 --wd `pwd` <path to DataCollection folder>/DataCollection/metadata/extract_monolingual.sh &
+```
+
+This will take days (up to two weeks) even on a multicore machine with recent Commoncrawl crawls. Re-run the last line to make sure all files are properly processed. Finished files will not be processed again.
+
+## Merging language statistics into a single file
+
+```
+nohup sh -c "find . | grep langsplit.xz | xargs xzcat | <path to DataCollection folder>/DataCollection/metadata/langstats2kv.py 2016_50 | gzip -9 > 2016_50.kv.gz" &
+```
+This will also take a couple of days to finish. At this point the meta-data generation (Phase 1) of the parallel data collection process is finished and you can proceed with Phase 2 described in (/baseline/baseline.md)
+
+# Building a meta-data database (deprecated)
+*Building a meta-data database is deprecated. The description how to build the meta-data database below is incomplete and the resulting database has some [issues](https://github.com/ModernMT/DataCollection/issues/14). To look up URL locations in CommonCrawl use the CommonCrawl index server instead*
+
 ## Intro
 
 For each page in CommonCrawl we hold as metadata
@@ -53,44 +88,6 @@ Run the server with
 /home/buck/net/build/DataCollection/metadata/md_server.py /PATH_TO_DBS/db/rdb_201*/ -ip 129.215.197.184 -port 8080
 ```
 (change IP and Port)
-
-
-## Getting the language distribution data
-
-Language distribution in computed by feeding raw text dumps (the .wet files) into CLD2.
-
-Example for May 2015 crawl:
-
-```
-# Get filelist
-mkdir 2015_22
-cd 2015_22
-wget https://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2015-22/wet.paths.gz
-
-# Convert to HTTPS URLs
-zcat wet.paths.gz | sed 's/^/https:\/\/commoncrawl.s3.amazonaws.com\//' > $wet.paths.http
-
-# Make subdirectories
-for f in `zcat wet.paths.gz |  cut -d '/' -f 5 | sort | uniq`; do mkdir -p $f; done;
-
-# Collect monolingual data
-# Set number of jobs to roughly half the number of cores, e.g. -j8 on a 16-core machine.
-cat wet.paths.http | \
-parallel --nice 19 --progress --sshloginfile -j 12 --wd `pwd` /path/to/DataCollection/metadata/extract_monolingual.sh
-```
-
-This will take a few days even on a multicore machine. Re-run the last line to make sure all files are properly processed. Finished files will not be processed again.
-
-
-## Updating entries in the metadatabase with the new language statistics.
-
-Compile the updatekv executeable in DataCollection/metadata/leveldb.
-
-```
-xzcat 2015_22/*.internal.warc.wet.gz.langsplit.xz | \
-/path/to/DataCollection/metadata/langstats2kv.py 2015_22 | \
-gzip -9 > 2015_22.kv.gz
-```
 
 ## Metadata API
 
