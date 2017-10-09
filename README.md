@@ -4,7 +4,7 @@ Collecting data for machine translation training from CommonCrawl is a two-phase
 
 ![CommonCrawl process diagram](/common_crawl_process.png?raw=true "CommonCrawl data collection process")
 
-## Phase 1: Language annotation, building a meta-data database and monolingual data extraction
+## Phase 1: Language annotation, building a meta-data file and monolingual data extraction
 
 The first phase detects the languages of the web pages contained in the crawl and other meta-data. A meta-data file is built from this analysis.
 
