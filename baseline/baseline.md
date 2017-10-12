@@ -43,7 +43,7 @@ In case candidates were already crawled earlier for a reverse language direction
 ```
 nohup cat candidates.en-de | nice ~/DataCollection/baseline/locate_candidates_cc_index_api.py - - > candidates.en-de.locations 2> locate.log &
 ```
-The script uses the index server provided by CommonCrawl, which is often overloaded/slow to respond. To speed up the process, you can run your own index server (recommended in the AWS us-east region to be close to the data the server accesses). When running your own index server edit the variable `COMMONCRAWL_INDEX_URL` in `locate_candidates_cc_index_api.py` to point to your index server.
+The script uses the index server provided by CommonCrawl, which is often overloaded/slow to respond. To speed up the process, you can run your own [index server](https://github.com/commoncrawl/cc-index-server) (recommended in the AWS us-east region to be close to the data the server accesses). When running your own index server edit the variable `COMMONCRAWL_INDEX_URL` in `locate_candidates_cc_index_api.py` to point to your index server.
 
 ### Option 2 (if you have built your own location database - *deprecated*)
 *This option is deprecated - see more details in the [meta-data generation documentation](/metadata/metadata.md).*
