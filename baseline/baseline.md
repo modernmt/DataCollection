@@ -76,8 +76,8 @@ Some dictionaries are available in Bitextor and some in the `dicts` folder in th
 
 The resulting `en-de.sent` file has 5 columns: source URL, target URL, source text, target text, and hunalign score. The columns can be extracted into individual files using the `cut` command, e.g. `cut -f 3 en-de.sent` to extract the source text.
 
-## Step 6: Clean parallel sentences
-This step is optional, but applies some common-sense cleaning filters to the extracted bitext.
+## Step 6: Clean parallel sentences (optional)
+This step is optional, it applies some common-sense cleaning filters to the extracted bitext.
 
 ```
 nohup cat en-de.sent | ~/DataCollection/baseline/filter_hunalign_bitext.py - en-de.filtered --lang1 en --lang2 de -cld2 -deleted en-de.deleted 2> filter.log &
@@ -94,6 +94,14 @@ nohup python ~/DataCollection/baseline/corpus_by_domain.py -slang en -tlang de -
 ```
 The option `--regdomain` extracts the files by registered domain (i.e. without subdomains). The parameter can be omitted to extract by subdomain.
 
+## Step 8: Deduplicating the web corpora (optional)
+
+Due to boilerplate text, corpora produced on a domain-level by `corpus_by_domain.py` can contain many duplicates. Earlier in the process, in Step 5, boilerplate text can be useful to improve the quality of the sentence alignment. For many corpus uses duplicates should be removed however. The following script removes duplicates using Kenneth Heafield's [corpus preprocessing tools](https://github.com/kpu/preprocess). Please install these tools and adjust the path to the `dedupe` binary in the `dedupe.sh` as necessary.
+
+```
+cd ..
+~/DataCollection/baseline/dedupe.sh webdomain_registered webdomain_registered_cleaned en de
+```
 
 ## Appendix
 
