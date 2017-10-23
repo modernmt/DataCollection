@@ -88,8 +88,8 @@ This needs cld2-cffi and langid so run `pip install langid cld2-cffi` first. The
 If the extraction by pairs of corpus files by web domain is desired rather than large parallel corpus files, the following commands can be used:
 
 ```
-mkdir webdomain_registered
-cd webdomain_registered
+mkdir webdomain_registered_cleaned
+cd webdomain_registered_cleaned
 nohup python ~/DataCollection/baseline/corpus_by_domain.py -slang en -tlang de --regdomain ../en-de.filtered 2> ../webdomain_registered_err.log &
 ```
 The option `--regdomain` extracts the files by registered domain (i.e. without subdomains). The parameter can be omitted to extract by subdomain.
@@ -100,7 +100,7 @@ Due to boilerplate text, corpora produced on a domain-level by `corpus_by_domain
 
 ```
 cd ..
-~/DataCollection/baseline/dedupe.sh webdomain_registered webdomain_registered_cleaned en de
+~/DataCollection/baseline/dedupe.sh webdomain_registered_cleaned webdomain_registered_cleaned_deduplicated en de
 ```
 
 ## Appendix
