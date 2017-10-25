@@ -1,8 +1,20 @@
-Start with fresh Ubuntu Server 14.03.03 LTS
+# Hardware requirements
 
-Check the raw version of this file for easy copy/paste
+* CPU
+  * Phase 1: 32 Core recommended (language identification in [Phase 1](metadata/metadata.md) takes about 100 days on such a 4 Core CPU, 32 Core CPU recommended)
+  * Phase 2: 4 Core 
+* RAM
+  * 32 GB RAM (see issues #8 and #18)
+* Drive space
+  * Phase 1: 3-4 TB per Common Crawl
+  * Phase 2: 300 GB per language direction
 
-# Install packages
+# Operating system requirements
+The system was tested with Ubuntu 14.04 LTS, but other Debian-based Linux distributions should work as well.
+
+# Software installation
+
+## Install packages
 ```
 sudo apt-get update
 sudo apt-get install build-essential git-core pkg-config
@@ -18,30 +30,30 @@ sudo apt-get install libgflags-dev libsnappy-dev libbz2-dev liblzma-dev zlib1g-d
 sudo apt-get install pigz
 ```
 
-# Make a directory for code
+## Make a directory for code
 ```
 cd
 mkdir -p net/build
 ```
 
-# Clone project from github (add ssh key before)
+## Clone project from github (add ssh key before)
 ```
 cd net/build/
 git clone git@github.com:ModernMT/DataCollection.git
 ```
 
-# Make new virtualenv
+## Make new virtualenv (optional)
 ```
 cd net/build/
 virtualenv crawl
 ```
 
-# Activate virtualenv
+## Activate virtualenv (optional)
 ```
 source ~/net/build/crawl/bin/activate
 ```
 
-# Install requirements
+## Install requirements
 ```
 sudo apt-get install libffi-dev
 sudo apt-get install libssl-dev
@@ -53,7 +65,7 @@ pip install -r requirements.txt
 ```
 When encountering issues with installing NLTK data, you might have to hand-edit `DEFAULT_URL` in `/usr/lib/python2.7/dist-packages/nltk/downloader.py` from `http://nltk.googlecode.com/svn/trunk/nltk_data/index.xml` to `http://www.nltk.org/nltk_data/`.
 
-# Install moses
+## Install Moses
 ```
 sudo apt-get install build-essential git-core pkg-config automake libtool
 cd /home/build
@@ -62,9 +74,9 @@ cd moses
 make -f contrib/Makefiles/install-dependencies.gmake
 ```
 
-# Install Bitextor
+## Install Bitextor
 
-Like described at http://sourceforge.net/p/bitextor/wiki/Home/ (used 4.1.0-rc4 for baseline test, but newer versions should work)
+Like described at http://sourceforge.net/p/bitextor/wiki/Home/ (tested baseline with 4.1.0-rc4, but newer versions should work)
 
 Potentially needed option when configuring: `./configure --without-apertium`
 
