@@ -67,11 +67,11 @@ if __name__ == "__main__":
                         action='store_true')
     args = parser.parse_args()
 
-    deletions = defaultdict(list)
-
     n_written = 0
     n_total = 0
     lid = LanguageIdentifier(args.cld2, [args.source_lang, args.target_lang])
+    if args.deleted_filename:
+	deleted_file = codecs.open(args.deleted_filename,'w',encoding='utf-8')
     for line in args.infile:
         n_total += 1
         score = 1.0
@@ -79,10 +79,10 @@ if __name__ == "__main__":
 	tgturl = ""
         split_line = line.rstrip('\n').split("\t")
 	if len(split_line) <= 1:
-	    deletions["line_short"].append(line)
+	    deleted_file.write("line_short\t%s\n" % line)
 	    continue
 	if len(split_line) > 5:
-	    deletions["line_long"].append(line)
+	    deleted_file.write("line_long\t%s\n" % line)
 	    continue
         if len(split_line) == 5:
             srcurl, tgturl, source, target, score = split_line
@@ -96,43 +96,37 @@ if __name__ == "__main__":
         target = target.decode('utf-8', 'ignore')
 
         if source == target:
-            deletions["identical"].append(target)
+	    deleted_file.write("identical\t%s\n" % target)
             continue
         if not source.strip():
-            deletions["source_empty"].append('')
+	    deleted_file.write("source_empty\n")
             continue
         elif not target.strip():
-            deletions["target_empty"].append('')
+	    deleted_file.write("target_empty\n")
             continue
         if float(score) < args.minscore:
-            deletions["low score"].append("\t".join((source, target, score)))
+	    deleted_file.write("low_score\t%s\t%s\t%s\n" % (source,target,score))
             continue
 
         if float((len(source) + 15)) / float(len(target) + 15) > 1.5:
-            deletions["source_too_long"].append("%s\t%s" % (source, target))
+	    deleted_file.write("source_too_long\t%s\t%s\n" % (source,target))
             continue
+	# To be debugged - criterion is exactly like previous, so never reached
         if float((len(target) + 15)) / float(len(source) + 15) > 1.5:
-            deletions["source_too_short"].append("%s\t%s" % (source, target))
+	    deleted_file.write("source_too_short\t%s\t%s\n" % (source,target))
             continue
 
         if not lid.is_language(source, args.source_lang):
-            deletions["source_lang"].append(source)
+	    deleted_file.write("source_lang\t%s\n" % source)
             continue
         if not lid.is_language(target, args.target_lang):
-            deletions["target_lang"].append(target)
+	    deleted_file.write("target_lang\t%s\n" % target)
             continue
 
         args.outfile.write(line)
         n_written += 1
 
     if args.deleted_filename:
-	deleted_file = codecs.open(args.deleted_filename,'w',encoding='utf-8')
         deleted_file.write("Written: %d of %d = %f percent\n" %
                            (n_written, n_total,
                             100. * n_written / max((1, n_total))))
-        for reason, deleted in deletions.iteritems():
-            deleted_file.write("Deleted %d items due to %s\n"
-                               % (len(deleted), reason))
-            for line in deleted:
-                if line.strip():
-                    deleted_file.write("\t%s\n" % line)
